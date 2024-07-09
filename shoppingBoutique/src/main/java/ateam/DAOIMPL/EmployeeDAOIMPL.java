@@ -1,9 +1,10 @@
 package ateam.DAOIMPL;
 
 
+import ateam.BDconnection.Connect;
 import ateam.DAO.EmployeeDAO;
 import ateam.Models.Employee;
-import com.mycompany.carolsboutique.BDconnection.Connect;
+//import com.mycompany.carolsboutique.BDconnection.Connect;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

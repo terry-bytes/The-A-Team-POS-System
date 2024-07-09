@@ -15,4 +15,6 @@ public interface ProductDAO {
     void updateProduct(Product product);
 
     void deleteProduct(int product_ID);
+    
+    Product getProductByBarcode(String product_SKU);
 }

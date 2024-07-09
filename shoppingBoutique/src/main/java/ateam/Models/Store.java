@@ -17,4 +17,6 @@ public class Store {
     private int store_zipcode; 
     private String store_phone; 
     private String store_email; 
+    
+    
 }
