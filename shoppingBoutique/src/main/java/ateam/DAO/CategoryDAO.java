@@ -5,7 +5,7 @@ import java.util.List;
 
 public interface CategoryDAO {
 
-    void addCategory(Category category);
+    boolean addCategory(Category category);
 
     Category getCategoryById(int category_ID); 
 

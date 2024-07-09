@@ -8,7 +8,11 @@ package ateam.DAOIMPL;
 import ateam.DAO.CategoryDAO;
 import ateam.Models.Category;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -22,8 +26,18 @@ public class CategoryDaoImpl implements CategoryDAO{
     }
 
     @Override
-    public void addCategory(Category category) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public boolean addCategory(Category category) {
+        if(connection != null){
+            String sql = "INSERT INTO categories (category_name) VALUES (?)";
+            try(PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+                preparedStatement.setString(1, category.getCategory_name());
+                
+                if(preparedStatement.executeUpdate() > 0) return true;
+            } catch (SQLException ex) {
+                Logger.getLogger(CategoryDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return false;
     }
 
     @Override
