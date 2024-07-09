@@ -96,7 +96,7 @@ public class CustomerDaoImpl implements CustomerDAO{
     @Override
     public boolean updateCustomer(Customer customer) {
         if(connection != null){
-            String sql = "UPDATE INTO customers(customer_name, customer_surname, customer_email, customer_password) VALUES(?, ?, ?, ?) WHERE customer_ID = ?";
+            String sql = "UPDATE customers SET customer_name=?, customer_surname=?, customer_email=?, customer_password=? WHERE customer_ID = ?";
             try(PreparedStatement preparedStatement = connection.prepareStatement(sql)){
                 preparedStatement.setString(1, customer.getCustomer_name());
                 preparedStatement.setString(2, customer.getCustomer_surname());

@@ -89,7 +89,7 @@ public class CategoryDaoImpl implements CategoryDAO{
     @Override
     public boolean updateCategory(Category ctgr) {
         if(connection != null){
-            String sql = "UPDATE categories(category_name) SET (?) WHERE category_ID = ?";
+            String sql = "UPDATE categories SET category_name=? WHERE category_ID = ?";
             try(PreparedStatement preparedStatement = connection.prepareStatement(sql)){
                 preparedStatement.setInt(1, ctgr.getCategory_ID());
                 
