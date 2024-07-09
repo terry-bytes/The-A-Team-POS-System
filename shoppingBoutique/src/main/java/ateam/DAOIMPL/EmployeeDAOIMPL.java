@@ -1,7 +1,6 @@
 package ateam.DAOIMPL;
 
 
-import ateam.BDconnection.Connect;
 import ateam.DAO.EmployeeDAO;
 import ateam.Models.Employee;
 

@@ -51,13 +51,15 @@ public class CategoryDaoImpl implements CategoryDAO{
     }
 
     @Override
-    public void updateCategory(Category category) {
+    public boolean updateCategory(Category ctgr) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public void deleteCategory(int category_ID) {
+    public boolean deleteCategory(int i) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+  
     
 }
