@@ -34,7 +34,7 @@ public class EmployeeDAOIMPL implements EmployeeDAO {
             preparedStatement.setString(1, employee.getFirstName());
             preparedStatement.setString(2, employee.getLastName());
             preparedStatement.setString(3, employee.getStore_ID());
-            preparedStatement.setString(4, employee.getEmployeeIdVar());
+            preparedStatement.setString(4, employee.getEmployees_id());
             preparedStatement.setString(5, employee.getEmployeePassword());
             preparedStatement.setBoolean(6, employee.isManager());
 
@@ -71,7 +71,7 @@ public class EmployeeDAOIMPL implements EmployeeDAO {
                 employee.setFirstName(resultSet.getString("first_name"));
                 employee.setLastName(resultSet.getString("last_name"));
                 employee.setStore_ID(resultSet.getString("store_ID"));
-                employee.setEmployeeIdVar(resultSet.getString("employees_id"));
+                employee.setEmployees_id(resultSet.getString("employees_id"));
                 employee.setEmployeePassword(resultSet.getString("employee_password"));
                 employee.setManager(resultSet.getBoolean("is_manager"));
             }
@@ -102,7 +102,7 @@ public class EmployeeDAOIMPL implements EmployeeDAO {
                 employee.setFirstName(resultSet.getString("first_name"));
                 employee.setLastName(resultSet.getString("last_name"));
                 employee.setStore_ID(resultSet.getString("store_ID"));
-                employee.setEmployeeIdVar(resultSet.getString("employees_id"));
+                employee.setEmployees_id(resultSet.getString("employees_id"));
                 employee.setEmployeePassword(resultSet.getString("employee_password"));
                 employee.setManager(resultSet.getBoolean("is_manager"));
 
@@ -129,7 +129,7 @@ public class EmployeeDAOIMPL implements EmployeeDAO {
             preparedStatement.setString(1, employee.getFirstName());
             preparedStatement.setString(2, employee.getLastName());
             preparedStatement.setString(3, employee.getStore_ID());
-            preparedStatement.setString(4, employee.getEmployeeIdVar());
+            preparedStatement.setString(4, employee.getEmployees_id());
             preparedStatement.setString(5, employee.getEmployeePassword());
             preparedStatement.setBoolean(6, employee.isManager());
             preparedStatement.setInt(7, employee.getEmployee_ID());
