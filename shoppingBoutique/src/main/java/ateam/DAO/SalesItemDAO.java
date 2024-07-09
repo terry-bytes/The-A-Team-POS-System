@@ -6,13 +6,13 @@ import java.util.List;
 
 public interface SalesItemDAO {
 
-    void createSalesItem(SalesItem salesItem);
+    boolean createSalesItem(SalesItem salesItem);
 
     SalesItem getSalesItemById(int sales_item_ID); 
 
     List<SalesItem> getSalesItemsBySaleId(int sales_ID); 
 
-    void updateSalesItem(SalesItem salesItem);
+    boolean updateSalesItem(SalesItem salesItem);
 
-    void deleteSalesItem(int sales_item_ID); 
+    boolean deleteSalesItem(int sales_item_ID); 
 }

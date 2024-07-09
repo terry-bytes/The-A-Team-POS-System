@@ -6,13 +6,13 @@ import java.util.List;
 
 public interface SaleDAO {
 
-    void addSale(Sale sale);
+    boolean addSale(Sale sale);
 
     Sale getSaleById(int sales_ID); 
 
     List<Sale> getAllSales();
 
-    void updateSale(Sale sale);
+    boolean updateSale(Sale sale);
 
-    void deleteSale(int sales_ID);
+    boolean deleteSale(int sales_ID);
 }
