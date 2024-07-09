@@ -1,4 +1,5 @@
-package com.mycompany.carolsboutique.BDconnection;
+package ateam.BDconnection;
+
 
 import java.sql.Connection;
 import java.sql.DriverManager;
