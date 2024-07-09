@@ -6,13 +6,13 @@ import java.util.List;
 
 public interface ProductDAO {
 
-    void addProduct(Product product);
+    boolean addProduct(Product product);
 
     Product getProductById(int product_ID);
 
     List<Product> getAllProducts();
 
-    void updateProduct(Product product);
+    boolean updateProduct(Product product);
 
-    void deleteProduct(int product_ID);
+    boolean deleteProduct(int product_ID);
 }

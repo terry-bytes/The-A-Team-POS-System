@@ -6,13 +6,13 @@ import java.util.List;
 
 public interface StoreDAO {
 
-    void addStore(Store store);
+    boolean addStore(Store store);
 
     Store getStoreById(int store_ID);
 
     List<Store> getAllStores();
 
-    void updateStore(Store store);
+    boolean updateStore(Store store);
 
-    void deleteStore(int store_ID);  
+    boolean deleteStore(int store_ID);  
 }

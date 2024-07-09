@@ -6,13 +6,13 @@ import java.util.List;
 
 public interface CustomerDAO {
 
-    void addCustomer(Customer customer);
+    boolean addCustomer(Customer customer);
 
     Customer getCustomerById(int customer_ID);
 
     List<Customer> getAllCustomers();
 
-    void updateCustomer(Customer customer);
+    boolean updateCustomer(Customer customer);
 
-    void deleteCustomer(int customer_ID); 
+    boolean deleteCustomer(int customer_ID); 
 }

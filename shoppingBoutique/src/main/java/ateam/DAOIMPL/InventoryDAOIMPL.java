@@ -1,45 +1,45 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package ateam.DAOIMPL;
 
-
-import ateam.BDconnection.Connect;
-import ateam.DAO.EmployeeDAO;
-import ateam.Models.Employee;
-
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
+import ateam.DAO.InventoryDAO;
+import ateam.Models.Inventory;
 import java.util.List;
 
-public class EmployeeDAOIMPL implements EmployeeDAO {
+/**
+ *
+ * @author Train
+ */
+public class InventoryDAOIMPL implements InventoryDAO {
 
     @Override
-    public boolean addEmployee(Employee employee) {
+    public boolean addInventory(Inventory invntr) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Employee getEmployeeById(int employee_ID) {
+    public Inventory getInventoryById(int inventory_ID) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public List<Employee> getAllEmployees() {
+    public List<Inventory> getAllInventories() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public boolean updateEmployee(Employee employee) {
+    public boolean updateInventory(Inventory invntr) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public boolean deleteEmployee(int employee_ID) {
+    public boolean deleteInventory(int i) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 
-
+    
 }
