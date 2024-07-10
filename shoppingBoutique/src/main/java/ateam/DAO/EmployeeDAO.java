@@ -14,4 +14,5 @@ public interface EmployeeDAO {
     boolean updateEmployee(Employee employee);
 
     boolean deleteEmployee(int employee_ID);
+    Employee getEmployee(String employee_id, String password);
 }
