@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.http.HttpSession;
 
 @WebServlet(name = "EmployeeServlet", urlPatterns = "/employees")
 public class EmployeeServlet extends HttpServlet {
@@ -34,7 +35,7 @@ public class EmployeeServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String action = request.getParameter("action");
+        String action = request.getParameter("submit");
 
         switch (action) {
             case "add":
@@ -45,6 +46,9 @@ public class EmployeeServlet extends HttpServlet {
                 break;
             case "delete":
                 deleteEmployee(request, response);
+                break;
+            case "login":
+                handleLogin(request, response);
                 break;
             default:
                 response.sendRedirect(request.getContextPath() + "/employees");
@@ -151,6 +155,33 @@ public class EmployeeServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/employees");
         } else {
             response.sendRedirect(request.getContextPath() + "/employees");
+        }
+    }
+    
+    private void handleLogin(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        Employee employee = employeeService.login(
+                request.getParameter("employeeId"), 
+                request.getParameter("password"));
+        if(employee != null){
+            HttpSession session = request.getSession(true);
+            session.setAttribute("Employee", employee);
+            
+            // checking the role of the Employee
+            switch (employee.getRole()) {
+                case Admin:
+                    request.getRequestDispatcher("admin.jsp").forward(request, response);
+                    break;
+                case Manager:
+                    request.getRequestDispatcher("managerDashboard.jsp").forward(request, response);
+                    break;
+                default:
+                    request.getRequestDispatcher("tellerDashboard.jsp").forward(request, response);
+                    break;
+            }
+
+        }else{
+            request.setAttribute("message", "failed to login");
+             request.getRequestDispatcher("login.jsp").forward(request, response);
         }
     }
 }

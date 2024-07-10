@@ -10,7 +10,7 @@ package ateam.Models;
  * @author Train
  */
 public enum Role {
-    TELLER,
-    MANAGER,
-    ADMIN
+    Teller,
+    Manager,
+    Admin
 }

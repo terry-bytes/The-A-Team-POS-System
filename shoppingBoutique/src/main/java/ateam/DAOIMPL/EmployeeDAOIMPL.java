@@ -8,6 +8,8 @@ import ateam.BDconnection.Connect;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class EmployeeDAOIMPL implements EmployeeDAO {
 
@@ -21,8 +23,8 @@ public class EmployeeDAOIMPL implements EmployeeDAO {
     private Connection connection;
 
     public EmployeeDAOIMPL() {
-        Connect connect = new Connect();
-        this.connection = connect.connectToDB();
+        //Connect connect = new Connect();
+        this.connection = new Connect().connectToDB();
     }
 
     @Override
@@ -186,4 +188,36 @@ public class EmployeeDAOIMPL implements EmployeeDAO {
             }
         }
     }
+
+    @Override
+    public Employee getEmployee(String employee_id, String password) {
+        if(connection == null)
+            return null;
+        Employee employee = new Employee();
+        String sql = "SELECT employee_ID, first_name, last_name, store_ID, employee_password, role"
+                + " FROM employees"
+                + " WHERE employees_id = ?";
+        try(PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+            preparedStatement.setString(1, employee_id);
+            
+            try(ResultSet resultSet = preparedStatement.executeQuery()){
+                if(resultSet.next()){
+                    if(password.equals(resultSet.getString("employee_password"))){
+                        employee.setEmployee_ID(resultSet.getInt("employee_ID"));
+                        employee.setFirstName(resultSet.getString("first_name"));
+                        employee.setLastName(resultSet.getString("last_name"));
+                        employee.setStore_ID(resultSet.getInt("store_ID"));
+                        employee.setEmployees_id(employee_id);
+                        employee.setEmployeePassword(password);
+                        employee.setRole(Enum.valueOf(Role.class, resultSet.getString("role")));
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(EmployeeDAOIMPL.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return employee;
+    }
+
+    
 }
