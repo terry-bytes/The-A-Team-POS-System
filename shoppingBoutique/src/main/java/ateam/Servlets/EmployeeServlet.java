@@ -166,7 +166,6 @@ public class EmployeeServlet extends HttpServlet {
             HttpSession session = request.getSession(true);
             session.setAttribute("Employee", employee);
             
-            // checking the role of the Employee
             switch (employee.getRole()) {
                 case Admin:
                     request.getRequestDispatcher("admin.jsp").forward(request, response);
