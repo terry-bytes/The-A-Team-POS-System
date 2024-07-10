@@ -21,7 +21,7 @@
                 <ul>
                     <li><a href="" class="link">Dashboard</a></li>
                     <li><a href="" class="link">My Store</a></li>
-                    <li><a href="" class="link">Dashboard</a></li>
+                    <li><a href="" class="link">Notifications</a></li>
                 </ul>
             </div>
         </nav>
