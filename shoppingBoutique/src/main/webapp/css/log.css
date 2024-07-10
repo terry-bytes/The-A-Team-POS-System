@@ -21,7 +21,7 @@ and open the template in the editor.
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    
+    overflow: hidden;
 }
 
 .login-box{
@@ -89,4 +89,25 @@ and open the template in the editor.
 button{
     font-weight: 500;
    
+}
+
+.select-container{
+    display: flex;
+    justify-content: center;
+    position: relative;
+    height: 50px;
+    padding: 10px 0;
+}
+
+.select-box{
+    border: none;
+    appearance: none;
+    padding: 0 30px 0 15px;
+    width: 100%;
+    font-size: 18px;
+}
+
+.two-forms{
+    display: flex;
+    gap: 10px;
 }
