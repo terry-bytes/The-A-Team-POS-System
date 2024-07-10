@@ -2,44 +2,188 @@ package ateam.DAOIMPL;
 
 
 
-import ateam.DAO.EmployeeDAO;
 import ateam.Models.Employee;
+import ateam.BDconnection.Connect;
 
+import ateam.DAO.EmployeeDAO;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class EmployeeDAOIMPL implements EmployeeDAO {
 
+    private static final String SQL_INSERT_EMPLOYEE = "INSERT INTO employees (first_name, last_name, store_ID, employees_id, employee_password, is_manager) VALUES (?, ?, ?, ?, ?, ?)";
+    private static final String SQL_SELECT_EMPLOYEE_BY_ID = "SELECT * FROM employees WHERE employee_ID = ?";
+    private static final String SQL_SELECT_ALL_EMPLOYEES = "SELECT * FROM employees";
+    private static final String SQL_UPDATE_EMPLOYEE = "UPDATE employees SET first_name = ?, last_name = ?, store_ID = ?, employees_id = ?, employee_password = ?, is_manager = ? WHERE employee_ID = ?";
+    private static final String SQL_DELETE_EMPLOYEE = "DELETE FROM employees WHERE employee_ID = ?";
+
+    private Connection connection;
+
+    public EmployeeDAOIMPL() {
+        Connect connect = new Connect();
+        this.connection = connect.connectToDB();
+    }
+
     @Override
     public boolean addEmployee(Employee employee) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        boolean success = false;
+        PreparedStatement preparedStatement = null;
+
+        try {
+
+            preparedStatement = connection.prepareStatement(SQL_INSERT_EMPLOYEE);
+            preparedStatement.setString(1, employee.getFirstName());
+            preparedStatement.setString(2, employee.getLastName());
+            preparedStatement.setString(3, employee.getStore_ID());
+            preparedStatement.setString(4, employee.getEmployees_id());
+            preparedStatement.setString(5, employee.getEmployeePassword());
+            preparedStatement.setBoolean(6, employee.isManager());
+
+            int rowsInserted = preparedStatement.executeUpdate();
+            if (rowsInserted > 0) {
+                success = true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+
+            close(preparedStatement);
+        }
+
+        return success;
     }
 
     @Override
     public Employee getEmployeeById(int employee_ID) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Employee employee = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        try {
+
+            preparedStatement = connection.prepareStatement(SQL_SELECT_EMPLOYEE_BY_ID);
+            preparedStatement.setInt(1, employee_ID);
+
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                employee = new Employee();
+                employee.setEmployee_ID(resultSet.getInt("employee_ID"));
+                employee.setFirstName(resultSet.getString("first_name"));
+                employee.setLastName(resultSet.getString("last_name"));
+                employee.setStore_ID(resultSet.getString("store_ID"));
+                employee.setEmployees_id(resultSet.getString("employees_id"));
+                employee.setEmployeePassword(resultSet.getString("employee_password"));
+                employee.setManager(resultSet.getBoolean("is_manager"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+
+            close(resultSet, preparedStatement);
+        }
+
+        return employee;
     }
 
     @Override
     public List<Employee> getAllEmployees() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<Employee> employees = new ArrayList<>();
+        Statement statement = null;
+        ResultSet resultSet = null;
+
+        try {
+            statement = connection.createStatement();
+
+            resultSet = statement.executeQuery(SQL_SELECT_ALL_EMPLOYEES);
+
+            while (resultSet.next()) {
+                Employee employee = new Employee();
+                employee.setEmployee_ID(resultSet.getInt("employee_ID"));
+                employee.setFirstName(resultSet.getString("first_name"));
+                employee.setLastName(resultSet.getString("last_name"));
+                employee.setStore_ID(resultSet.getString("store_ID"));
+                employee.setEmployees_id(resultSet.getString("employees_id"));
+                employee.setEmployeePassword(resultSet.getString("employee_password"));
+                employee.setManager(resultSet.getBoolean("is_manager"));
+
+                employees.add(employee);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+
+            close(resultSet, statement);
+        }
+
+        return employees;
     }
 
     @Override
     public boolean updateEmployee(Employee employee) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        boolean success = false;
+        PreparedStatement preparedStatement = null;
+
+        try {
+
+            preparedStatement = connection.prepareStatement(SQL_UPDATE_EMPLOYEE);
+            preparedStatement.setString(1, employee.getFirstName());
+            preparedStatement.setString(2, employee.getLastName());
+            preparedStatement.setString(3, employee.getStore_ID());
+            preparedStatement.setString(4, employee.getEmployees_id());
+            preparedStatement.setString(5, employee.getEmployeePassword());
+            preparedStatement.setBoolean(6, employee.isManager());
+            preparedStatement.setInt(7, employee.getEmployee_ID());
+
+            int rowsUpdated = preparedStatement.executeUpdate();
+            if (rowsUpdated > 0) {
+                success = true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            close(preparedStatement);
+        }
+
+        return success;
     }
 
     @Override
     public boolean deleteEmployee(int employee_ID) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        boolean success = false;
+        PreparedStatement preparedStatement = null;
+
+        try {
+
+            preparedStatement = connection.prepareStatement(SQL_DELETE_EMPLOYEE);
+            preparedStatement.setInt(1, employee_ID);
+
+            int rowsDeleted = preparedStatement.executeUpdate();
+            if (rowsDeleted > 0) {
+                success = true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            close(preparedStatement);
+        }
+
+        return success;
     }
 
-
-
+    private void close(AutoCloseable... closeables) {
+        if (closeables != null) {
+            for (AutoCloseable closeable : closeables) {
+                try {
+                    if (closeable != null) {
+                        closeable.close();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 }
