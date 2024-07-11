@@ -4,6 +4,9 @@
     Author     : Train 01
 --%>
 
+
+<%@page import="ateam.Models.Store"%>
+<%@page import="ateam.Models.Employee"%>
 <%@page import="java.util.List"%>
 <%@page import="ateam.Models.Role"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -17,20 +20,27 @@
     
     </head>
     <body>
-        <%  List<Role> roles = (List<Role>) request.getSession(false).getAttribute("roles");
-            String message = (String) request.getAttribute("addEmployeeMessage");%>
+        <%  Role[] roles = Role.values();
+            String message = (String) request.getAttribute("addEmployeeMessage");
+            Employee employee = (Employee) request.getSession(false).getAttribute("Employee");
+            List<Store> stores = (List<Store>) request.getSession(false).getAttribute("stores");
+        %>
+        <% if(employee != null && employee.getRole() == Role.Manager){%>
+        <jsp:include page="navbar.jsp"/>
         <div class="container">
+            
+            
             <div class="login-box">
                 <div class="login-header">
-                    <h4>Carols Boutique</h4>
-                    <h3>Login</h3>
+                   
+                    <h3>Add Employee</h3>
                 </div>
                 <form action="employees" method="post">
                     <div class="two-forms">
                         <div class="input-box">
                             <input type="text"
                                    placeholder='Firstname'
-                                   name='firstname'
+                                   name='firstName'
                                    class='input-field'
                                    autocomplete="off" required
                                    />
@@ -38,8 +48,8 @@
                         </div>
                         <div class="input-box">
                             <input type="text"
-                                   placeholder='Lastname'
-                                   name='lastname'
+                                   placeholder='lastName'
+                                   name='lastName'
                                    class='input-field'
                                    autocomplete="off" required
                                    />
@@ -59,24 +69,58 @@
                     
                     <div class="select-container">
                         <label>Role</label>
-                        <select class="select-box">Select Role</select>
+                        <select class="select-box" name="role" id="roleSelector">
                             <% if(roles != null){
                                 for(Role role : roles){%>
-                                <option value="<%=role.name()%>"><%=role.name()%></option>
+                                <option  value="<%=role.name()%>"><%=role.name()%></option>
                                 <%}}%>
-                            
+                            </select>
                     </div>
+                            
+                    <div class="select-container" id="storeSelector" style="display: none;">
+                        <label>Store</label>
+                        <select class="select-box" name="storeId">
+                            <% if(stores != null){
+                                for(Store store : stores){%>
+                                <option  value="<%=store.getStore_ID() %>"><%=store.getStore_name() %></option>
+                                <%}}%>
+                            </select>
+                    </div>
+                     
+                       
+                    <input type="hidden" name="storeId" value="<%=employee.getStore_ID()%>"/>
+                        
+ 
                     
                     
                     <%if(message != null){%>
                     <p><%=message%></p>
                     <%}%>
                     <div class="input-submit">
-                        <input name="submit" value="login" hidden>
+                        <input name="submit" value="add" hidden>
                         <button class="submit-btn" id="submit">LogIn</button>
                     </div>
                 </form>
             </div>
+                    
         </div>
+        <%} else {%>
+        <jsp:include page="unauthorized.jsp"/>
+        <% }%>
+                    
+        <script>
+            var selectedRole = document.getElementById("roleSelector");
+            var storeSelection = document.getElementById("storeSelector");
+            
+            selectedRole.addEventListener('change', function(){
+                var role = selectedRole.value;
+                
+                if(role == 'Manager'){
+                    storeSelection.style.display = 'block';
+                }else {
+                    storeSelection.style.display = 'none';
+                }
+            })
+        </script>
     </body>
 </html>

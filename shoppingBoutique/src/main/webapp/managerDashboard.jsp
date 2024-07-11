@@ -4,6 +4,8 @@
     Author     : Train 01
 --%>
 
+<%@page import="ateam.Models.Role"%>
+<%@page import="ateam.Models.Employee"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -12,6 +14,16 @@
         <title>JSP Page</title>
     </head>
     <body>
+        <% Employee employee = (Employee) request.getSession(false).getAttribute("Employee"); 
+            if(employee != null && employee.getRole() == Role.Manager){
+        %>
+        
         <h1>Manager</h1>
+        
+        <a href="addEmployee.jsp">Add Employee</a>
+        
+        <%} else {%>
+        <jsp:include page="unauthorized.jsp"/>
+        <%}%>
     </body>
 </html>
