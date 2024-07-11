@@ -1,3 +1,4 @@
+
 package ateam.DAO;
 
 import ateam.Models.Product;
@@ -7,3 +8,4 @@ public interface ProductDAO {
 
     Product getProductBySKU(String productSKU);
 }
+
