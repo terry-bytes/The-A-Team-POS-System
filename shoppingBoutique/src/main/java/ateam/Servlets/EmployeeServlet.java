@@ -2,10 +2,14 @@ package ateam.Servlets;
 
 import ateam.DAO.EmployeeDAO;
 import ateam.DAOIMPL.EmployeeDAOIMPL;
+import ateam.DAOIMPL.StoreDAOIMPL;
 import ateam.Models.Employee;
 import ateam.Models.Role;
+import ateam.Models.Store;
 import ateam.Service.EmployeeService;
+import ateam.Service.StoreService;
 import ateam.ServiceImpl.EmployeeServiceImpl;
+import ateam.ServiceImpl.StoreServiceImpl;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -22,11 +26,13 @@ import javax.servlet.http.HttpSession;
 public class EmployeeServlet extends HttpServlet {
 
     private final EmployeeService employeeService;
+    private final StoreService storeService;
 
     public EmployeeServlet() {
         try {
             EmployeeDAO employeeDAO = new EmployeeDAOIMPL();
             this.employeeService = new EmployeeServiceImpl(employeeDAO);
+            this.storeService = new StoreServiceImpl(new StoreDAOIMPL());
         } catch (Exception e) {
             Logger.getLogger(EmployeeServlet.class.getName()).log(Level.SEVERE, "Error initializing EmployeeService", e);
             throw new RuntimeException(e);
@@ -58,10 +64,12 @@ public class EmployeeServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("submit");
-
+        HttpSession session = request.getSession(false);
 
         switch(action){
             case "getAddEmployee":
+                List<Store> stores = storeService.getAllStores();
+                session.setAttribute("stores", stores);
                 request.getRequestDispatcher("addEmployee.jsp").forward(request, response);
                 break;
         }
@@ -118,11 +126,11 @@ public class EmployeeServlet extends HttpServlet {
         Role role = Role.valueOf(request.getParameter("role"));
 
         Employee newEmployee = new Employee();
-        newEmployee.setFirstName(firstName);
-        newEmployee.setLastName(lastName);
+        newEmployee.setFirstName(firstName.trim());
+        newEmployee.setLastName(lastName.trim());
         newEmployee.setStore_ID(storeId);
-        newEmployee.setEmployees_id(employeesId);
-        newEmployee.setEmployeePassword(password);
+        newEmployee.setEmployees_id(employeesId.trim());
+        newEmployee.setEmployeePassword(password.trim());
         newEmployee.setRole(role);
 
         boolean success = employeeService.addEmployee(newEmployee);

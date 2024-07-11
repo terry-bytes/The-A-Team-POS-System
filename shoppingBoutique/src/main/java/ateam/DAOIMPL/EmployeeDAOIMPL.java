@@ -5,6 +5,7 @@ import ateam.Models.Employee;
 import ateam.Models.Role;
 import ateam.DAO.EmployeeDAO;
 import ateam.BDconnection.Connect;
+import ateam.util.PasswordUtil;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -203,7 +204,7 @@ public class EmployeeDAOIMPL implements EmployeeDAO {
             
             try(ResultSet resultSet = preparedStatement.executeQuery()){
                 if(resultSet.next()){
-                    if(password.equals(resultSet.getString("employee_password"))){
+                    if(PasswordUtil.verifyPassword(password, resultSet.getString("password"))){
                         employee.setEmployee_ID(resultSet.getInt("employee_ID"));
                         employee.setFirstName(resultSet.getString("first_name"));
                         employee.setLastName(resultSet.getString("last_name"));

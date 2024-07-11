@@ -3,20 +3,25 @@ package ateam.ServiceImpl;
 import ateam.DAO.EmployeeDAO;
 import ateam.Models.Employee;
 import ateam.Service.EmployeeService;
+import ateam.util.PasswordUtil;
 
 import java.util.List;
 
 public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeDAO employeeDAO;
+    private final PasswordUtil passwordUtil;
 
     public EmployeeServiceImpl(EmployeeDAO employeeDAO) {
         this.employeeDAO = employeeDAO;
+        this.passwordUtil = new PasswordUtil();
     }
 
     @Override
     public boolean addEmployee(Employee employee) {
         try {
+            employee.setEmployeePassword(PasswordUtil.encryptPassword(employee.getEmployeePassword().trim()));
+            
             return employeeDAO.addEmployee(employee);
         } catch (Exception e) {
             e.printStackTrace();
