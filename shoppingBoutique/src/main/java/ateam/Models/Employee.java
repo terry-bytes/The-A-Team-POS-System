@@ -9,11 +9,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Employee {
 
-    private int employee_ID;  
+    private int employee_ID;
     private String firstName;
     private String lastName;
-    private String store_ID;  
-    private String employeeIdVar;  
+    private Integer store_ID;
+    private String employees_id;
     private String employeePassword;
-    private boolean isManager;
+    private Role role;
+
 }

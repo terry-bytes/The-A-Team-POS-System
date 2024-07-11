@@ -6,13 +6,13 @@ import java.util.List;
 
 public interface LayawayDAO {
 
-    void addLayaway(Layaway layaway);
+    boolean addLayaway(Layaway layaway);
 
     Layaway getLayawayById(int layaway_ID);
 
     List<Layaway> getAllLayaways();
 
-    void updateLayaway(Layaway layaway);
+    boolean updateLayaway(Layaway layaway);
 
-    void deleteLayaway(int layaway_ID); 
+    boolean deleteLayaway(int layaway_ID); 
 }

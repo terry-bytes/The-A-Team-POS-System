@@ -1,18 +1,17 @@
 package ateam.DAO;
 
-
 import ateam.Models.Inventory;
 import java.util.List;
 
 public interface InventoryDAO {
 
-    void addInventory(Inventory inventory);
+    boolean addInventory(Inventory inventory, int addedByEmployeeId);
 
-    Inventory getInventoryById(int inventory_ID); 
+    Inventory getInventoryById(int inventory_ID);
 
     List<Inventory> getAllInventories();
 
-    void updateInventory(Inventory inventory);
+    boolean updateInventory(Inventory inventory);
 
-    void deleteInventory(int inventory_ID); 
+    boolean deleteInventory(int inventory_ID);
 }

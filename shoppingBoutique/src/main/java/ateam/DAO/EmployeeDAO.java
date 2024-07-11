@@ -1,18 +1,19 @@
 package ateam.DAO;
 
-
 import ateam.Models.Employee;
 import java.util.List;
 
 public interface EmployeeDAO {
 
-    void addEmployee(Employee employee);
+    boolean addEmployee(Employee employee);
 
     Employee getEmployeeById(int employee_ID);
 
     List<Employee> getAllEmployees();
 
-    void updateEmployee(Employee employee);
+    boolean updateEmployee(Employee employee);
 
-    void deleteEmployee(int employee_ID); 
+    boolean deleteEmployee(int employee_ID);
+    Employee getEmployee(String employee_id, String password);
+    
 }

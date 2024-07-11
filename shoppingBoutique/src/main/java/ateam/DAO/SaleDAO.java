@@ -1,18 +1,16 @@
 package ateam.DAO;
 
-
 import ateam.Models.Sale;
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface SaleDAO {
 
-    void addSale(Sale sale);
+    int startNewSale(int employeeId, int storeId);
 
-    Sale getSaleById(int sales_ID); 
+    BigDecimal calculateTotalAmount(int salesId);
 
-    List<Sale> getAllSales();
+    boolean updateTotalAmount(int salesId, BigDecimal totalAmount);
 
-    void updateSale(Sale sale);
-
-    void deleteSale(int sales_ID);
+    boolean finalizeSale(int salesId, String paymentMethod);
 }
