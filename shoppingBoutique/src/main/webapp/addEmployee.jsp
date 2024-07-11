@@ -17,7 +17,7 @@
     
     </head>
     <body>
-        <%  List<Role> roles = (List<Role>) request.getSession(false).getAttribute("roles");
+        <%  Role[] roles = Role.values();
             String message = (String) request.getAttribute("addEmployeeMessage");%>
         <div class="container">
             <div class="login-box">
@@ -30,7 +30,7 @@
                         <div class="input-box">
                             <input type="text"
                                    placeholder='Firstname'
-                                   name='firstname'
+                                   name='firstName'
                                    class='input-field'
                                    autocomplete="off" required
                                    />
@@ -38,8 +38,8 @@
                         </div>
                         <div class="input-box">
                             <input type="text"
-                                   placeholder='Lastname'
-                                   name='lastname'
+                                   placeholder='lastName'
+                                   name='lastName'
                                    class='input-field'
                                    autocomplete="off" required
                                    />
@@ -59,12 +59,12 @@
                     
                     <div class="select-container">
                         <label>Role</label>
-                        <select class="select-box">Select Role</select>
+                        <select class="select-box" name="role">
                             <% if(roles != null){
                                 for(Role role : roles){%>
-                                <option value="<%=role.name()%>"><%=role.name()%></option>
+                                <option  value="<%=role.name()%>"><%=role.name()%></option>
                                 <%}}%>
-                            
+                            </select>
                     </div>
                     
                     
@@ -72,7 +72,7 @@
                     <p><%=message%></p>
                     <%}%>
                     <div class="input-submit">
-                        <input name="submit" value="login" hidden>
+                        <input name="submit" value="add" hidden>
                         <button class="submit-btn" id="submit">LogIn</button>
                     </div>
                 </form>

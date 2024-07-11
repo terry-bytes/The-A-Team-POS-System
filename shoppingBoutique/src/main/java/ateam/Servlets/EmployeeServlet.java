@@ -57,12 +57,12 @@ public class EmployeeServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String action = request.getParameter("action");
+        String action = request.getParameter("submit");
 
-        if ("edit".equals(action)) {
-            showEditForm(request, response);
-        } else {
-            listEmployees(request, response);
+        switch(action){
+            case "getAddEmployee":
+                request.getRequestDispatcher("addEmployee.jsp").forward(request, response);
+                break;
         }
     }
 
@@ -80,10 +80,17 @@ public class EmployeeServlet extends HttpServlet {
     }
 
     private void addEmployee(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        /*
+        retrieving the manager from the session
+        want to get a store id from the manager so I can assign it to employee
+        might change this code as time goes on
+        */
+        Employee emp = (Employee) request.getSession(false).getAttribute("Employee");
+        
         String firstName = request.getParameter("firstName");
         String lastName = request.getParameter("lastName");
-        Integer storeId = Integer.parseInt(request.getParameter("storeId"));
-        String employeesId = request.getParameter("employeesId");
+        Integer storeId = emp.getStore_ID();
+        String employeesId = request.getParameter("employeesId");     // employee Id will be generated from the database so there is no need to send it from this side
         String password = request.getParameter("password");
         Role role = Role.valueOf(request.getParameter("role"));
 
@@ -96,11 +103,13 @@ public class EmployeeServlet extends HttpServlet {
         newEmployee.setRole(role);
 
         boolean success = employeeService.addEmployee(newEmployee);
-
+        
         if (success) {
-            response.sendRedirect(request.getContextPath() + "/employees");
+            request.setAttribute("addEmployeeMessage", "Employee added successfully");
+            response.sendRedirect(request.getContextPath() + "/employees?submit=getAddEmployee");
         } else {
-            response.sendRedirect(request.getContextPath() + "/employees");
+            
+            response.sendRedirect(request.getContextPath() + "/employees?submit=getAddEmployee");
         }
     }
 
