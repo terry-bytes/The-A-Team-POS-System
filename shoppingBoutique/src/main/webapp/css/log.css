@@ -31,6 +31,8 @@ and open the template in the editor.
     width: 440px;
     height: 480px;
     padding: 30px;
+    background-color: #edf2f2;
+
 }
 
 .login-header{
