@@ -4,6 +4,7 @@
     Author     : Train 01
 --%>
 
+<%@page import="ateam.Models.Employee"%>
 <%@page import="java.util.List"%>
 <%@page import="ateam.Models.Role"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -18,12 +19,18 @@
     </head>
     <body>
         <%  Role[] roles = Role.values();
-            String message = (String) request.getAttribute("addEmployeeMessage");%>
+            String message = (String) request.getAttribute("addEmployeeMessage");
+            Employee employee = (Employee) request.getSession(false).getAttribute("Employee");
+        %>
+        <% if(employee != null && employee.getRole() == Role.Manager){%>
+        <jsp:include page="navbar.jsp"/>
         <div class="container">
+            
+            
             <div class="login-box">
                 <div class="login-header">
-                    <h4>Carols Boutique</h4>
-                    <h3>Login</h3>
+                   
+                    <h3>Add Employee</h3>
                 </div>
                 <form action="employees" method="post">
                     <div class="two-forms">
@@ -77,6 +84,10 @@
                     </div>
                 </form>
             </div>
+                    
         </div>
+                    <%} else {%>
+                    <jsp:include page="unauthorized.jsp"/>
+                    <% }%>
     </body>
 </html>
