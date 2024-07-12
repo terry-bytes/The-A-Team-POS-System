@@ -1,10 +1,3 @@
-<%-- 
-    Document   : addEmployee
-    Created on : Jul 10, 2024, 2:44:36 PM
-    Author     : Train 01
---%>
-
-
 <%@page import="ateam.Models.Store"%>
 <%@page import="ateam.Models.Employee"%>
 <%@page import="java.util.List"%>
@@ -14,33 +7,30 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Add employee</title>
+        <title>Add Employee</title>
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/log.css">
         <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    
     </head>
     <body>
-        <%  Role[] roles = Role.values();
+        <%  
+            Role[] roles = Role.values();
             String message = (String) request.getAttribute("addEmployeeMessage");
             Employee employee = (Employee) request.getSession(false).getAttribute("Employee");
             List<Store> stores = (List<Store>) request.getSession(false).getAttribute("stores");
             String storeName;
         %>
-        <% if(employee != null && employee.getRole() == Role.Manager){%>
+        <% if(employee != null && employee.getRole() == Role.Manager) { %>
         <jsp:include page="navbar.jsp"/>
         <div class="container">
-            
-            
             <div class="login-box">
                 <div class="login-header">
-                   
                     <h3>Add Employee</h3>
                 </div>
                 <form action="employees" method="post">
                     <div class="two-forms">
                         <div class="input-box">
                             <input type="text"
-                                   placeholder='Firstname'
+                                   placeholder='First Name'
                                    name='firstName'
                                    class='input-field'
                                    autocomplete="off" required
@@ -49,7 +39,7 @@
                         </div>
                         <div class="input-box">
                             <input type="text"
-                                   placeholder='lastName'
+                                   placeholder='Last Name'
                                    name='lastName'
                                    class='input-field'
                                    autocomplete="off" required
@@ -57,8 +47,17 @@
                              <i class="bx bx-user"></i>
                         </div>
                     </div>
-                    
-                    
+
+                    <div class="input-box">
+                        <input type="email"
+                               placeholder='Email'
+                               name='email'
+                               class='input-field'
+                               autocomplete="off" required
+                               />
+                        <i class="bx bx-envelope"></i>
+                    </div>
+
                     <div class="input-box">
                         <input type="password"
                                placeholder='Password'
@@ -68,63 +67,57 @@
                                />
                         <i class="bx bx-lock-alt"></i>
                     </div>
-                    
                     <div class="select-container">
                         <label>Role</label>
                         <select class="select-box" name="role" id="roleSelector">
-                            <% if(roles != null){
-                                for(Role role : roles){%>
-                                <option  value="<%=role.name()%>"><%=role.name()%></option>
-                                <%}}%>
-                            </select>
+                            <% if(roles != null) {
+                                for(Role role : roles) { %>
+                                <option value="<%=role.name()%>"><%=role.name()%></option>
+                                <% } } %>
+                        </select>
                     </div>
-                            
                     <div class="select-container" id="storeSelector" style="display: none;">
                         <label>Store</label>
-                        <select class="select-box" name="managerStoreId">
-                            <% if(stores != null){
-                                for(Store store : stores){
-                                storeName = store.getStore_name();
-                            %>
-                                <option  value="<%=store.getStore_ID() %>"><%= storeName.toString() %></option>
-                                <%}}%>
-                            </select>
+
+                        <select class="select-box" name="storeId">
+                            <% if(stores != null) {
+                                for(Store store : stores) { %>
+                                <option value="<%=store.getStore_ID() %>"><%=store.getStore_name() %></option>
+                                <% } } %>
+                        </select>
                     </div>
-                     
-                       
-                    <input type="hidden" name="tellerStoreId" value="<%=employee.getStore_ID()%>"/>
-                        
- 
-                    
-                    
-                    <%if(message != null){%>
+                    <input type="hidden" name="storeId" value="<%=employee.getStore_ID()%>"/>
+                    <% if(message != null) { %>
+
                     <p><%=message%></p>
-                    <%}%>
+                    <% } %>
                     <div class="input-submit">
                         <input name="submit" value="add" hidden>
-                        <button class="submit-btn" id="submit">ADD EMPLOYEE</button>
+
+                        <button class="submit-btn" id="submit">Add Employee</button>
+
                     </div>
                 </form>
             </div>
-                    
         </div>
-        <%} else {%>
+        <% } else { %>
         <jsp:include page="unauthorized.jsp"/>
-        <% }%>
-                    
+        <% } %>
         <script>
             var selectedRole = document.getElementById("roleSelector");
             var storeSelection = document.getElementById("storeSelector");
             
-            selectedRole.addEventListener('change', function(){
+            selectedRole.addEventListener('change', function() {
                 var role = selectedRole.value;
                 
-                if(role === 'Manager'){
+
+                if(role === 'Manager') {
+
                     storeSelection.style.display = 'block';
-                }else {
+                } else {
                     storeSelection.style.display = 'none';
                 }
-            })
+            });
         </script>
     </body>
 </html>

@@ -65,6 +65,7 @@ public class EmployeeServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("submit");
+
         HttpSession session = request.getSession(false);
 
         switch(action){
@@ -85,7 +86,7 @@ public class EmployeeServlet extends HttpServlet {
             listEmployees(request, response);
 
         }
-        
+
     }
 
     private void listEmployees(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -113,37 +114,37 @@ public class EmployeeServlet extends HttpServlet {
     }
 
     private void addEmployee(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        /*
-        retrieving the manager from the session
-        want to get a store id from the manager so I can assign it to employee
-        might change this code as time goes on
-        */
-        Employee emp = (Employee) request.getSession(false).getAttribute("Employee");
-        
+        Employee manager = (Employee) request.getSession(false).getAttribute("Employee");
+
         String firstName = request.getParameter("firstName");
         String lastName = request.getParameter("lastName");
-        Integer storeId = emp.getStore_ID();
-        String employeesId = request.getParameter("employeesId");     // employee Id will be generated from the database so there is no need to send it from this side
+        String email = request.getParameter("email");
         String password = request.getParameter("password");
         Role role = Role.valueOf(request.getParameter("role"));
-
+        
+        int storeId;
+        if(role == Role.Manager){
+            storeId = Integer.parseInt(request.getParameter("managerStoreId"));
+        }else{
+            storeId = Integer.parseInt(request.getParameter("tellerStoreId"));
+        }
+        
         Employee newEmployee = new Employee();
-        newEmployee.setFirstName(firstName.trim());
-        newEmployee.setLastName(lastName.trim());
+
+        newEmployee.setFirstName(firstName);
+        newEmployee.setLastName(lastName);
+        newEmployee.setEmail(email);
         newEmployee.setStore_ID(storeId);
-        newEmployee.setEmployees_id(employeesId.trim());
-        newEmployee.setEmployeePassword(password.trim());
+        newEmployee.setEmployeePassword(password);
+
         newEmployee.setRole(role);
 
         boolean success = employeeService.addEmployee(newEmployee);
-        
+
         if (success) {
             request.setAttribute("addEmployeeMessage", "Employee added successfully");
-            response.sendRedirect(request.getContextPath() + "/employees?submit=getAddEmployee");
-        } else {
-            
-            response.sendRedirect(request.getContextPath() + "/employees?submit=getAddEmployee");
         }
+        response.sendRedirect(request.getContextPath() + "/employees?submit=getAddEmployee");
     }
 
     private void updateEmployee(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -152,31 +153,26 @@ public class EmployeeServlet extends HttpServlet {
         String lastName = request.getParameter("lastName");
         //String email = request.                                               // Please add email
         String employeesId = request.getParameter("employeesId");
+
+        String email = request.getParameter("email");
+        Integer storeId = Integer.parseInt(request.getParameter("storeId"));
+
         String password = request.getParameter("password");
         Role role = Role.valueOf(request.getParameter("role"));
-        int storeId;
-        if(role == Role.Manager){
-            storeId = Integer.parseInt(request.getParameter("managerStoreId"));
-        }else{
-            storeId = Integer.parseInt(request.getParameter("tellerStoreId"));
-        }
+        
 
         Employee employeeToUpdate = new Employee();
         employeeToUpdate.setEmployee_ID(employeeId);
         employeeToUpdate.setFirstName(firstName);
         employeeToUpdate.setLastName(lastName);
+        employeeToUpdate.setEmail(email);
         employeeToUpdate.setStore_ID(storeId);
-        employeeToUpdate.setEmployees_id(employeesId);
         employeeToUpdate.setEmployeePassword(password);
         employeeToUpdate.setRole(role);
 
         boolean success = employeeService.updateEmployee(employeeToUpdate);
 
-        if (success) {
-            response.sendRedirect(request.getContextPath() + "/employees");
-        } else {
-            response.sendRedirect(request.getContextPath() + "/employees");
-        }
+        response.sendRedirect(request.getContextPath() + "/employees");
     }
 
     private void deleteEmployee(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -190,19 +186,17 @@ public class EmployeeServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/employees");
         }
     }
-    
+
     private void handleLogin(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Employee employee = employeeService.login(
-                request.getParameter("employeeId"), 
+                request.getParameter("employeeId"),
                 request.getParameter("password"));
-        if(employee != null){
+        if (employee != null) {
             HttpSession session = request.getSession(true);
             session.setAttribute("Employee", employee);
-            System.out.println("store Id: "+employee.getStore_ID());
             Store store = storeService.getStoreById(employee.getStore_ID());
             session.setAttribute("store", store);
-            
-            
+
             switch (employee.getRole()) {
                 case Admin:
                     request.getRequestDispatcher("admin.jsp").forward(request, response);
@@ -215,9 +209,9 @@ public class EmployeeServlet extends HttpServlet {
                     break;
             }
 
-        }else{
+        } else {
             request.setAttribute("message", "failed to login");
-             request.getRequestDispatcher("login.jsp").forward(request, response);
+            request.getRequestDispatcher("login.jsp").forward(request, response);
         }
     }
 }
