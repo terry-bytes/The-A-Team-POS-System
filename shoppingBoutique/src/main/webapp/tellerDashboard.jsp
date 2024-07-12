@@ -12,6 +12,7 @@
         <title>JSP Page</title>
     </head>
     <body>
+        <jsp:include page="navbar.jsp"/>
         <h1>Hello Teller!</h1>
     </body>
 </html>

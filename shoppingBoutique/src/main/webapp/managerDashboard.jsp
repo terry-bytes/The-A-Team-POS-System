@@ -14,6 +14,7 @@
         <title>JSP Page</title>
     </head>
     <body>
+        <jsp:include page="navbar.jsp"/>
         <% Employee employee = (Employee) request.getSession(false).getAttribute("Employee"); 
             if(employee != null && employee.getRole() == Role.Manager){
         %>
