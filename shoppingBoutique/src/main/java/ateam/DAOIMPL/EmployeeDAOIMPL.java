@@ -18,6 +18,8 @@ public class EmployeeDAOIMPL implements EmployeeDAO {
     private static final String SQL_SELECT_ALL_EMPLOYEES = "SELECT * FROM employees";
     private static final String SQL_UPDATE_EMPLOYEE = "UPDATE employees SET first_name = ?, last_name = ?, store_ID = ?, employee_password = ?, role = ?, email = ? WHERE employee_ID = ?";
     private static final String SQL_DELETE_EMPLOYEE = "DELETE FROM employees WHERE employee_ID = ?";
+    private static final String SQL_SELECT_EMPLOYEE_BY_EMAIL = "SELECT * FROM employees WHERE email = ?";
+    private static final String SQL_UPDATE_EMPLOYEE_PASSWORD = "UPDATE employees SET employee_password = ? WHERE email = ?";
     private static final String SQL_GENERATE_EMPLOYEE_ID = "SELECT CONCAT(LEFT(first_name, 1), LEFT(last_name, 1), LPAD(FLOOR(RAND() * 10000), 4, '0')) AS employees_id FROM dual";
 
     private Connection connection;
@@ -42,7 +44,7 @@ public class EmployeeDAOIMPL implements EmployeeDAO {
             }
             preparedStatement.setString(4, employee.getEmployeePassword());
             preparedStatement.setString(5, employee.getRole().name());
-            preparedStatement.setString(6, employee.getEmail()); 
+            preparedStatement.setString(6, employee.getEmail());
 
             int rowsInserted = preparedStatement.executeUpdate();
             if (rowsInserted > 0) {
@@ -139,7 +141,7 @@ public class EmployeeDAOIMPL implements EmployeeDAO {
             }
             preparedStatement.setString(4, employee.getEmployeePassword());
             preparedStatement.setString(5, employee.getRole().name());
-            preparedStatement.setString(6, employee.getEmail()); 
+            preparedStatement.setString(6, employee.getEmail());
             preparedStatement.setInt(7, employee.getEmployee_ID());
 
             int rowsUpdated = preparedStatement.executeUpdate();
@@ -177,20 +179,6 @@ public class EmployeeDAOIMPL implements EmployeeDAO {
         return success;
     }
 
-    private void close(AutoCloseable... closeables) {
-        if (closeables != null) {
-            for (AutoCloseable closeable : closeables) {
-                try {
-                    if (closeable != null) {
-                        closeable.close();
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
     @Override
     public Employee getEmployee(String employee_id, String password) {
         if (connection == null) {
@@ -213,7 +201,7 @@ public class EmployeeDAOIMPL implements EmployeeDAO {
                         employee.setEmployees_id(employee_id);
                         employee.setEmployeePassword(password);
                         employee.setRole(Enum.valueOf(Role.class, resultSet.getString("role")));
-                        employee.setEmail(resultSet.getString("email")); 
+                        employee.setEmail(resultSet.getString("email"));
                     }
                 }
             }
@@ -221,6 +209,75 @@ public class EmployeeDAOIMPL implements EmployeeDAO {
             Logger.getLogger(EmployeeDAOIMPL.class.getName()).log(Level.SEVERE, null, ex);
         }
         return employee;
+    }
+
+    @Override
+    public Employee findByEmail(String email) {
+        Employee employee = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        try {
+            preparedStatement = connection.prepareStatement(SQL_SELECT_EMPLOYEE_BY_EMAIL);
+            preparedStatement.setString(1, email);
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                employee = new Employee();
+                employee.setEmployee_ID(resultSet.getInt("employee_ID"));
+                employee.setFirstName(resultSet.getString("first_name"));
+                employee.setLastName(resultSet.getString("last_name"));
+                Integer storeID = resultSet.getObject("store_ID", Integer.class);
+                employee.setStore_ID(storeID);
+                employee.setEmployees_id(resultSet.getString("employees_id"));
+                employee.setEmployeePassword(resultSet.getString("employee_password"));
+                employee.setRole(Role.valueOf(resultSet.getString("role")));
+                employee.setEmail(resultSet.getString("email"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            close(resultSet, preparedStatement);
+        }
+
+        return employee;
+    }
+
+    @Override
+    public boolean updatePasswordByEmail(String email, String newPassword) {
+        boolean success = false;
+        PreparedStatement preparedStatement = null;
+
+        try {
+            preparedStatement = connection.prepareStatement(SQL_UPDATE_EMPLOYEE_PASSWORD);
+            preparedStatement.setString(1, newPassword);
+            preparedStatement.setString(2, email);
+
+            int rowsUpdated = preparedStatement.executeUpdate();
+            if (rowsUpdated > 0) {
+                success = true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            close(preparedStatement);
+        }
+
+        return success;
+    }
+
+    private void close(AutoCloseable... closeables) {
+        if (closeables != null) {
+            for (AutoCloseable closeable : closeables) {
+                try {
+                    if (closeable != null) {
+                        closeable.close();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
 }

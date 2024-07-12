@@ -55,8 +55,17 @@ public class EmployeeServlet extends HttpServlet {
             case "login":
                 handleLogin(request, response);
                 break;
-            case "verify": 
+            case "verify":
                 verifyOTP(request, response);
+                break;
+            case "forgotPassword":
+                handleForgotPassword(request, response);
+                break;
+            case "changePassword":
+                changePassword(request, response);
+                break;
+            case "verifyResetOTP":
+                verifyResetOTP(request, response);
                 break;
             default:
                 response.sendRedirect(request.getContextPath() + "/employees");
@@ -71,18 +80,19 @@ public class EmployeeServlet extends HttpServlet {
             case "getAddEmployee":
                 request.getRequestDispatcher("addEmployee.jsp").forward(request, response);
                 break;
+            case "edit":
+                showEditForm(request, response);
+                break;
+            case "addForm":
+                showAddForm(request, response);
+                break;
+            case "deleteConfirm":
+                showDeleteConfirm(request, response);
+                break;
+            default:
+                listEmployees(request, response);
+                break;
         }
-        if ("edit".equals(action)) {
-            showEditForm(request, response);
-        } else if ("addForm".equals(action)) {
-            showAddForm(request, response);
-        } else if ("deleteConfirm".equals(action)) {
-            showDeleteConfirm(request, response);
-        } else {
-            listEmployees(request, response);
-
-        }
-
     }
 
     private void listEmployees(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -127,28 +137,21 @@ public class EmployeeServlet extends HttpServlet {
         newEmployee.setEmployeePassword(password);
         newEmployee.setRole(role);
 
-        // Generate OTP
         String otp = generateOTP();
-
-        // Send OTP to the employee's email
-        EmailServiceImpl emailService = new EmailServiceImpl();
         Email emailDetails = new Email("ramovhatp@gmail.com", "xaed clmt qpis ctvf");
         emailDetails.setReceiver(email);
         emailDetails.setSubject("Email Verification OTP");
         emailDetails.setMessage("Your OTP for email verification is: " + otp);
 
         emailService.sendMail(emailDetails);
-
-        // Store OTP in session for verification
         request.getSession().setAttribute("otp", otp);
         request.getSession().setAttribute("newEmployee", newEmployee);
 
-        // Redirect to OTP verification page
         response.sendRedirect(request.getContextPath() + "/verifyOTP.jsp");
     }
 
     private String generateOTP() {
-        int otp = (int) (Math.random() * 900000) + 100000; // Generate a 6-digit OTP
+        int otp = (int) (Math.random() * 900000) + 100000;
         return String.valueOf(otp);
     }
 
@@ -171,20 +174,13 @@ public class EmployeeServlet extends HttpServlet {
         employeeToUpdate.setRole(role);
 
         boolean success = employeeService.updateEmployee(employeeToUpdate);
-
         response.sendRedirect(request.getContextPath() + "/employees");
     }
 
     private void deleteEmployee(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int employeeId = Integer.parseInt(request.getParameter("employeeId"));
-
         boolean success = employeeService.deleteEmployee(employeeId);
-
-        if (success) {
-            response.sendRedirect(request.getContextPath() + "/employees");
-        } else {
-            response.sendRedirect(request.getContextPath() + "/employees");
-        }
+        response.sendRedirect(request.getContextPath() + "/employees");
     }
 
     private void handleLogin(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -213,23 +209,64 @@ public class EmployeeServlet extends HttpServlet {
         }
     }
 
+    private void handleForgotPassword(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String email = request.getParameter("email");
+        String otp = generateOTP();
+
+        Email emailDetails = new Email("ramovhatp@gmail.com", "xaed clmt qpis ctvf");
+        emailDetails.setReceiver(email);
+        emailDetails.setSubject("Password Reset OTP");
+        emailDetails.setMessage("Your OTP for password reset is: " + otp);
+
+        emailService.sendMail(emailDetails);
+        request.getSession().setAttribute("resetOtp", otp);
+        request.getSession().setAttribute("resetEmail", email);
+
+        response.sendRedirect(request.getContextPath() + "/verifyResetOTP.jsp");
+    }
+
     private void verifyOTP(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         String inputOtp = request.getParameter("otp");
         String generatedOtp = (String) request.getSession().getAttribute("otp");
         Employee newEmployee = (Employee) request.getSession().getAttribute("newEmployee");
 
         if (inputOtp.equals(generatedOtp)) {
-
             boolean success = employeeService.addEmployee(newEmployee);
             if (success) {
                 request.setAttribute("addEmployeeMessage", "Employee added successfully");
             }
             response.sendRedirect(request.getContextPath() + "/employees?submit=getAddEmployee");
         } else {
-
             request.setAttribute("otpMessage", "Invalid OTP. Please try again.");
             request.getRequestDispatcher("/verifyOTP.jsp").forward(request, response);
         }
     }
 
+    private void verifyResetOTP(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        String inputOtp = request.getParameter("otp");
+        String generatedOtp = (String) request.getSession().getAttribute("resetOtp");
+        String email = (String) request.getSession().getAttribute("resetEmail");
+
+        if (inputOtp.equals(generatedOtp)) {
+            response.sendRedirect(request.getContextPath() + "/changePassword.jsp?email=" + email);
+        } else {
+            request.setAttribute("otpMessage", "Invalid OTP. Please try again.");
+            request.getRequestDispatcher("/verifyResetOTP.jsp").forward(request, response);
+        }
+    }
+
+    private void changePassword(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String email = request.getParameter("email");
+        String newPassword = request.getParameter("newPassword");
+
+        boolean success = employeeService.updatePasswordByEmail(email, newPassword);
+
+        if (success) {
+            request.setAttribute("message", "Password changed successfully.");
+            response.sendRedirect(request.getContextPath() + "/login.jsp");
+        } else {
+            request.setAttribute("message", "Error changing password.");
+            request.getRequestDispatcher("/changePassword.jsp").forward(request, response);
+        }
+    }
 }
