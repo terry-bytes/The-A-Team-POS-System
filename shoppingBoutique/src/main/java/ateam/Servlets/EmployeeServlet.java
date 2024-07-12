@@ -2,9 +2,12 @@ package ateam.Servlets;
 
 import ateam.DAO.EmployeeDAO;
 import ateam.DAOIMPL.EmployeeDAOIMPL;
+import ateam.Models.Email;
 import ateam.Models.Employee;
 import ateam.Models.Role;
+import ateam.Service.EmailService;
 import ateam.Service.EmployeeService;
+import ateam.ServiceImpl.EmailServiceImpl;
 import ateam.ServiceImpl.EmployeeServiceImpl;
 
 import javax.servlet.ServletException;
@@ -22,11 +25,13 @@ import javax.servlet.http.HttpSession;
 public class EmployeeServlet extends HttpServlet {
 
     private final EmployeeService employeeService;
+    private final EmailService emailService;
 
     public EmployeeServlet() {
         try {
             EmployeeDAO employeeDAO = new EmployeeDAOIMPL();
             this.employeeService = new EmployeeServiceImpl(employeeDAO);
+            this.emailService = new EmailServiceImpl();
         } catch (Exception e) {
             Logger.getLogger(EmployeeServlet.class.getName()).log(Level.SEVERE, "Error initializing EmployeeService", e);
             throw new RuntimeException(e);
@@ -49,6 +54,9 @@ public class EmployeeServlet extends HttpServlet {
                 break;
             case "login":
                 handleLogin(request, response);
+                break;
+            case "verify": 
+                verifyOTP(request, response);
                 break;
             default:
                 response.sendRedirect(request.getContextPath() + "/employees");
@@ -119,12 +127,29 @@ public class EmployeeServlet extends HttpServlet {
         newEmployee.setEmployeePassword(password);
         newEmployee.setRole(role);
 
-        boolean success = employeeService.addEmployee(newEmployee);
+        // Generate OTP
+        String otp = generateOTP();
 
-        if (success) {
-            request.setAttribute("addEmployeeMessage", "Employee added successfully");
-        }
-        response.sendRedirect(request.getContextPath() + "/employees?submit=getAddEmployee");
+        // Send OTP to the employee's email
+        EmailServiceImpl emailService = new EmailServiceImpl();
+        Email emailDetails = new Email("ramovhatp@gmail.com", "xaed clmt qpis ctvf");
+        emailDetails.setReceiver(email);
+        emailDetails.setSubject("Email Verification OTP");
+        emailDetails.setMessage("Your OTP for email verification is: " + otp);
+
+        emailService.sendMail(emailDetails);
+
+        // Store OTP in session for verification
+        request.getSession().setAttribute("otp", otp);
+        request.getSession().setAttribute("newEmployee", newEmployee);
+
+        // Redirect to OTP verification page
+        response.sendRedirect(request.getContextPath() + "/verifyOTP.jsp");
+    }
+
+    private String generateOTP() {
+        int otp = (int) (Math.random() * 900000) + 100000; // Generate a 6-digit OTP
+        return String.valueOf(otp);
     }
 
     private void updateEmployee(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -187,4 +212,24 @@ public class EmployeeServlet extends HttpServlet {
             request.getRequestDispatcher("login.jsp").forward(request, response);
         }
     }
+
+    private void verifyOTP(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        String inputOtp = request.getParameter("otp");
+        String generatedOtp = (String) request.getSession().getAttribute("otp");
+        Employee newEmployee = (Employee) request.getSession().getAttribute("newEmployee");
+
+        if (inputOtp.equals(generatedOtp)) {
+
+            boolean success = employeeService.addEmployee(newEmployee);
+            if (success) {
+                request.setAttribute("addEmployeeMessage", "Employee added successfully");
+            }
+            response.sendRedirect(request.getContextPath() + "/employees?submit=getAddEmployee");
+        } else {
+
+            request.setAttribute("otpMessage", "Invalid OTP. Please try again.");
+            request.getRequestDispatcher("/verifyOTP.jsp").forward(request, response);
+        }
+    }
+
 }
