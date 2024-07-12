@@ -15,3 +15,6 @@ buildNumber.properties
 .project
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
+
+shoppingBoutique/src/main/java/ateam/BDconnection/
+shoppingBoutique/src/main/java/ateam/BDconnection/

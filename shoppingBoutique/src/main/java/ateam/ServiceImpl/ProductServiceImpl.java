@@ -4,6 +4,8 @@
  */
 package ateam.ServiceImpl;
 
+import ateam.DAO.ProductDAO;
+import ateam.DAOIMPL.ProductDAOIMPL;
 import ateam.Models.Product;
 import ateam.Service.ProductService;
 import java.util.List;
@@ -13,10 +15,12 @@ import java.util.List;
  * @author user
  */
 public class ProductServiceImpl implements ProductService {
-    private ProductD
+    private ProductDAO productDAO;
 
-    public ProductServiceImpl() {
+    public ProductServiceImpl(ProductDAO productDao) {
         
+        this.productDAO = productDao;
+        productDao = new ProductDAOIMPL();
         
     }
     

@@ -68,4 +68,13 @@ public class EmployeeServiceImpl implements EmployeeService {
     public Employee login(String employee_id, String password) {
         return employeeDAO.getEmployee(employee_id, password);
     }
+        @Override
+    public Employee findByEmail(String email) {
+        return employeeDAO.findByEmail(email);
+    }
+
+    @Override
+    public boolean updatePasswordByEmail(String email, String newPassword) {
+        return employeeDAO.updatePasswordByEmail(email, newPassword);
+    }
 }

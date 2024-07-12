@@ -1,3 +1,4 @@
+
 package ateam.DAO;
 
 import ateam.Models.SalesItem;
@@ -9,3 +10,4 @@ public interface SalesItemDAO {
 
     boolean removeSaleItem(int salesItemId);
 }
+

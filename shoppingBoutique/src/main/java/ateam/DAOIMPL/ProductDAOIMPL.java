@@ -1,3 +1,4 @@
+
 package ateam.DAOIMPL;
 
 import ateam.BDconnection.Connect;
@@ -71,8 +72,33 @@ public class ProductDAOIMPL implements ProductDAO {
 
     @Override
     public boolean addProduct(Product product) {
-       
-        return false;
+        
+        String insert = "Insert into product(product_name, product_description,product_price,category_ID,product_SKU,quantity_in_stock,productImagePath) values(?,?,?,?,?,?,?)";
+            
+        
+        try {
+            
+            PreparedStatement preparedStatement = connection.prepareStatement(insert);
+            
+            preparedStatement.setString(1,product.getProduct_name());
+            preparedStatement.setString(2,product.getProduct_description());
+            preparedStatement.setDouble(3, product.getProduct_price());
+            preparedStatement.setInt(4,product.getCategory_ID());
+            preparedStatement.setString(5, product.getProduct_SKU());
+            preparedStatement.setInt(6, product.getQuantity_in_stock());
+            preparedStatement.setString(7,product.getProduct_image_path());
+            
+            
+            if( preparedStatement.executeUpdate()>0)
+            {
+                return true;
+            }
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(ProductDAOIMPL.class.getName()).log(Level.SEVERE, null, ex);
+        }
+       return false;
+        
     }
 
     @Override
@@ -91,17 +117,15 @@ public class ProductDAOIMPL implements ProductDAO {
 
             while (resultSet.next()) {
                 
-               
-                int ID = resultSet.getInt("product_ID");
-                String productName = resultSet.getString("product_name");
-                String description = resultSet.getString("product_description");
-                Double price = resultSet.getDouble("product_price");
-                int categoryId = resultSet.getInt("category_ID");
-                String SKU = resultSet.getString("product_SKU");
-                int quantity = resultSet.getInt("quantity_in_stock");
-                String ImagePath = resultSet.getString("productImagePath");
-                
-                Product product = new Product(ID,productName,description,price,categoryId,SKU,quantity,ImagePath);
+               Product product = new Product();
+               product.setProduct_ID(resultSet.getInt("product_ID"));
+                product.setProduct_name(resultSet.getString("product_name"));
+                product.setProduct_description(resultSet.getString("product_description"));
+                product.setProduct_price(resultSet.getDouble("product_price"));
+                product.setCategory_ID(resultSet.getInt("category_ID"));
+                product.setProduct_SKU(resultSet.getString("product_SKU"));
+                product.setQuantity_in_stock(resultSet.getInt("quantity_in_stock"));
+                product.setProduct_image_path(resultSet.getString("productImagePath"));
                 
                 allItems.add(product);
             }

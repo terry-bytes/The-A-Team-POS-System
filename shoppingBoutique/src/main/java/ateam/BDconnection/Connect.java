@@ -30,10 +30,10 @@ public class Connect {
         try {
             connection = DriverManager.getConnection(URL, USER, PASSWORD);
         } catch (SQLException ex) {
-            System.out.println("Failed to connect to database"+ ex.getMessage());
+            Logger.getLogger(Connect.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         return connection;
     }
-    
+
 }
