@@ -82,7 +82,7 @@ public class LayawayDaoImpl implements LayawayDAO{
                     + " FROM layaways";
             try(PreparedStatement preparedStatement = connection.prepareStatement(sql)){
                 try(ResultSet resultSet = preparedStatement.executeQuery()){
-                    if(resultSet.next()){
+                    while(resultSet.next()){
                         Layaway layaway = new Layaway();
                         layaway.setLayaway_ID(resultSet.getInt("layaway_ID"));
                         layaway.setCustomer_ID(resultSet.getInt("customer_ID"));

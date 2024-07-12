@@ -1,9 +1,3 @@
-<%-- 
-    Document   : login
-    Created on : Jul 10, 2024, 9:33:52 AM
-    Author     : Train 01
---%>
-
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -28,7 +22,6 @@
                                class='input-field'
                                autocomplete="off" required
                                />
-
                     </div>
                     <div class="input-box">
                         <input type="password"
@@ -39,13 +32,16 @@
                                />
                     </div>
                     <%if(message != null){%>
-                    <p><%=message%></p>
+                    <p style="color: red;"><%=message%></p>
                     <%}%>
                     <div class="input-submit">
                         <input name="submit" value="login" hidden>
                         <button class="submit-btn" id="submit">LogIn</button>
                     </div>
                 </form>
+                <div class="forgot-password">
+                    <a href="${pageContext.request.contextPath}/forgotPassword.jsp">Forgot Password?</a>
+                </div>
             </div>
         </div>
     </body>

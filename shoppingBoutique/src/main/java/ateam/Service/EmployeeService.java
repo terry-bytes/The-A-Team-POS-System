@@ -23,5 +23,10 @@ public interface EmployeeService {
     boolean updateEmployee(Employee employee);
 
     boolean deleteEmployee(int employee_ID);
+
     Employee login(String employee_id, String password);
+
+    Employee findByEmail(String email);
+
+    boolean updatePasswordByEmail(String email, String newPassword);
 }

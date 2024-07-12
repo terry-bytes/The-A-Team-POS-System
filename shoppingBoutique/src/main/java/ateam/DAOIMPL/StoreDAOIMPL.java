@@ -58,7 +58,7 @@ public class StoreDAOIMPL implements StoreDAO{
     @Override
     public Store getStoreById(int store_ID) {
          Store store = new Store();
-         System.out.println("dao store Id: "+store_ID);
+         
         try {
             preparedStatement = connection.prepareStatement("SELECT * FROM store WHERE store_ID = ?");
             preparedStatement.setInt(1, store_ID);
