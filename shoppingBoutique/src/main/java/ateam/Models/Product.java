@@ -17,4 +17,8 @@ public class Product {
     private String product_SKU; 
     private int quantity_in_stock; 
     private String product_image_path;
+
+    
+   
+    
 }
