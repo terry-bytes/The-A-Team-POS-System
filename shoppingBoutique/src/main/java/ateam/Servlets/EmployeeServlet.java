@@ -1,5 +1,6 @@
 package ateam.Servlets;
 
+import ateam.BDconnection.Connect;
 import ateam.DAO.EmployeeDAO;
 import ateam.DAOIMPL.EmployeeDAOIMPL;
 import ateam.DAOIMPL.StoreDAOIMPL;
@@ -32,7 +33,7 @@ public class EmployeeServlet extends HttpServlet {
         try {
             EmployeeDAO employeeDAO = new EmployeeDAOIMPL();
             this.employeeService = new EmployeeServiceImpl(employeeDAO);
-            this.storeService = new StoreServiceImpl(new StoreDAOIMPL());
+            this.storeService = new StoreServiceImpl(new StoreDAOIMPL(new Connect().connectToDB()));
         } catch (Exception e) {
             Logger.getLogger(EmployeeServlet.class.getName()).log(Level.SEVERE, "Error initializing EmployeeService", e);
             throw new RuntimeException(e);
@@ -72,6 +73,7 @@ public class EmployeeServlet extends HttpServlet {
                 session.setAttribute("stores", stores);
                 request.getRequestDispatcher("addEmployee.jsp").forward(request, response);
                 break;
+          
         }
         if ("edit".equals(action)) {
             showEditForm(request, response);
@@ -148,10 +150,16 @@ public class EmployeeServlet extends HttpServlet {
         int employeeId = Integer.parseInt(request.getParameter("employeeId"));
         String firstName = request.getParameter("firstName");
         String lastName = request.getParameter("lastName");
-        Integer storeId = Integer.parseInt(request.getParameter("storeId"));
+        //String email = request.                                               // Please add email
         String employeesId = request.getParameter("employeesId");
         String password = request.getParameter("password");
         Role role = Role.valueOf(request.getParameter("role"));
+        int storeId;
+        if(role == Role.Manager){
+            storeId = Integer.parseInt(request.getParameter("managerStoreId"));
+        }else{
+            storeId = Integer.parseInt(request.getParameter("tellerStoreId"));
+        }
 
         Employee employeeToUpdate = new Employee();
         employeeToUpdate.setEmployee_ID(employeeId);
@@ -190,6 +198,10 @@ public class EmployeeServlet extends HttpServlet {
         if(employee != null){
             HttpSession session = request.getSession(true);
             session.setAttribute("Employee", employee);
+            System.out.println("store Id: "+employee.getStore_ID());
+            Store store = storeService.getStoreById(employee.getStore_ID());
+            session.setAttribute("store", store);
+            
             
             switch (employee.getRole()) {
                 case Admin:

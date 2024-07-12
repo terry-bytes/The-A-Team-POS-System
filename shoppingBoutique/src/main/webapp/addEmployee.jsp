@@ -24,6 +24,7 @@
             String message = (String) request.getAttribute("addEmployeeMessage");
             Employee employee = (Employee) request.getSession(false).getAttribute("Employee");
             List<Store> stores = (List<Store>) request.getSession(false).getAttribute("stores");
+            String storeName;
         %>
         <% if(employee != null && employee.getRole() == Role.Manager){%>
         <jsp:include page="navbar.jsp"/>
@@ -57,6 +58,7 @@
                         </div>
                     </div>
                     
+                    
                     <div class="input-box">
                         <input type="password"
                                placeholder='Password'
@@ -79,16 +81,18 @@
                             
                     <div class="select-container" id="storeSelector" style="display: none;">
                         <label>Store</label>
-                        <select class="select-box" name="storeId">
+                        <select class="select-box" name="managerStoreId">
                             <% if(stores != null){
-                                for(Store store : stores){%>
-                                <option  value="<%=store.getStore_ID() %>"><%=store.getStore_name() %></option>
+                                for(Store store : stores){
+                                storeName = store.getStore_name();
+                            %>
+                                <option  value="<%=store.getStore_ID() %>"><%= storeName.toString() %></option>
                                 <%}}%>
                             </select>
                     </div>
                      
                        
-                    <input type="hidden" name="storeId" value="<%=employee.getStore_ID()%>"/>
+                    <input type="hidden" name="tellerStoreId" value="<%=employee.getStore_ID()%>"/>
                         
  
                     
@@ -98,7 +102,7 @@
                     <%}%>
                     <div class="input-submit">
                         <input name="submit" value="add" hidden>
-                        <button class="submit-btn" id="submit">LogIn</button>
+                        <button class="submit-btn" id="submit">ADD EMPLOYEE</button>
                     </div>
                 </form>
             </div>
@@ -115,7 +119,7 @@
             selectedRole.addEventListener('change', function(){
                 var role = selectedRole.value;
                 
-                if(role == 'Manager'){
+                if(role === 'Manager'){
                     storeSelection.style.display = 'block';
                 }else {
                     storeSelection.style.display = 'none';

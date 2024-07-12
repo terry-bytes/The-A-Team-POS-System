@@ -4,6 +4,7 @@
     Author     : Train 01
 --%>
 
+<%@page import="ateam.Models.Store"%>
 <%@page import="ateam.Models.Employee"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -14,11 +15,13 @@
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/navbar.css">
     </head>
     <body>
-        <% Employee employee = (Employee) request.getSession(false).getAttribute("Attribute");%>
+        <% Employee employee = (Employee) request.getSession(false).getAttribute("Attribute");
+            Store store = (Store) request.getSession(false).getAttribute("store");
+        %>
         <nav class="navbar">
             <div class='logo'>
                 <h3>Carol's Boutique</h3>
-                <p></p>
+                <p><%=store.getStore_name()%></p>
             </div>
             <div class="nav-menu">
                 <ul>

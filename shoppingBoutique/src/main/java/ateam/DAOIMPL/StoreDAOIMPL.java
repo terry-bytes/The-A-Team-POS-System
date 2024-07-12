@@ -58,11 +58,13 @@ public class StoreDAOIMPL implements StoreDAO{
     @Override
     public Store getStoreById(int store_ID) {
          Store store = new Store();
+         System.out.println("dao store Id: "+store_ID);
         try {
             preparedStatement = connection.prepareStatement("SELECT * FROM store WHERE store_ID = ?");
             preparedStatement.setInt(1, store_ID);
-            resultSet.next();
-            store.setStore_ID(resultSet.getInt("store_name"));
+            resultSet = preparedStatement.executeQuery();
+            if(resultSet.next()){
+            store.setStore_ID(resultSet.getInt("store_ID"));
             store.setStore_name(resultSet.getString("store_name"));
             store.setStore_address(resultSet.getString("store_address"));
             store.setStore_city(resultSet.getString("store_city"));
@@ -70,6 +72,7 @@ public class StoreDAOIMPL implements StoreDAO{
             store.setStore_zipcode(resultSet.getInt("store_zipcode"));
             store.setStore_phone(resultSet.getString("store_phone"));
             store.setStore_email(resultSet.getString("store_email"));
+            }
         } catch (SQLException ex) {
             Logger.getLogger(StoreDAOIMPL.class.getName()).log(Level.SEVERE, null, ex);
         } finally {

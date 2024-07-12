@@ -72,6 +72,8 @@ and open the template in the editor.
     border-radius: 30px;
     cursor: pointer;
     transition: 0.3s;
+    background: black;
+    color: #fff;
 }
 
 .submit-btn label{
