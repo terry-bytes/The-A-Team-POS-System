@@ -17,10 +17,10 @@ import java.util.List;
 public class ProductServiceImpl implements ProductService {
     private ProductDAO productDAO;
 
-    public ProductServiceImpl(ProductDAO productDao) {
+    public ProductServiceImpl(ProductDAO productDAO) {
         
-        this.productDAO = productDao;
-        productDao = new ProductDAOIMPL();
+        this.productDAO = productDAO;
+        productDAO = new ProductDAOIMPL();
         
     }
     
@@ -30,13 +30,14 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<Product> getAllItems() {
         
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+     return productDAO.allProduct();
     }
 
     @Override
     public boolean InsertItems(Product product) {
         
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        
+     return productDAO.addProduct(product);
     }
     
 }
