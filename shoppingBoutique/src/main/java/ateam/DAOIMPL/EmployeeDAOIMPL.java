@@ -204,7 +204,7 @@ public class EmployeeDAOIMPL implements EmployeeDAO {
             
             try(ResultSet resultSet = preparedStatement.executeQuery()){
                 if(resultSet.next()){
-                    if(password.equals(resultSet.getString("password"))){
+                    if(password.equals(resultSet.getString("employee_password"))){
                         employee.setEmployee_ID(resultSet.getInt("employee_ID"));
                         employee.setFirstName(resultSet.getString("first_name"));
                         employee.setLastName(resultSet.getString("last_name"));

@@ -25,7 +25,7 @@
             Employee employee = (Employee) request.getSession(false).getAttribute("Employee");
             List<Store> stores = (List<Store>) request.getSession(false).getAttribute("stores");
         %>
-        <% if(employee == null){%>
+        <% if(employee != null && employee.getRole() == Role.Manager){%>
         <jsp:include page="navbar.jsp"/>
         <div class="container">
             

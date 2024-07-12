@@ -18,7 +18,7 @@
         <nav class="navbar">
             <div class='logo'>
                 <h3>Carol's Boutique</h3>
-                <p>Name of the branch</p>
+                <p></p>
             </div>
             <div class="nav-menu">
                 <ul>
