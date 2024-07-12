@@ -1,12 +1,11 @@
+
 package ateam.DAOIMPL;
-
-
 
 import ateam.Models.Employee;
 import ateam.Models.Role;
+import ateam.DAO.EmployeeDAO;
 import ateam.BDconnection.Connect;
 
-import ateam.DAO.EmployeeDAO;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -16,11 +15,12 @@ import java.util.logging.Logger;
 
 public class EmployeeDAOIMPL implements EmployeeDAO {
 
-    private static final String SQL_INSERT_EMPLOYEE = "INSERT INTO employees (first_name, last_name, store_ID, employees_id, employee_password, role) VALUES (?, ?, ?, ?, ?, ?)";
+    private static final String SQL_INSERT_EMPLOYEE = "INSERT INTO employees (first_name, last_name, store_ID, employee_password, role) VALUES (?, ?, ?, ?, ?)";
     private static final String SQL_SELECT_EMPLOYEE_BY_ID = "SELECT * FROM employees WHERE employee_ID = ?";
     private static final String SQL_SELECT_ALL_EMPLOYEES = "SELECT * FROM employees";
-    private static final String SQL_UPDATE_EMPLOYEE = "UPDATE employees SET first_name = ?, last_name = ?, store_ID = ?, employees_id = ?, employee_password = ?, role = ? WHERE employee_ID = ?";
+    private static final String SQL_UPDATE_EMPLOYEE = "UPDATE employees SET first_name = ?, last_name = ?, store_ID = ?, employee_password = ?, role = ? WHERE employee_ID = ?";
     private static final String SQL_DELETE_EMPLOYEE = "DELETE FROM employees WHERE employee_ID = ?";
+    private static final String SQL_GENERATE_EMPLOYEE_ID = "SELECT CONCAT(LEFT(first_name, 1), LEFT(last_name, 1), LPAD(FLOOR(RAND() * 10000), 4, '0')) AS employees_id FROM dual";
 
     private Connection connection;
 
@@ -35,6 +35,7 @@ public class EmployeeDAOIMPL implements EmployeeDAO {
         PreparedStatement preparedStatement = null;
 
         try {
+           
             preparedStatement = connection.prepareStatement(SQL_INSERT_EMPLOYEE);
             preparedStatement.setString(1, employee.getFirstName());
             preparedStatement.setString(2, employee.getLastName());
@@ -43,9 +44,8 @@ public class EmployeeDAOIMPL implements EmployeeDAO {
             } else {
                 preparedStatement.setNull(3, Types.INTEGER);
             }
-            preparedStatement.setString(4, employee.getEmployees_id());
-            preparedStatement.setString(5, employee.getEmployeePassword());
-            preparedStatement.setString(6, employee.getRole().name());
+            preparedStatement.setString(4, employee.getEmployeePassword());
+            preparedStatement.setString(5, employee.getRole().name());
 
             int rowsInserted = preparedStatement.executeUpdate();
             if (rowsInserted > 0) {
@@ -138,10 +138,9 @@ public class EmployeeDAOIMPL implements EmployeeDAO {
             } else {
                 preparedStatement.setNull(3, Types.INTEGER);
             }
-            preparedStatement.setString(4, employee.getEmployees_id());
-            preparedStatement.setString(5, employee.getEmployeePassword());
-            preparedStatement.setString(6, employee.getRole().name());
-            preparedStatement.setInt(7, employee.getEmployee_ID());
+            preparedStatement.setString(4, employee.getEmployeePassword());
+            preparedStatement.setString(5, employee.getRole().name());
+            preparedStatement.setInt(6, employee.getEmployee_ID());
 
             int rowsUpdated = preparedStatement.executeUpdate();
             if (rowsUpdated > 0) {
@@ -205,7 +204,7 @@ public class EmployeeDAOIMPL implements EmployeeDAO {
             
             try(ResultSet resultSet = preparedStatement.executeQuery()){
                 if(resultSet.next()){
-                    if(password.equals(resultSet.getString("employee_password"))){
+                    if(password.equals(resultSet.getString("password"))){
                         employee.setEmployee_ID(resultSet.getInt("employee_ID"));
                         employee.setFirstName(resultSet.getString("first_name"));
                         employee.setLastName(resultSet.getString("last_name"));
@@ -224,3 +223,4 @@ public class EmployeeDAOIMPL implements EmployeeDAO {
 
     
 }
+

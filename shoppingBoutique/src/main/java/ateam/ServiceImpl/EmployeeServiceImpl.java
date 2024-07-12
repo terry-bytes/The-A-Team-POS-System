@@ -4,19 +4,24 @@ import ateam.DAO.EmployeeDAO;
 import ateam.Models.Employee;
 import ateam.Service.EmployeeService;
 
+
 import java.util.List;
 
 public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeDAO employeeDAO;
 
+
     public EmployeeServiceImpl(EmployeeDAO employeeDAO) {
         this.employeeDAO = employeeDAO;
+        
     }
 
     @Override
     public boolean addEmployee(Employee employee) {
         try {
+            //employee.setEmployeePassword(PasswordUtil.encryptPassword(employee.getEmployeePassword().trim()));
+            
             return employeeDAO.addEmployee(employee);
         } catch (Exception e) {
             e.printStackTrace();

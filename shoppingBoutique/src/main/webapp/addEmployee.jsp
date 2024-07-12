@@ -4,6 +4,8 @@
     Author     : Train 01
 --%>
 
+
+<%@page import="ateam.Models.Store"%>
 <%@page import="ateam.Models.Employee"%>
 <%@page import="java.util.List"%>
 <%@page import="ateam.Models.Role"%>
@@ -21,8 +23,9 @@
         <%  Role[] roles = Role.values();
             String message = (String) request.getAttribute("addEmployeeMessage");
             Employee employee = (Employee) request.getSession(false).getAttribute("Employee");
+            List<Store> stores = (List<Store>) request.getSession(false).getAttribute("stores");
         %>
-        <% if(employee != null && employee.getRole() == Role.Manager){%>
+        <% if(employee == null){%>
         <jsp:include page="navbar.jsp"/>
         <div class="container">
             
@@ -66,13 +69,28 @@
                     
                     <div class="select-container">
                         <label>Role</label>
-                        <select class="select-box" name="role">
+                        <select class="select-box" name="role" id="roleSelector">
                             <% if(roles != null){
                                 for(Role role : roles){%>
                                 <option  value="<%=role.name()%>"><%=role.name()%></option>
                                 <%}}%>
                             </select>
                     </div>
+                            
+                    <div class="select-container" id="storeSelector" style="display: none;">
+                        <label>Store</label>
+                        <select class="select-box" name="storeId">
+                            <% if(stores != null){
+                                for(Store store : stores){%>
+                                <option  value="<%=store.getStore_ID() %>"><%=store.getStore_name() %></option>
+                                <%}}%>
+                            </select>
+                    </div>
+                     
+                       
+                    <input type="hidden" name="storeId" value="<%=employee.getStore_ID()%>"/>
+                        
+ 
                     
                     
                     <%if(message != null){%>
@@ -86,8 +104,23 @@
             </div>
                     
         </div>
-                    <%} else {%>
-                    <jsp:include page="unauthorized.jsp"/>
-                    <% }%>
+        <%} else {%>
+        <jsp:include page="unauthorized.jsp"/>
+        <% }%>
+                    
+        <script>
+            var selectedRole = document.getElementById("roleSelector");
+            var storeSelection = document.getElementById("storeSelector");
+            
+            selectedRole.addEventListener('change', function(){
+                var role = selectedRole.value;
+                
+                if(role == 'Manager'){
+                    storeSelection.style.display = 'block';
+                }else {
+                    storeSelection.style.display = 'none';
+                }
+            })
+        </script>
     </body>
 </html>
