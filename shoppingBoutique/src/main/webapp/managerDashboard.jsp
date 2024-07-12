@@ -20,7 +20,7 @@
         
         <h1>Manager</h1>
         
-        <a href="addEmployee.jsp">Add Employee</a>
+        <a href="employees?submit=getAddEmployee">Add Employee</a>
         
         <%} else {%>
         <jsp:include page="unauthorized.jsp"/>
