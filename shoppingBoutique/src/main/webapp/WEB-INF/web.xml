@@ -12,5 +12,14 @@
             30
         </session-timeout>
     </session-config>
+        <servlet>
+        <servlet-name>BarcodeScanServlet</servlet-name>
+        <servlet-class>ateam.Servlets.BarcodeScanServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>BarcodeScanServlet</servlet-name>
+        <url-pattern>/BarcodeScanServlet</url-pattern>
+    </servlet-mapping>
+
     
 </web-app>
