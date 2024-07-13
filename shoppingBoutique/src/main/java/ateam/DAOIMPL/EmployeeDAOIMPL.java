@@ -95,7 +95,7 @@ public class EmployeeDAOIMPL implements EmployeeDAO {
 
     @Override
     public List<Employee> getAllEmployees() {
-        List<Employee> employees = new ArrayList<>();
+        List<Employee> employees = new ArrayList();
         Statement statement = null;
         ResultSet resultSet = null;
 

@@ -51,6 +51,8 @@ public class StoreDAOIMPL implements StoreDAO{
         }
         } catch (SQLException ex) {
             Logger.getLogger(StoreDAOIMPL.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            close(resultSet, preparedStatement);
         }
         return success;
     }
@@ -83,7 +85,7 @@ public class StoreDAOIMPL implements StoreDAO{
 
     @Override
     public List<Store> getAllStores() {
-        List<Store> stores = new ArrayList<>();
+        List<Store> stores = new ArrayList();
         
         try {
             preparedStatement = connection.prepareStatement("SELECT * FROM store");
@@ -110,12 +112,47 @@ public class StoreDAOIMPL implements StoreDAO{
 
     @Override
     public boolean updateStore(Store store) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        boolean success = false;
+        try {
+            preparedStatement = connection.prepareStatement("UPDATE store SET store_name = ?, store_address = ?, store_city = ?, store_province = ?, store_zipcode = ?, store_phone = ?, store_email = ? WHERE store_ID = ? ");
+            preparedStatement.setString(1, store.getStore_name());
+            preparedStatement.setString(2, store.getStore_address());
+            preparedStatement.setString(3, store.getStore_city());
+            preparedStatement.setString(4, store.getStore_province());
+            preparedStatement.setInt(5, store.getStore_zipcode());
+            preparedStatement.setString(6, store.getStore_phone());
+            preparedStatement.setString(7, store.getStore_email());
+            preparedStatement.setInt(8, store.getStore_ID());
+            preparedStatement.execute();
+            int rowsAffected = preparedStatement.executeUpdate();
+        if (rowsAffected > 0) {
+            success = true;
+        }
+        } catch (SQLException ex) {
+            Logger.getLogger(StoreDAOIMPL.class.getName()).log(Level.SEVERE, null, ex);
+        }  finally {
+            close(resultSet, preparedStatement);
+        }
+        return success;
     }
 
     @Override
     public boolean deleteStore(int store_ID) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        boolean success = false;
+        try {
+            preparedStatement = connection.prepareStatement("DELETE FROM store WHERE store_ID = ?");
+            preparedStatement.setInt(1, store_ID);
+            preparedStatement.execute();
+            int rowsAffected = preparedStatement.executeUpdate();
+        if (rowsAffected > 0) {
+            success = true;
+        }
+        } catch (SQLException ex) {
+            Logger.getLogger(StoreDAOIMPL.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            close(resultSet, preparedStatement);
+        }
+        return success;
     }
     
     
