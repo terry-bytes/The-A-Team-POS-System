@@ -83,7 +83,7 @@ public class InventoryDAOIMPL implements InventoryDAO {
 
     @Override
     public List<Inventory> getAllInventories() {
-        List<Inventory> inventories = new ArrayList<>();
+        List<Inventory> inventories = new ArrayList();
         Statement statement = null;
         ResultSet resultSet = null;
 

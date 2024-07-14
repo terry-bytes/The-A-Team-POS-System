@@ -76,7 +76,7 @@ public class LayawayDaoImpl implements LayawayDAO{
 
     @Override
     public List<Layaway> getAllLayaways() {
-        List<Layaway> layaways = new ArrayList<>();
+        List<Layaway> layaways = new ArrayList();
         if(connection != null){
             String sql = "SELECT customer_ID, employee_ID, start_date, expiry_date, layaway_status"
                     + " FROM layaways";

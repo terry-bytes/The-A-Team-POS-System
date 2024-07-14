@@ -39,12 +39,12 @@ public class StoreServiceImpl implements StoreService{
 
     @Override
     public boolean updateStore(Store store) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return storeDao.updateStore(store);
     }
 
     @Override
     public boolean deleteStore(int store_ID) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return storeDao.deleteStore(store_ID);
     }
     
 }
