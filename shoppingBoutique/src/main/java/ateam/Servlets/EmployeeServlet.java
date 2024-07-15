@@ -235,7 +235,7 @@ public class EmployeeServlet extends HttpServlet {
                     request.getRequestDispatcher("admin.jsp").forward(request, response);
                     break;
                 case Manager:
-                    request.getRequestDispatcher("managerDashboard.jsp").forward(request, response);
+                    response.sendRedirect("SalesDemo");
                     break;
                 default:
                     request.getRequestDispatcher("tellerDashboard.jsp").forward(request, response);

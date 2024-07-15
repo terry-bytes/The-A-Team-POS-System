@@ -20,6 +20,4 @@
         <servlet-name>BarcodeScanServlet</servlet-name>
         <url-pattern>/BarcodeScanServlet</url-pattern>
     </servlet-mapping>
-
-    
 </web-app>

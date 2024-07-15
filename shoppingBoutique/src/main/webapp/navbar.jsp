@@ -24,20 +24,24 @@
         <nav class="navbar">
             <div class='logo'>
                 <h3>Carol's Boutique</h3>
-                
+                <p><%= store.getStore_name()%></p>
             </div>
             <div class="nav-menu">
                 <ul>
+                    <li class="profile-area">
+                        <div class="theme-btn">
+                            <span class="material-icons-sharp">light_mode</span>
+                            <span class="material-icons-sharp">dark_mode</span>
+                        </div>
+                    </li>
                     <li><a href="" class="link">Dashboard</a></li>
                     <li><a href="" class="link">My Store</a></li>
                     <li><a href="" class="link">Notifications</a></li>
+                    <li class="user">
+                        <p><%=employee.getFirstName()%></p>
+                    </li>
                 </ul>
-                <div class="profile-area">
-                    <div class="theme-btn">
-                        <span class="material-icons-sharp">light_mode</span>
-                        <span class="material-icons-sharp">dark_mode</span>
-                    </div>
-                </div>
+                
             </div>
         </nav>
     </body>

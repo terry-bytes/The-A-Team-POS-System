@@ -7,6 +7,38 @@ and open the template in the editor.
     Created on : 13 Jul 2024, 18:19:05
     Author     : T440
 */
+body{
+    background-image: linear-gradient(to right, #277af6, #0098f7, #48b2ef, #85c7e5, #bfd9e0);
+    background-repeat: no-repeat;
+}
+.manager-container{
+    display: flex;
+    margin-top: 80px;
+   
+    
+}
+
+.sidebar{
+    margin: 0;
+    padding: 0;
+    width: 200px;
+    /*background-image: linear-gradient(to right, #277af6, #0098f7, #48b2ef, #85c7e5, #bfd9e0);*/
+    position: fixed;
+    overflow: auto;
+    height: 100%;
+}
+
+
+.sidebar a{
+    color: #fff;
+    padding: 20px;
+    text-decoration: none;
+}
+
+.menu-content{
+    margin-left: 200px;
+    padding: 1px 10px;
+}
 
 .graphBox{
     position: relative;
@@ -25,4 +57,33 @@ and open the template in the editor.
     width: 100%;
     box-shadow: 0 7px 25px rgba(0, 0, 0, 0.08);
     border-radius: 20px;
+}
+.two{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.two h4{
+    color: #fff;
+}
+
+.submit-btn{
+    padding: 10px 20px;
+    background-color: black;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    border-radius: 20px;
+    text-transform: uppercase;
+}
+
+.submit-btn label{
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    cursor: pointer;
 }

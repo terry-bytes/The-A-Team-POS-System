@@ -37,7 +37,7 @@ public class SalesDemo extends HttpServlet {
         // Generate fake data, while waiting for database.
         Map<String, Integer> salesData = new HashMap<>();
         salesData.put("Midrand Branch", 189);
-        salesData.put("Standton Branch", 201);
+        salesData.put("Sandton Branch", 201);
         salesData.put("Gomora Branch", 160);
         salesData.put("Fourways Branch", 313);
         
