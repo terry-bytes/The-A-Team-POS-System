@@ -13,6 +13,9 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>JSP Page</title>
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/navbar.css">
+        
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp"
+      rel="stylesheet">
     </head>
     <body>
         <% Employee employee = (Employee) request.getSession(false).getAttribute("Attribute");
@@ -21,7 +24,7 @@
         <nav class="navbar">
             <div class='logo'>
                 <h3>Carol's Boutique</h3>
-                <p><%=store.getStore_name()%></p>
+                
             </div>
             <div class="nav-menu">
                 <ul>
@@ -29,6 +32,12 @@
                     <li><a href="" class="link">My Store</a></li>
                     <li><a href="" class="link">Notifications</a></li>
                 </ul>
+                <div class="profile-area">
+                    <div class="theme-btn">
+                        <span class="material-icons-sharp">light_mode</span>
+                        <span class="material-icons-sharp">dark_mode</span>
+                    </div>
+                </div>
             </div>
         </nav>
     </body>
