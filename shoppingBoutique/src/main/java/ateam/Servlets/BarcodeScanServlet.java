@@ -5,15 +5,15 @@ import ateam.Models.Product;
 import ateam.Models.BarcodeScanner;
 import ateam.DAO.BarcodeScanCallback;
 import ateam.DAOIMPL.ProductDAOIMPL;
+import com.google.gson.Gson;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 @WebServlet(name = "BarcodeScanServlet", urlPatterns = {"/BarcodeScanServlet"})
 public class BarcodeScanServlet extends HttpServlet {
@@ -28,7 +28,7 @@ public class BarcodeScanServlet extends HttpServlet {
             public void onBarcodeScanned(String barcodeData) {
                 // Handle scanned barcode data here (e.g., store in database, process, etc.)
                 System.out.println("Barcode scanned in servlet: " + barcodeData);
-                
+
                 // Fetch product details from database
                 Product product = productDAO.getProductBySKU(barcodeData);
                 if (product != null) {
@@ -37,13 +37,12 @@ public class BarcodeScanServlet extends HttpServlet {
                     System.out.println("Product found: " + product.getProduct_name());
                     System.out.println("Product Price: " + product.getProduct_price());
                     System.out.println("Product Quantity in stock: " + product.getQuantity_in_stock());
-                    
                 } else {
                     System.out.println("Product not found for barcode: " + barcodeData);
                 }
             }
         });
-        
+
         productDAO = new ProductDAOIMPL(); // Initialize your ProductDAO implementation here
     }
 
@@ -58,9 +57,22 @@ public class BarcodeScanServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Stop barcode scanning when POST request is received
-        barcodeScanner.stopScanning();
-        response.getWriter().write("Barcode scanning stopped.");
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        String barcodeData = request.getParameter("barcode");
+        Product product = productDAO.getProductBySKU(barcodeData);
+
+        PrintWriter out = response.getWriter();
+        if (product != null) {
+            Gson gson = new Gson();
+            String jsonProduct = gson.toJson(product);
+            out.write(jsonProduct);
+        } else {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            out.write("{\"error\":\"Product not found\"}");
+        }
+        out.close();
     }
 
     @Override

@@ -23,22 +23,28 @@ public class BarcodeScanner {
     private BarcodeScanCallback callback;
 
     public BarcodeScanner(BarcodeScanCallback callback) {
-        this.callback = callback;
+        this.webcam = Webcam.getDefault();
     }
 
 public void startScanning() {
 
-    webcam = Webcam.getDefault();
-    webcam.setViewSize(WebcamResolution.QVGA.getSize());  
-
-    webcam.open();
-
+     if (webcam != null) {
+            // Close the webcam if it is open
+            if (webcam.isOpen()) {
+                webcam.close();
+            }
+            // Set the desired resolution
+            webcam.setViewSize(WebcamResolution.VGA.getSize());
+            // Open the webcam
+            webcam.open();
     executor = Executors.newSingleThreadScheduledExecutor();
-    executor.scheduleAtFixedRate(() -> {
-        try {
+    
+    Runnable na=()->{
+         try {
             BufferedImage image = webcam.getImage();
             Result result = scanBarcode(image);
             if (result != null) {
+                 //System.out.println("Captured Barcode Data: " + barcodeData); 
                 System.out.println("Scanned barcode: " + result.getText());
                 callback.onBarcodeScanned(result.getText());
                 stopScanning();
@@ -46,7 +52,12 @@ public void startScanning() {
         } catch (NotFoundException e) {
             System.err.println("Barcode not found: " + e.getMessage());
         }
-    }, 0, 100, TimeUnit.MILLISECONDS);
+    };
+    
+    executor.scheduleAtFixedRate(na, 0, 100, TimeUnit.MILLISECONDS);
+    
+  
+}
 }
 
 
@@ -65,6 +76,8 @@ public void startScanning() {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        webcam.close();
+        if (webcam != null && webcam.isOpen()) {
+            webcam.close();
+        }
     }
 }

@@ -1,4 +1,4 @@
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,6 +20,12 @@
   <button onclick="startScan()">Start Scanning</button>
   <button onclick="stopScan()">Stop Scanning</button>
 
+  <h2>Scanned Items</h2>
+  <ul id="scannedItems"></ul>
+  
+   <!-- Audio element for sound notification -->
+  <audio id="scanSound" src="path/to/your/soundfile.mp3" preload="auto"></audio>
+
   <script>
     function startScan() {
       $.ajax({
@@ -38,7 +44,7 @@
     // Function to stop barcode scanning
     function stopScan() {
       $.ajax({
-        url: "barcodeScan",  // URL mapped to BarcodeScanServlet
+        url: "BarcodeScanServlet",  // URL mapped to BarcodeScanServlet
         type: "POST",
         success: function(response) {
           console.log("Barcode scanning stopped.");
@@ -75,11 +81,34 @@
       }
     }
 
+    // Function to add scanned item to the list
+    function addScannedItem(product) {
+      const scannedItems = document.getElementById('scannedItems');
+      const li = document.createElement('li');
+      li.textContent = `SKU: ${product.productSKU}, Name: ${product.product_name}, Price: ${product.product_price}, Quantity: ${product.quantity_in_stock}`;
+      scannedItems.appendChild(li);
+    }
+
     // Optional: Handle response from servlet (if needed)
     $(document).ready(function() {
-      // Start scanning when page loads (optional)
-      startScan();
+      // Handle scanned barcode
+      function handleScannedBarcode(barcode) {
+        $.ajax({
+          url: "BarcodeScanServlet",
+          type: "POST",
+          data: { barcode: barcode },
+          success: function(response) {
+            if (response.error) {
+              console.error(response.error);
+            } else {
+              addScannedItem(response);
+            }
+          },
+          error: function(xhr, status, error) {
+            console.error("Error fetching product details: " + error);
+          }
+        });
+      }
     });
   </script>
 </body>
-</html>

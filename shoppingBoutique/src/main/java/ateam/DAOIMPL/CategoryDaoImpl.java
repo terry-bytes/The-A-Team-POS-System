@@ -65,7 +65,7 @@ public class CategoryDaoImpl implements CategoryDAO{
 
     @Override
     public List<Category> getAllCategories() {
-        List<Category> categories = new ArrayList<>();
+        List<Category> categories = new ArrayList();
         if(connection != null){
             String sql = "SELECT category_ID, category_name FROM categories";
             try(PreparedStatement preparedStatement = connection.prepareStatement(sql)){
