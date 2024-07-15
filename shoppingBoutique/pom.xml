@@ -96,13 +96,6 @@
             <version>1.6.2</version>
         </dependency>
 
-        <!-- JFreeChart for generating graphs -->
-        <dependency>
-            <groupId>org.jfree</groupId>
-            <artifactId>jfreechart</artifactId>
-            <version>1.5.3</version>
-        </dependency>
-
     </dependencies>
 
     <build>
