@@ -1,4 +1,3 @@
-
 package ateam.DAOIMPL;
 
 import ateam.BDconnection.Connect;
@@ -20,12 +19,13 @@ public class ProductDAOIMPL implements ProductDAO {
 
     private Connection connection;
 
-    public ProductDAOIMPL () {
+    public ProductDAOIMPL() {
         this.connection = new Connect().connectToDB();
     }
 
     @Override
-    public Product getProductBySKU(String productSKU) {
+    public List<Product> getProductBySKU(String productSKU) {
+        List<Product> getProduct = new ArrayList();
         Product product = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -46,6 +46,7 @@ public class ProductDAOIMPL implements ProductDAO {
                 product.setProduct_SKU(resultSet.getString("product_SKU"));
                 product.setQuantity_in_stock(resultSet.getInt("quantity_in_stock"));
                 product.setProduct_image_path(resultSet.getString("productImagePath"));
+                getProduct.add(product);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -53,7 +54,7 @@ public class ProductDAOIMPL implements ProductDAO {
             close(resultSet, preparedStatement);
         }
 
-        return product;
+        return getProduct;
     }
 
     private void close(AutoCloseable... closeables) {
@@ -72,53 +73,48 @@ public class ProductDAOIMPL implements ProductDAO {
 
     @Override
     public boolean addProduct(Product product) {
-        
+
         String insert = "Insert into product(product_name, product_description,product_price,category_ID,product_SKU,quantity_in_stock,productImagePath) values(?,?,?,?,?,?,?)";
-            
-        
+
         try {
-            
+
             PreparedStatement preparedStatement = connection.prepareStatement(insert);
-            
-            preparedStatement.setString(1,product.getProduct_name());
-            preparedStatement.setString(2,product.getProduct_description());
+
+            preparedStatement.setString(1, product.getProduct_name());
+            preparedStatement.setString(2, product.getProduct_description());
             preparedStatement.setDouble(3, product.getProduct_price());
-            preparedStatement.setInt(4,product.getCategory_ID());
+            preparedStatement.setInt(4, product.getCategory_ID());
             preparedStatement.setString(5, product.getProduct_SKU());
             preparedStatement.setInt(6, product.getQuantity_in_stock());
-            preparedStatement.setString(7,product.getProduct_image_path());
-            
-            
-            if( preparedStatement.executeUpdate()>0)
-            {
+            preparedStatement.setString(7, product.getProduct_image_path());
+
+            if (preparedStatement.executeUpdate() > 0) {
                 return true;
             }
-            
+
         } catch (SQLException ex) {
             Logger.getLogger(ProductDAOIMPL.class.getName()).log(Level.SEVERE, null, ex);
         }
-       return false;
-        
+        return false;
+
     }
 
     @Override
     public List<Product> allProduct() {
-        
-        
-            List<Product> allItems = new ArrayList();
-            String statements =  "Select* from products ";
-    
+
+        List<Product> allItems = new ArrayList();
+        String statements = "Select* from products ";
+
         try {
-           
-            PreparedStatement  preparedStatement = connection.prepareStatement(statements);
-            
-            
+
+            PreparedStatement preparedStatement = connection.prepareStatement(statements);
+
             ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
-                
-               Product product = new Product();
-               product.setProduct_ID(resultSet.getInt("product_ID"));
+
+                Product product = new Product();
+                product.setProduct_ID(resultSet.getInt("product_ID"));
                 product.setProduct_name(resultSet.getString("product_name"));
                 product.setProduct_description(resultSet.getString("product_description"));
                 product.setProduct_price(resultSet.getDouble("product_price"));
@@ -126,15 +122,15 @@ public class ProductDAOIMPL implements ProductDAO {
                 product.setProduct_SKU(resultSet.getString("product_SKU"));
                 product.setQuantity_in_stock(resultSet.getInt("quantity_in_stock"));
                 product.setProduct_image_path(resultSet.getString("productImagePath"));
-                
+
                 allItems.add(product);
             }
-            
+
         } catch (SQLException ex) {
             Logger.getLogger(ProductDAOIMPL.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         return allItems;
-        
+
     }
 }

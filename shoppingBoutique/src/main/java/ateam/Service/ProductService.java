@@ -12,11 +12,11 @@ import java.util.List;
  * @author user
  */
 public interface ProductService {
-    
-    
-    List<Product>getAllItems ();
+
+    List<Product> getProductBySKU(String sku);
+
+    List<Product> getAllItems();
+
     boolean InsertItems(Product product);
-    
-    
-    
+
 }
