@@ -17,6 +17,7 @@
             String message = (String) request.getAttribute("addEmployeeMessage");
             Employee employee = (Employee) request.getSession(false).getAttribute("Employee");
             List<Store> stores = (List<Store>) request.getSession(false).getAttribute("stores");
+            String storeName;
         %>
         <% if(employee != null && employee.getRole() == Role.Manager) { %>
         <jsp:include page="navbar.jsp"/>
@@ -46,6 +47,7 @@
                              <i class="bx bx-user"></i>
                         </div>
                     </div>
+
                     <div class="input-box">
                         <input type="email"
                                placeholder='Email'
@@ -55,6 +57,7 @@
                                />
                         <i class="bx bx-envelope"></i>
                     </div>
+
                     <div class="input-box">
                         <input type="password"
                                placeholder='Password'
@@ -75,6 +78,7 @@
                     </div>
                     <div class="select-container" id="storeSelector" style="display: none;">
                         <label>Store</label>
+
                         <select class="select-box" name="storeId">
                             <% if(stores != null) {
                                 for(Store store : stores) { %>
@@ -84,11 +88,14 @@
                     </div>
                     <input type="hidden" name="storeId" value="<%=employee.getStore_ID()%>"/>
                     <% if(message != null) { %>
+
                     <p><%=message%></p>
                     <% } %>
                     <div class="input-submit">
                         <input name="submit" value="add" hidden>
+
                         <button class="submit-btn" id="submit">Add Employee</button>
+
                     </div>
                 </form>
             </div>
@@ -103,7 +110,9 @@
             selectedRole.addEventListener('change', function() {
                 var role = selectedRole.value;
                 
+
                 if(role === 'Manager') {
+
                     storeSelection.style.display = 'block';
                 } else {
                     storeSelection.style.display = 'none';

@@ -5,6 +5,7 @@ import ateam.Models.Role;
 import ateam.DAO.EmployeeDAO;
 import ateam.BDconnection.Connect;
 
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -94,7 +95,7 @@ public class EmployeeDAOIMPL implements EmployeeDAO {
 
     @Override
     public List<Employee> getAllEmployees() {
-        List<Employee> employees = new ArrayList<>();
+        List<Employee> employees = new ArrayList();
         Statement statement = null;
         ResultSet resultSet = null;
 

@@ -38,8 +38,9 @@ public void startScanning() {
             // Open the webcam
             webcam.open();
     executor = Executors.newSingleThreadScheduledExecutor();
-    executor.scheduleAtFixedRate(() -> {
-        try {
+    
+    Runnable na=()->{
+         try {
             BufferedImage image = webcam.getImage();
             Result result = scanBarcode(image);
             if (result != null) {
@@ -51,7 +52,11 @@ public void startScanning() {
         } catch (NotFoundException e) {
             System.err.println("Barcode not found: " + e.getMessage());
         }
-    }, 0, 100, TimeUnit.MILLISECONDS);
+    };
+    
+    executor.scheduleAtFixedRate(na, 0, 100, TimeUnit.MILLISECONDS);
+    
+  
 }
 }
 

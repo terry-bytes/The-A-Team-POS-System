@@ -25,11 +25,11 @@ public class Email {
 
     
     public Email(String receiver, String message, String subject) {
-    this.receiver = receiver;
-    this.message = message;
-    this.subject = subject;
-}
- public Email(String sender, String password) {
+        this.receiver = receiver;
+        this.message = message;
+        this.subject = subject;
+    }
+    public Email(String sender, String password) {
         this.sender = sender;
         this.password = password;
     }    
