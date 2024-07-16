@@ -5,10 +5,9 @@ import ateam.DAO.EmployeeDAO;
 import ateam.DAOIMPL.EmployeeDAOIMPL;
 
 import ateam.DAOIMPL.StoreDAOIMPL;
-import ateam.Models.Employee;
-import ateam.Models.Role;
+import ateam.Exception.EmployeeNotFoundException;
+import ateam.Exception.InvalidPasswordException;
 import ateam.Models.Store;
-import ateam.Service.EmployeeService;
 import ateam.Service.StoreService;
 
 import ateam.Models.Email;
@@ -153,7 +152,10 @@ public class EmployeeServlet extends HttpServlet {
         String password = request.getParameter("password");
         Role role = Role.valueOf(request.getParameter("role"));
         
-        String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+       String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+      
+
+
         int storeId;
         if(role == Role.Manager){
             storeId = Integer.parseInt(request.getParameter("managerStoreId"));
@@ -193,7 +195,7 @@ public class EmployeeServlet extends HttpServlet {
         int employeeId = Integer.parseInt(request.getParameter("employeeId"));
         String firstName = request.getParameter("firstName");
         String lastName = request.getParameter("lastName");
-        //String email = request.                                               // Please add email
+        //String email = request.getParameter("email");                                               // Please add email
         String employeesId = request.getParameter("employeesId");
 
         String email = request.getParameter("email");
@@ -202,14 +204,17 @@ public class EmployeeServlet extends HttpServlet {
         String password = request.getParameter("password");
         Role role = Role.valueOf(request.getParameter("role"));
         
-
+        String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+        System.out.println("Stored hashed password: " + hashedPassword);
+        
+      
         Employee employeeToUpdate = new Employee();
         employeeToUpdate.setEmployee_ID(employeeId);
         employeeToUpdate.setFirstName(firstName);
         employeeToUpdate.setLastName(lastName);
         employeeToUpdate.setEmail(email);
         employeeToUpdate.setStore_ID(storeId);
-        employeeToUpdate.setEmployeePassword(password);
+        employeeToUpdate.setEmployeePassword(hashedPassword);
         employeeToUpdate.setRole(role);
 
         boolean success = employeeService.updateEmployee(employeeToUpdate);
@@ -223,9 +228,16 @@ public class EmployeeServlet extends HttpServlet {
     }
 
     private void handleLogin(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Employee employee = employeeService.login(
-                request.getParameter("employeeId"),
-                request.getParameter("password"));
+        Employee employee = null;
+        try {
+            employee = employeeService.login(
+                    request.getParameter("employeeId"),
+                    request.getParameter("password"));
+        } catch (EmployeeNotFoundException |InvalidPasswordException ex) {
+            
+            request.setAttribute("message", "You have entered wrong password or employeeID");
+                       request.getRequestDispatcher("login.jsp").forward(request, response);
+        } 
         if (employee != null) {
             HttpSession session = request.getSession(true);
             session.setAttribute("Employee", employee);
@@ -299,8 +311,10 @@ public class EmployeeServlet extends HttpServlet {
     private void changePassword(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String email = request.getParameter("email");
         String newPassword = request.getParameter("newPassword");
+        String hashedPassword = BCrypt.hashpw(newPassword, BCrypt.gensalt());
+      
 
-        boolean success = employeeService.updatePasswordByEmail(email, newPassword);
+        boolean success = employeeService.updatePasswordByEmail(email, hashedPassword);
 
         if (success) {
             request.setAttribute("message", "Password changed successfully.");
