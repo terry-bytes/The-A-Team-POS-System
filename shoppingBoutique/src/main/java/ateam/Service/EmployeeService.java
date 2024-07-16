@@ -5,6 +5,8 @@
  */
 package ateam.Service;
 
+import ateam.Exception.EmployeeNotFoundException;
+import ateam.Exception.InvalidPasswordException;
 import ateam.Models.Employee;
 import java.util.List;
 
@@ -24,7 +26,15 @@ public interface EmployeeService {
 
     boolean deleteEmployee(int employee_ID);
 
-    Employee login(String employee_id, String password);
+    /**
+     *
+     * @param employee_id
+     * @param password
+     * @return
+     * @throws EmployeeNotFoundException
+     * @throws InvalidPasswordException
+     */
+    Employee login(String employee_id, String password)throws EmployeeNotFoundException,InvalidPasswordException;
 
     Employee findByEmail(String email);
 

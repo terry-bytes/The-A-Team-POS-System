@@ -13,22 +13,33 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>JSP Page</title>
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/navbar.css">
+        
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp"
+      rel="stylesheet">
     </head>
     <body>
-        <% Employee employee = (Employee) request.getSession(false).getAttribute("Attribute");
+        <% Employee employee = (Employee) request.getSession(false).getAttribute("Employee");
             Store store = (Store) request.getSession(false).getAttribute("store");
         %>
         <nav class="navbar">
             <div class='logo'>
                 <h3>Carol's Boutique</h3>
-                <p><%=store.getStore_name()%></p>
+                <p><%= store.getStore_name()%></p>
             </div>
             <div class="nav-menu">
                 <ul>
+                    <li class="profile-area">
+                        <div class="theme-btn">
+                            <span class="material-icons-sharp">light_mode</span>
+                            <span class="material-icons-sharp">dark_mode</span>
+                        </div>
+                    </li>
                     <li><a href="" class="link">Dashboard</a></li>
-                    <li><a href="" class="link">My Store</a></li>
+                    <li><a href="StoreServlet?submit=getStoreDashboard" class="link">My Store</a></li>
                     <li><a href="" class="link">Notifications</a></li>
+                    
                 </ul>
+                
             </div>
         </nav>
     </body>

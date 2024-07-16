@@ -204,6 +204,10 @@
     </head>
     <body>
 
+        <jsp:include page="navbar.jsp"/>
+        <h1>Hello Teller!</h1>
+
+
         <div class="container">
             <div class="left-section">
                 <div>
@@ -417,5 +421,6 @@
             }
 
         </script>
+
     </body>
 </html>
