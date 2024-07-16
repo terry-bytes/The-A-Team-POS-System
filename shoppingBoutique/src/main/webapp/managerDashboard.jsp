@@ -46,9 +46,9 @@
         <div class="manager-container">
             <div class="sidebar">
                 
-                    <a href="employees?submit=getAddEmployee" >Add Employee</a></li>
-                    <a href="employees?submit=getAddEmployee" >Download Reports</a></li>
-               
+                    <a href="employees?submit=getAddEmployee" >Add Employee</a>
+                    <a href="employees?submit=getAddEmployee" >Download Reports</a>
+                    <a href="#" >Manage IBT</a>
             </div>
             
             <div class="menu-content">
