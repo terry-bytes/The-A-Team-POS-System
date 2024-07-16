@@ -172,12 +172,13 @@ public class EmployeeServlet extends HttpServlet {
         newEmployee.setEmployeePassword(hashedPassword);
 
         newEmployee.setRole(role);
-
+        String msg = "Dear " +newEmployee.getFirstName()+" "+newEmployee.getLastName()+"\nWelcome aboard! You have been successfully added to Carols Boutique."+
+                    " We're excited to have you on our team.\n";
         String otp = generateOTP();
         Email emailDetails = new Email("ramovhatp@gmail.com", "xaed clmt qpis ctvf");
         emailDetails.setReceiver(email);
         emailDetails.setSubject("Email Verification OTP");
-        emailDetails.setMessage("Your OTP for email verification is: " + otp);
+        emailDetails.setMessage(msg+"\nYour OTP for email verification is: " + otp);
 
         emailService.sendMail(emailDetails);
         request.getSession().setAttribute("otp", otp);
