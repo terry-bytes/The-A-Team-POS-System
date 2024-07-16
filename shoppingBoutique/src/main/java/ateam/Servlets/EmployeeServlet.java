@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpSession;
+import org.mindrot.jbcrypt.BCrypt;
 
 @WebServlet(name = "EmployeeServlet", urlPatterns = "/employees")
 public class EmployeeServlet extends HttpServlet {
@@ -152,6 +153,7 @@ public class EmployeeServlet extends HttpServlet {
         String password = request.getParameter("password");
         Role role = Role.valueOf(request.getParameter("role"));
         
+        String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
         int storeId;
         if(role == Role.Manager){
             storeId = Integer.parseInt(request.getParameter("managerStoreId"));
@@ -165,7 +167,7 @@ public class EmployeeServlet extends HttpServlet {
         newEmployee.setLastName(lastName);
         newEmployee.setEmail(email);
         newEmployee.setStore_ID(storeId);
-        newEmployee.setEmployeePassword(password);
+        newEmployee.setEmployeePassword(hashedPassword);
 
         newEmployee.setRole(role);
 

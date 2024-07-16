@@ -18,7 +18,7 @@
       rel="stylesheet">
     </head>
     <body>
-        <% Employee employee = (Employee) request.getSession(false).getAttribute("Attribute");
+        <% Employee employee = (Employee) request.getSession(false).getAttribute("Employee");
             Store store = (Store) request.getSession(false).getAttribute("store");
         %>
         <nav class="navbar">
@@ -35,11 +35,9 @@
                         </div>
                     </li>
                     <li><a href="" class="link">Dashboard</a></li>
-                    <li><a href="" class="link">My Store</a></li>
+                    <li><a href="StoreServlet?submit=getStoreDashboard" class="link">My Store</a></li>
                     <li><a href="" class="link">Notifications</a></li>
-                    <li class="user">
-                        <p><%=employee.getFirstName()%></p>
-                    </li>
+                    
                 </ul>
                 
             </div>

@@ -143,7 +143,7 @@
             });
         </script>
         <%} %> 
-        <p><%=employee.getFirstName()%></p>
+        
         <%} else {%>
         <jsp:include page="unauthorized.jsp" />
         <%}%>
