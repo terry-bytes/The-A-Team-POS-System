@@ -24,6 +24,12 @@ public class StoreServiceImpl implements StoreService{
 
     @Override
     public boolean addStore(Store store) {
+        if(getAllStores().stream()
+                .filter(s -> s.getStore_name().equalsIgnoreCase(store.getStore_name()))
+                .findFirst()
+                .orElse(store)
+                != null)
+            return false;
         return storeDao.addStore(store);
     }
 
