@@ -1,125 +1,405 @@
-<%-- 
-    Document   : storeDashboard
-    Created on : 12 Jul 2024, 10:01:21 AM
-    Author     : carme
---%>
-
 <%@page import="java.util.List"%>
-<%@page import="ateam.Models.Store"%>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@page import="ateam.Models.Product"%>
+<%@page import="ateam.Models.Employee"%>
+<%@page import="javax.servlet.http.HttpSession"%>
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Store Dashboard Page</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Barcode Scanner</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                display: flex;
+                justify-content: space-between;
+                padding: 20px;
+            }
+
+            .container {
+                display: flex;
+                width: 100%;
+            }
+
+            .left-section {
+                flex: 1;
+                padding-right: 20px;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+            }
+
+            .user-info {
+                display: flex;
+                align-items: center;
+                margin-bottom: 20px;
+            }
+
+            .user-info img {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                margin-right: 10px;
+            }
+
+            .transaction-buttons {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: flex-end;
+                gap: 10px;
+                margin-bottom: 20px;
+            }
+
+            .transaction-buttons button {
+                padding: 8px;
+                font-size: 14px;
+                cursor: pointer;
+                width: 150px;
+            }
+
+            .scanned-items {
+                flex: 1;
+                border: 1px solid #ccc;
+                padding: 10px;
+                margin-bottom: 10px;
+                max-height: 400px; /* Increased height */
+                overflow-y: auto;  /* Allow vertical scrolling */
+            }
+
+            .scanned-items h2 {
+                margin-top: 0;
+            }
+
+            #item-list {
+                list-style-type: none;
+                padding: 0;
+                overflow-y: auto;
+                max-height: 500px; /* Increased height */
+                margin-bottom: 20px;
+            }
+
+            .total-price {
+                font-size: 1.5em;
+                margin-top: auto;
+                text-align: right;
+            }
+
+            .right-section {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+            }
+
+            .keyboard {
+                width: 100%;
+                max-width: 400px;
+                align-self: flex-end;
+                border: 1px solid #ccc;
+                padding: 10px;
+                font-size: 16px;
+            }
+
+            .keyboard-row {
+                display: flex;
+            }
+
+            .key {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 50px;
+                height: 50px;
+                border: 1px solid #ccc;
+                margin: 5px;
+                cursor: pointer;
+            }
+
+            input[type="text"] {
+                width: calc(100% - 20px);
+                padding: 10px;
+                margin-bottom: 10px;
+                border: 1px solid #ccc;
+            }
+
+            #toggleCase {
+                background-color: #ccc;
+                font-weight: bold;
+            }
+
+            #complete-sale {
+                padding: 10px;
+                font-size: 16px;
+                cursor: pointer;
+
+                text-align: center;
+                border: none;
+                background-color: #4CAF50;
+                color: white;
+                width: 150px;
+            }
+            .container {
+                display: flex;
+            }
+            .left-section, .right-section {
+                padding: 20px;
+                border: 1px solid #ccc;
+            }
+            .left-section {
+                width: 50%;
+            }
+            .right-section {
+                width: 50%;
+            }
+            .scanned-items ul {
+                list-style: none;
+                padding: 0;
+            }
+            .scanned-items ul li {
+                display: flex;
+                justify-content: space-between;
+            }
+            .keyboard {
+                display: flex;
+                flex-direction: column;
+            }
+            .keyboard-row {
+                display: flex;
+            }
+            .key {
+                padding: 10px;
+                margin: 2px;
+                border: 1px solid #ccc;
+                cursor: pointer;
+                user-select: none;
+            }
+            #interactive {
+                width: 100%;
+                height: 400px;
+            }
+            #barcode-scanner {
+                position: fixed;
+                top: -100px; /* Move off-screen */
+                left: -100px; /* Move off-screen */
+                width: 1px; /* Set minimal width */
+                height: 1px; /* Set minimal height */
+                opacity: 0; /* Hide visually */
+                pointer-events: none; /* Disable interaction */
+                z-index: -1; /* Ensure it's behind other elements */
+            }
+        </style>
     </head>
     <body>
-        <h1>Store Dashboard</h1>
-        <h2>Choose an option Chapati</h2>
-        <h1>Add a new Store</h1>
-        <form action="StoreServlet" method="post">
-            <label>Enter the new store name</label>
-            <input type="text"  name="storeName"><br><br>
-                   
-            <label>Enter the new store address</label>
-            <input type="text"  name="storeAddress"><br><br>
-            
-            <label>Enter the new store city</label>
-            <input type="text"  name="storeCity"><br><br>
-            
-            <label>Enter the new store province</label>
-            <input type="text"  name="storeProvince"><br><br>
-            
-            <label>Enter the new store zipcode</label>
-            <input type="text"  name="storeZipcode"><br><br>
-            
-            <label>Enter the new store phone</label>
-            <input type="text"  name="storePhone"><br><br>
-            
-            <label>Enter the new store email address</label>
-            <input type="text"  name="storeEmailAddress"><br><br>
-            
-            <input type="submit" value="Submit_Store" name="storeSwitch"><br><br>
-           
-            <p><%=request.getAttribute("message")%></p>
-           
-        </form>
-            
-            <h1>Update a Store</h1>
-        <form action="StoreServlet" method="post">
-            <label>Enter store ID to update</label>
-            <input type="text"  name="storeIDUpdate"><br><br>
-            
-            <label>Enter the new store name</label>
-            <input type="text"  name="storeName"><br><br>
-                   
-            <label>Enter the new store address</label>
-            <input type="text"  name="storeAddress"><br><br>
-            
-            <label>Enter the new store city</label>
-            <input type="text"  name="storeCity"><br><br>
-            
-            <label>Enter the new store province</label>
-            <input type="text"  name="storeProvince"><br><br>
-            
-            <label>Enter the new store zipcode</label>
-            <input type="text"  name="storeZipcode"><br><br>
-            
-            <label>Enter the new store phone</label>
-            <input type="text"  name="storePhone"><br><br>
-            
-            <label>Enter the new store email address</label>
-            <input type="text"  name="storeEmailAddress"><br><br>
-            
-            <input type="submit" value="Update_Store" name="storeSwitch"><br><br>
-           
-            <p><%=request.getAttribute("message")%></p>
-           
-        </form>
- 
-        <form action="StoreServlet" method="post">
-            <h2>Search for a store using Store ID</h2>
-            <input type="text" name="storeID"><br><br>  
-            <input type="submit" value="Search_Store" name="storeSwitch"><br><br>
-            <% Store store = (Store)request.getAttribute("Store");
-           if(store != null) {
-            %>
-            <p><%=store.getStore_name()%></p>
-            <%}%>
-            
-        </form>
-        
-        <form action="StoreServlet" method="post">
-            <h2>All Stores on the System</h2>
-            <input type="submit" value="View_Stores" name="storeSwitch">
-             <% 
-        List<Store> stores = (List<Store>) request.getAttribute("stores");
-        if (stores != null && !stores.isEmpty()) {
-            for (Store s : stores) {
-    %>
-    <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
-        <h2>Store ID: <%= s.getStore_ID() %></h2>
-        <p>Name: <%= s.getStore_name() %></p>
-        <p>Address: <%= s.getStore_address() %></p>
-        <p>City: <%= s.getStore_city() %></p>
-        <p>Province: <%= s.getStore_province() %></p>
-        <p>Zip Code: <%= s.getStore_zipcode() %></p>
-        <p>Phone: <%= s.getStore_phone() %></p>
-        <p>Email: <%= s.getStore_email() %></p>
-    </div>
-    <% 
+
+        <div class="container">
+            <div class="left-section">
+                <div>
+                    <div class="user-info">
+                        <img src="images.jpeg" alt="User Avatar">
+                        <div>
+                            <%
+                                Employee loggedInUser = (Employee) session.getAttribute("loggedInUser");
+                                if (loggedInUser != null) {
+                                    out.print(loggedInUser.getFirstName() + " " + loggedInUser.getLastName());
+                                } else {
+                                    out.print("Username");
+                                }
+                            %>
+                        </div>
+                    </div>
+                    <form action="ProductServlet" method="post">
+                        <video id="barcode-scanner" style="display: none;"></video>
+                        <input name="input-field" type="text" id="input-field" placeholder="Scanned barcode will appear here">
+                        <div class="scanned-items">
+                            <h2>Scanned Items</h2>
+                            <%
+                                List<Product> getItem = (List<Product>) request.getAttribute("getItem");
+                                if (getItem == null || getItem.isEmpty()) {
+                            %>
+                            <p class="message">No Items found</p>
+                            <%
+                            } else {
+                            %>
+
+                            <table>
+                                <tr>
+                                    <th>Product SKU</th>
+                                    <th>Name</th>
+                                    <th>Quantity</th>
+                                    <th>Price</th>
+
+                                </tr>
+                                <% for (Product item : getItem) {%>    
+                                <tr>
+                                    <td><%= item.getProduct_SKU()%></td>
+                                    <td><%= item.getProduct_name()%></td>
+                                    <td><%= item.getScanCount()%></td>
+                                    <td><%= item.getProduct_price()%></td>
+
+                                </tr>
+                                <% } %>
+                            </table>
+
+
+                            <% }%>
+                            <div class="total-price">
+                                Total: <span id="total-price">0.00</span>
+                            </div>
+                        </div>
+
+                        <input name ="submit" type ="submit" value ="Add-Item">
+                        <button type="submit" name="submit" value="auto-submit" ></button>
+                    </form>
+                </div>
+                <button id="complete-sale">Complete Sale</button>
+            </div>
+
+            <div class="right-section">
+                <div class="transaction-buttons">
+                    <button>Return Item</button>
+                    <button>IBT Purchase</button>
+                    <button>View Reports</button>
+                    <button>Void Sale</button>
+                    <button>Remove Item</button>
+                    <button>Search Item</button>
+                </div>
+                <div class="keyboard">
+                    <input type="text" id="input-field" placeholder="Enter barcode manually">
+                    <div class="keyboard-row">
+                        <div class="key" onclick="appendToInput('1')">1</div>
+                        <div class="key" onclick="appendToInput('2')">2</div>
+                        <div class="key" onclick="appendToInput('3')">3</div>
+                        <div class="key" onclick="appendToInput('4')">4</div>
+                        <div class="key" onclick="appendToInput('5')">5</div>
+                        <div class="key" onclick="appendToInput('6')">6</div>
+                        <div class="key" onclick="appendToInput('7')">7</div>
+                        <div class="key" onclick="appendToInput('8')">8</div>
+                        <div class="key" onclick="appendToInput('9')">9</div>
+                        <div class="key" onclick="appendToInput('0')">0</div>
+                    </div>
+                    <div class="keyboard-row">
+                        <div class="key" onclick="appendToInput('Q')">Q</div>
+                        <div class="key" onclick="appendToInput('W')">W</div>
+                        <div class="key" onclick="appendToInput('E')">E</div>
+                        <div class="key" onclick="appendToInput('R')">R</div>
+                        <div class="key" onclick="appendToInput('T')">T</div>
+                        <div class="key" onclick="appendToInput('Y')">Y</div>
+                        <div class="key" onclick="appendToInput('U')">U</div>
+                        <div class="key" onclick="appendToInput('I')">I</div>
+                        <div class="key" onclick="appendToInput('O')">O</div>
+                        <div class="key" onclick="appendToInput('P')">P</div>
+                    </div>
+                    <div class="keyboard-row">
+                        <div class="key" onclick="appendToInput('A')">A</div>
+                        <div class="key" onclick="appendToInput('S')">S</div>
+                        <div class="key" onclick="appendToInput('D')">D</div>
+                        <div class="key" onclick="appendToInput('F')">F</div>
+                        <div class="key" onclick="appendToInput('G')">G</div>
+                        <div class="key" onclick="appendToInput('H')">H</div>
+                        <div class="key" onclick="appendToInput('J')">J</div>
+                        <div class="key" onclick="appendToInput('K')">K</div>
+                        <div class="key" onclick="appendToInput('L')">L</div>
+                    </div>
+                    <div class="keyboard-row">
+                        <div class="key" onclick="appendToInput('Z')">Z</div>
+                        <div class="key" onclick="appendToInput('X')">X</div>
+                        <div class="key" onclick="appendToInput('C')">C</div>
+                        <div class="key" onclick="appendToInput('V')">V</div>
+                        <div class="key" onclick="appendToInput('B')">B</div>
+                        <div class="key" onclick="appendToInput('N')">N</div>
+                        <div class="key" onclick="appendToInput('M')">M</div>
+                        <div class="key" id="toggleCase" onclick="toggleCase()">Shift</div>
+                        <div class="key" onclick="clearInput()">Clear</div>
+                    </div>
+                    <div class="keyboard-row">
+                        <div class="key" onclick="deleteLastCharacter()">Delete</div>
+                        <div class="key" style="flex: 1;" onclick="appendToInput(' ')">Space</div>
+                        <div class="key" onclick="submitInput()">Enter</div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <script>
+            let totalPrice = 0;
+            let caseToggle = false; // To track case state
+
+            function updateTotalPrice(price) {
+                totalPrice += price;
+                document.getElementById('total-price').innerText = totalPrice.toFixed(2);
             }
-        } else {
-    %>
-    <p>No stores found.</p>
-    <% } %>
-        </form>
-            
-        <form action="StoreServlet" method="post">
-            <h2>Delete a store from system using store ID</h2>
-            <input type="text" name="StoreIDDelete"><br><br>
-            <input type="submit" value="Delete_Store" name="storeSwitch">
-            <p><%=request.getAttribute("message")%></p>
-        </form>
+
+            function appendToInput(char) {
+                if (caseToggle) {
+                    char = char.toLowerCase();
+                }
+                document.getElementById('input-field').value += char;
+            }
+
+            function clearInput() {
+                document.getElementById('input-field').value = '';
+            }
+
+            function deleteLastCharacter() {
+                const inputField = document.getElementById('input-field');
+                inputField.value = inputField.value.slice(0, -1);
+            }
+
+            function submitInput() {
+                const inputField = document.getElementById('input-field');
+                // Submit the input field value to the server or process it as needed
+                console.log('Input submitted:', inputField.value);
+            }
+
+            function toggleCase() {
+                caseToggle = !caseToggle;
+                document.getElementById('toggleCase').innerText = caseToggle ? 'Caps' : 'Shift';
+            }
+        </script>
+
+        <script>
+            let scannerStarted = false;
+            const startBarcodeScanner = () => {
+                if (scannerStarted)
+                    return; // Prevent starting multiple times
+
+                scannerStarted = true;
+                Quagga.init({
+                    inputStream: {
+                        type: 'LiveStream',
+                        target: document.querySelector('#barcode-scanner'),
+                        constraints: {
+                            width: 640,
+                            height: 480,
+                            facingMode: 'environment'
+                        },
+                    },
+                    decoder: {
+                        readers: ['code_128_reader', 'ean_reader', 'ean_8_reader', 'code_39_reader', 'code_39_vin_reader', 'codabar_reader', 'upc_reader', 'upc_e_reader', 'i2of5_reader']
+                    }
+                }, (err) => {
+                    if (err) {
+                        console.error(err);
+                        return;
+                    }
+                    Quagga.start();
+                });
+
+                Quagga.onDetected((data) => {
+                    const code = data.codeResult.code;
+                    document.querySelector('#input-field').value = code;
+                    Quagga.stop(); // Stop the scanner once a barcode is detected
+                    scannerStarted = false; // Reset scannerStarted flag
+                    document.querySelector('button[name="submit"]').click(); // Trigger the form submission
+                });
+            };
+
+            document.addEventListener('DOMContentLoaded', (event) => {
+                document.querySelector('#input-field').addEventListener('focus', startBarcodeScanner);
+            });
+        </script>
     </body>
 </html>

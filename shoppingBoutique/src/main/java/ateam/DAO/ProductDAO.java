@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface ProductDAO {
 
-    Product getProductBySKU(String productSKU);
+    List<Product> getProductBySKU(String productSKU);
     boolean addProduct(Product product);
     List<Product> allProduct ();
             

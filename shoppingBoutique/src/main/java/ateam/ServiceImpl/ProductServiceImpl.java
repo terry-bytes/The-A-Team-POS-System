@@ -15,28 +15,31 @@ import java.util.List;
  * @author user
  */
 public class ProductServiceImpl implements ProductService {
+
     private ProductDAO productDAO;
 
     public ProductServiceImpl(ProductDAO productDAO) {
-        
+
         this.productDAO = productDAO;
         productDAO = new ProductDAOIMPL();
-        
+
     }
-    
-   
+
+    public List<Product> getProductBySKU(String sku) {
+
+        return productDAO.getProductBySKU(sku);
+    }
 
     @Override
     public List<Product> getAllItems() {
-        
-     return productDAO.allProduct();
+
+        return productDAO.allProduct();
     }
 
     @Override
     public boolean InsertItems(Product product) {
-        
-        
-     return productDAO.addProduct(product);
+
+        return productDAO.addProduct(product);
     }
-    
+
 }
