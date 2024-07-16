@@ -49,6 +49,7 @@
                     <a href="employees?submit=getAddEmployee" >Add Employee</a>
                     <a href="employees?submit=getAddEmployee" >Download Reports</a>
                     <a href="#" >Manage IBT</a>
+                    <a href="#"> Add Stock</a>
             </div>
             
             <div class="menu-content">
