@@ -181,7 +181,7 @@ public class EmployeeDAOIMPL implements EmployeeDAO {
     }
 
     @Override
-    public Employee getEmployee(String employee_id, String password) {
+    public Employee getEmployee(String employee_id) {
         if (connection == null) {
             return null;
         }
@@ -193,17 +193,17 @@ public class EmployeeDAOIMPL implements EmployeeDAO {
             preparedStatement.setString(1, employee_id);
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.next()) {
-                    if (password.equals(resultSet.getString("employee_password"))) {
+                while (resultSet.next()) {
+                   
                         employee.setEmployee_ID(resultSet.getInt("employee_ID"));
                         employee.setFirstName(resultSet.getString("first_name"));
                         employee.setLastName(resultSet.getString("last_name"));
                         employee.setStore_ID(resultSet.getInt("store_ID"));
                         employee.setEmployees_id(employee_id);
-                        employee.setEmployeePassword(password);
+                        employee.setEmployeePassword(resultSet.getString("employee_password"));
                         employee.setRole(Enum.valueOf(Role.class, resultSet.getString("role")));
                         employee.setEmail(resultSet.getString("email"));
-                    }
+                    
                 }
             }
         } catch (SQLException ex) {
@@ -236,7 +236,6 @@ public class EmployeeDAOIMPL implements EmployeeDAO {
                 employee.setEmail(resultSet.getString("email"));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
         } finally {
             close(resultSet, preparedStatement);
         }
@@ -259,7 +258,6 @@ public class EmployeeDAOIMPL implements EmployeeDAO {
                 success = true;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
         } finally {
             close(preparedStatement);
         }
