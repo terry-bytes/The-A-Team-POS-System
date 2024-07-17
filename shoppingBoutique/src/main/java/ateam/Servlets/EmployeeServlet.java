@@ -39,6 +39,8 @@ public class EmployeeServlet extends HttpServlet {
     private final StoreService storeService;
 
     private final EmailService emailService;
+    
+    
 
 
     public EmployeeServlet() {
@@ -170,21 +172,23 @@ public class EmployeeServlet extends HttpServlet {
         newEmployee.setEmail(email);
         newEmployee.setStore_ID(storeId);
         newEmployee.setEmployeePassword(hashedPassword);
-
+        
         newEmployee.setRole(role);
-        String msg = "Dear " +newEmployee.getFirstName()+" "+newEmployee.getLastName()+"\nWelcome aboard! You have been successfully added to Carols Boutique."+
-                    " We're excited to have you on our team.\n";
+        
         String otp = generateOTP();
         Email emailDetails = new Email("ramovhatp@gmail.com", "xaed clmt qpis ctvf");
         emailDetails.setReceiver(email);
         emailDetails.setSubject("Email Verification OTP");
-        emailDetails.setMessage(msg+"\nYour OTP for email verification is: " + otp);
+        emailDetails.setMessage("Your OTP for email verification is: " + otp);
 
         emailService.sendMail(emailDetails);
         request.getSession().setAttribute("otp", otp);
         request.getSession().setAttribute("newEmployee", newEmployee);
 
         response.sendRedirect(request.getContextPath() + "/verifyOTP.jsp");
+        
+        
+        
     }
 
     private String generateOTP() {

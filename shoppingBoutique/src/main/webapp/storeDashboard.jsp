@@ -10,7 +10,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Barcode Scanner</title>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
-        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/store.css"
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/store.css" />
     </head>
     <body>
         <% Employee employee = (Employee) request.getSession(false).getAttribute("Employee");
@@ -99,6 +99,84 @@
                 </form>
             </div>
         </div>
-       
+
+
+        <script>
+            let totalPrice = 0;
+            let caseToggle = false; // To track case state
+
+            function updateTotalPrice(price) {
+                totalPrice += price;
+                document.getElementById('total-price').innerText = totalPrice.toFixed(2);
+            }
+
+            function appendToInput(char) {
+                if (caseToggle) {
+                    char = char.toLowerCase();
+                }
+                document.getElementById('input-field').value += char;
+            }
+
+            function clearInput() {
+                document.getElementById('input-field').value = '';
+            }
+
+            function deleteLastCharacter() {
+                const inputField = document.getElementById('input-field');
+                inputField.value = inputField.value.slice(0, -1);
+            }
+
+            function submitInput() {
+                const inputField = document.getElementById('input-field');
+                // Submit the input field value to the server or process it as needed
+                console.log('Input submitted:', inputField.value);
+            }
+
+            function toggleCase() {
+                caseToggle = !caseToggle;
+                document.getElementById('toggleCase').innerText = caseToggle ? 'Caps' : 'Shift';
+            }
+        
+            let scannerStarted = false;
+            const startBarcodeScanner = () => {
+                if (scannerStarted)
+                    return; // Prevent starting multiple times
+
+                scannerStarted = true;
+                Quagga.init({
+                    inputStream: {
+                        type: 'LiveStream',
+                        target: document.querySelector('#barcode-scanner'),
+                        constraints: {
+                            width: 640,
+                            height: 480,
+                            facingMode: 'environment'
+                        },
+                    },
+                    decoder: {
+                        readers: ['code_128_reader', 'ean_reader', 'ean_8_reader', 'code_39_reader', 'code_39_vin_reader', 'codabar_reader', 'upc_reader', 'upc_e_reader', 'i2of5_reader']
+                    }
+                }, (err) => {
+                    if (err) {
+                        console.error(err);
+                        return;
+                    }
+                    Quagga.start();
+                });
+
+                Quagga.onDetected((data) => {
+                    const code = data.codeResult.code;
+                    document.querySelector('#input-field').value = code;
+                    Quagga.stop(); // Stop the scanner once a barcode is detected
+                    scannerStarted = false; // Reset scannerStarted flag
+                    document.querySelector('button[name="submit"]').click(); // Trigger the form submission
+                });
+            };
+
+            document.addEventListener('DOMContentLoaded', (event) => {
+                document.querySelector('#input-field').addEventListener('focus', startBarcodeScanner);
+            });
+        </script>
+
     </body>
 </html>

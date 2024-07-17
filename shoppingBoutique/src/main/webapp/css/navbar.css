@@ -24,13 +24,9 @@ and open the template in the editor.
     width: 100%;
     height: 100px;
     line-height: 100px;
-<<<<<<< HEAD
     padding-left: 20px;
     padding-right: 20px;
-=======
-    padding: 0px 50px;
-    /*box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);*/
->>>>>>> a947d3c82e0bcaa714b7fac6173d8459c77cf78a
+
 }
 
 .logo{

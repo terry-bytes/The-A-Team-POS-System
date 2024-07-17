@@ -6,6 +6,7 @@ import java.util.List;
 
 public interface SaleDAO {
 
+
     int startNewSale(int employeeId, int storeId);
 
     BigDecimal calculateTotalAmount(int salesId);
@@ -15,4 +16,7 @@ public interface SaleDAO {
     boolean finalizeSale(int salesId, String paymentMethod);
     
     List<Sale> getAllSales();
+
+    int saveSale(Sale sale);
+
 }
