@@ -22,6 +22,7 @@
                                class='input-field'
                                autocomplete="off" required
                                />
+                        <i class="bx bx-user"></i>
                     </div>
                     <div class="input-box">
                         <input type="password"
@@ -30,6 +31,7 @@
                                class="input-field"
                                autocomplete="off" required
                                />
+                        <i class="bx bx-lock-alt"></i>
                     </div>
                     <%if(message != null){%>
                     <p style="color: red;"><%=message%></p>

@@ -1,11 +1,14 @@
 package ateam.ServiceImpl;
 
 import ateam.DAO.EmployeeDAO;
+import ateam.Exception.EmployeeNotFoundException;
+import ateam.Exception.InvalidPasswordException;
 import ateam.Models.Employee;
 import ateam.Service.EmployeeService;
 
 
 import java.util.List;
+import org.mindrot.jbcrypt.BCrypt;
 
 public class EmployeeServiceImpl implements EmployeeService {
 
@@ -70,8 +73,23 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public Employee login(String employee_id, String password) {
-        return employeeDAO.getEmployee(employee_id, password);
+    public Employee login(String employee_id, String password) throws EmployeeNotFoundException,InvalidPasswordException {
+        
+        
+        Employee employee = employeeDAO.getEmployee(employee_id);
+        
+        
+//         
+        if (employee != null) {
+            if (BCrypt.checkpw(password, employee.getEmployeePassword())) {
+                return employee;
+            } else {
+                throw new InvalidPasswordException("Incorrect password");
+            }
+        }
+        throw new EmployeeNotFoundException("Employee not found");
+        
+        
     }
         @Override
     public Employee findByEmail(String email) {

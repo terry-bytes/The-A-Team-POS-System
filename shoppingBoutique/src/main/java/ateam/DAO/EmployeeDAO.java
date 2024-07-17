@@ -14,7 +14,7 @@ public interface EmployeeDAO {
     boolean updateEmployee(Employee employee);
 
     boolean deleteEmployee(int employee_ID);
-    Employee getEmployee(String employee_id, String password);
+    Employee getEmployee(String employee_id);
     Employee findByEmail(String email);
     boolean updatePasswordByEmail(String email, String newPassword);
     

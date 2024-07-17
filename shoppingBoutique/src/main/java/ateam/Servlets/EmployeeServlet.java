@@ -5,10 +5,9 @@ import ateam.DAO.EmployeeDAO;
 import ateam.DAOIMPL.EmployeeDAOIMPL;
 
 import ateam.DAOIMPL.StoreDAOIMPL;
-import ateam.Models.Employee;
-import ateam.Models.Role;
+import ateam.Exception.EmployeeNotFoundException;
+import ateam.Exception.InvalidPasswordException;
 import ateam.Models.Store;
-import ateam.Service.EmployeeService;
 import ateam.Service.StoreService;
 
 import ateam.Models.Email;
@@ -30,6 +29,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpSession;
+import org.mindrot.jbcrypt.BCrypt;
 
 @WebServlet(name = "EmployeeServlet", urlPatterns = "/employees")
 public class EmployeeServlet extends HttpServlet {
@@ -152,6 +152,10 @@ public class EmployeeServlet extends HttpServlet {
         String password = request.getParameter("password");
         Role role = Role.valueOf(request.getParameter("role"));
         
+       String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+      
+
+
         int storeId;
         if(role == Role.Manager){
             storeId = Integer.parseInt(request.getParameter("managerStoreId"));
@@ -165,15 +169,16 @@ public class EmployeeServlet extends HttpServlet {
         newEmployee.setLastName(lastName);
         newEmployee.setEmail(email);
         newEmployee.setStore_ID(storeId);
-        newEmployee.setEmployeePassword(password);
+        newEmployee.setEmployeePassword(hashedPassword);
 
         newEmployee.setRole(role);
-
+        String msg = "Dear " +newEmployee.getFirstName()+" "+newEmployee.getLastName()+"\nWelcome aboard! You have been successfully added to Carols Boutique."+
+                    " We're excited to have you on our team.\n";
         String otp = generateOTP();
         Email emailDetails = new Email("ramovhatp@gmail.com", "xaed clmt qpis ctvf");
         emailDetails.setReceiver(email);
         emailDetails.setSubject("Email Verification OTP");
-        emailDetails.setMessage("Your OTP for email verification is: " + otp);
+        emailDetails.setMessage(msg+"\nYour OTP for email verification is: " + otp);
 
         emailService.sendMail(emailDetails);
         request.getSession().setAttribute("otp", otp);
@@ -191,7 +196,7 @@ public class EmployeeServlet extends HttpServlet {
         int employeeId = Integer.parseInt(request.getParameter("employeeId"));
         String firstName = request.getParameter("firstName");
         String lastName = request.getParameter("lastName");
-        //String email = request.                                               // Please add email
+        //String email = request.getParameter("email");                                               // Please add email
         String employeesId = request.getParameter("employeesId");
 
         String email = request.getParameter("email");
@@ -200,14 +205,17 @@ public class EmployeeServlet extends HttpServlet {
         String password = request.getParameter("password");
         Role role = Role.valueOf(request.getParameter("role"));
         
-
+        String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+        System.out.println("Stored hashed password: " + hashedPassword);
+        
+      
         Employee employeeToUpdate = new Employee();
         employeeToUpdate.setEmployee_ID(employeeId);
         employeeToUpdate.setFirstName(firstName);
         employeeToUpdate.setLastName(lastName);
         employeeToUpdate.setEmail(email);
         employeeToUpdate.setStore_ID(storeId);
-        employeeToUpdate.setEmployeePassword(password);
+        employeeToUpdate.setEmployeePassword(hashedPassword);
         employeeToUpdate.setRole(role);
 
         boolean success = employeeService.updateEmployee(employeeToUpdate);
@@ -221,9 +229,16 @@ public class EmployeeServlet extends HttpServlet {
     }
 
     private void handleLogin(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Employee employee = employeeService.login(
-                request.getParameter("employeeId"),
-                request.getParameter("password"));
+        Employee employee = null;
+        try {
+            employee = employeeService.login(
+                    request.getParameter("employeeId"),
+                    request.getParameter("password"));
+        } catch (EmployeeNotFoundException |InvalidPasswordException ex) {
+            
+            request.setAttribute("message", "You have entered wrong password or employeeID");
+                       request.getRequestDispatcher("login.jsp").forward(request, response);
+        } 
         if (employee != null) {
             HttpSession session = request.getSession(true);
             session.setAttribute("Employee", employee);
@@ -297,8 +312,10 @@ public class EmployeeServlet extends HttpServlet {
     private void changePassword(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String email = request.getParameter("email");
         String newPassword = request.getParameter("newPassword");
+        String hashedPassword = BCrypt.hashpw(newPassword, BCrypt.gensalt());
+      
 
-        boolean success = employeeService.updatePasswordByEmail(email, newPassword);
+        boolean success = employeeService.updatePasswordByEmail(email, hashedPassword);
 
         if (success) {
             request.setAttribute("message", "Password changed successfully.");

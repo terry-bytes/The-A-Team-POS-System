@@ -13,4 +13,6 @@ public interface SaleDAO {
     boolean updateTotalAmount(int salesId, BigDecimal totalAmount);
 
     boolean finalizeSale(int salesId, String paymentMethod);
+    
+    List<Sale> getAllSales();
 }

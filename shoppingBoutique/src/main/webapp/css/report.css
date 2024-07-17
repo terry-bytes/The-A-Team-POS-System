@@ -7,18 +7,23 @@ and open the template in the editor.
     Created on : 13 Jul 2024, 18:19:05
     Author     : T440
 */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700");
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family:  "Poppins", sans-serif;
+}
+
 body{
-    background-image: linear-gradient(to right, #277af6, #0098f7, #48b2ef, #85c7e5, #bfd9e0);
-    background-repeat: no-repeat;
+    background: #dfe9f5;
 }
 .manager-container{
-    display: flex;
-    margin-top: 80px;
-   
-    
+    display: flex;  
 }
 
 .sidebar{
+<<<<<<< HEAD
     margin: 0;
     padding: 30px 0;
     width: 200px;
@@ -26,17 +31,32 @@ body{
     position: fixed;
     overflow: auto;
     height: 100%;
+=======
+   position: relative;
+   top: 0;
+   bottom: 0;
+   height: 100vh;
+   left: 0;
+   background: #fff;
+   width: 280px;
+   overflow: hidden;
+   box-shadow: 0 20px 35px rgba(0, 0, 0, 0.1);
+>>>>>>> a947d3c82e0bcaa714b7fac6173d8459c77cf78a
 }
 
 
 .sidebar a{
     color: #fff;
+<<<<<<< HEAD
     padding: 30px 20px;
+=======
+    padding: 30px;
+>>>>>>> a947d3c82e0bcaa714b7fac6173d8459c77cf78a
     text-decoration: none;
 }
 
 .menu-content{
-    margin-left: 200px;
+    margin-left: 300px;
     padding: 1px 10px;
 }
 

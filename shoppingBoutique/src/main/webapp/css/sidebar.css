@@ -1,0 +1,39 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css to edit this template
+*/
+/* 
+    Created on : Jul 17, 2024, 9:38:50 AM
+    Author     : Admin
+*/
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700");
+*{
+  margin: 0;
+  padding: 0;
+  outline: none;
+  border: none;
+  text-decoration: none;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+.logo{
+    text-align: center;
+    margin: 10px 0 0 10px;
+    display: flex;
+}
+
+.logo span{
+    font-weight: bold;
+    padding-left: 10px;
+    font-size: 20px;
+    text-transform: uppercase;
+}
+
+a{
+    position: relative;
+    color: black;
+    font-size: 14px;
+    display: table;
+    width: 280px;
+    padding: 10px;
+}

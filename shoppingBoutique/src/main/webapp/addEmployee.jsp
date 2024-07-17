@@ -79,14 +79,14 @@
                     <div class="select-container" id="storeSelector" style="display: none;">
                         <label>Store</label>
 
-                        <select class="select-box" name="storeId">
+                        <select class="select-box" name="managerStoreId">
                             <% if(stores != null) {
                                 for(Store store : stores) { %>
                                 <option value="<%=store.getStore_ID() %>"><%=store.getStore_name() %></option>
                                 <% } } %>
                         </select>
                     </div>
-                    <input type="hidden" name="storeId" value="<%=employee.getStore_ID()%>"/>
+                    <input type="hidden" name="tellerStoreId" value="<%=employee.getStore_ID()%>"/>
                     <% if(message != null) { %>
 
                     <p><%=message%></p>
