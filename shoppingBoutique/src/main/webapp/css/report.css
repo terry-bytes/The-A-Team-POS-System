@@ -20,7 +20,7 @@ body{
 
 .sidebar{
     margin: 0;
-    padding: 0;
+    padding: 30px 0;
     width: 200px;
     /*background-image: linear-gradient(to right, #277af6, #0098f7, #48b2ef, #85c7e5, #bfd9e0);*/
     position: fixed;
@@ -31,13 +31,17 @@ body{
 
 .sidebar a{
     color: #fff;
-    padding: 20px;
+    padding: 30px 20px;
     text-decoration: none;
 }
 
 .menu-content{
     margin-left: 200px;
     padding: 1px 10px;
+}
+
+.menu-content .heading{
+    padding: 20px 0;
 }
 
 .graphBox{

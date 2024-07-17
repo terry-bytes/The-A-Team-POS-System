@@ -24,7 +24,7 @@
         <nav class="navbar">
             <div class='logo'>
                 <h3>Carol's Boutique</h3>
-                <p><%= store.getStore_name()%></p>
+                <p>store</p>
             </div>
             <div class="nav-menu">
                 <ul>
@@ -37,9 +37,7 @@
                     <li><a href="" class="link">Dashboard</a></li>
                     <li><a href="" class="link">My Store</a></li>
                     <li><a href="" class="link">Notifications</a></li>
-                    <li class="user">
-                        <p><%=employee.getFirstName()%></p>
-                    </li>
+                    
                 </ul>
                 
             </div>

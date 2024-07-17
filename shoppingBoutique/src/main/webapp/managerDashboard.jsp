@@ -22,15 +22,14 @@
         <% Employee employee = (Employee) request.getSession(false).getAttribute("Employee"); 
            Map<String, Integer> salesData = (Map<String, Integer>) request.getAttribute("salesData");
            
-           if(employee != null){
+           if(employee == null){
             if(salesData != null && !salesData.isEmpty()){
             StringBuilder labels = new StringBuilder();
             StringBuilder data = new StringBuilder();
-            int totalSales = 0;
+            int totalSales = 500;
 
             for(Map.Entry<String, Integer> entry : salesData.entrySet()){
-                if(entry.getValue() > totalSales)
-                     totalSales += entry.getValue();
+                
                 labels.append("'").append(entry.getKey())
                         .append("',");
                 data.append(String.format("%.2f",(entry.getValue() * 100.0 / totalSales))).append(",");
@@ -43,7 +42,9 @@
             }
         %>
         <jsp:include page="navbar.jsp"/>
+        
         <div class="manager-container">
+            <hr />
             <div class="sidebar">
                 
                     <a href="employees?submit=getAddEmployee" >Add Employee</a></li>
@@ -143,7 +144,7 @@
             });
         </script>
         <%} %> 
-        <p><%=employee.getFirstName()%></p>
+     
         <%} else {%>
         <jsp:include page="unauthorized.jsp" />
         <%}%>
