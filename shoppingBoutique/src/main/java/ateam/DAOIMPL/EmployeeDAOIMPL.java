@@ -31,7 +31,7 @@ public class EmployeeDAOIMPL implements EmployeeDAO {
 
     @Override
     public boolean addEmployee(Employee employee) {
-        boolean success = false;
+        
         PreparedStatement preparedStatement = null;
 
         try {
@@ -47,17 +47,13 @@ public class EmployeeDAOIMPL implements EmployeeDAO {
             preparedStatement.setString(5, employee.getRole().name());
             preparedStatement.setString(6, employee.getEmail());
 
-            int rowsInserted = preparedStatement.executeUpdate();
-            if (rowsInserted > 0) {
-                success = true;
-            }
+           return preparedStatement.executeUpdate()>0;
         } catch (SQLException e) {
-            e.printStackTrace();
         } finally {
             close(preparedStatement);
         }
 
-        return success;
+        return false;
     }
 
     @Override
@@ -85,7 +81,6 @@ public class EmployeeDAOIMPL implements EmployeeDAO {
                 employee.setEmail(resultSet.getString("email"));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
         } finally {
             close(resultSet, preparedStatement);
         }
@@ -118,7 +113,6 @@ public class EmployeeDAOIMPL implements EmployeeDAO {
                 employees.add(employee);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
         } finally {
             close(resultSet, statement);
         }
@@ -150,7 +144,6 @@ public class EmployeeDAOIMPL implements EmployeeDAO {
                 success = true;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
         } finally {
             close(preparedStatement);
         }
@@ -172,7 +165,6 @@ public class EmployeeDAOIMPL implements EmployeeDAO {
                 success = true;
             }
         } catch (SQLException e) {
-            e.printStackTrace();
         } finally {
             close(preparedStatement);
         }
@@ -273,7 +265,6 @@ public class EmployeeDAOIMPL implements EmployeeDAO {
                         closeable.close();
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
                 }
             }
         }

@@ -358,9 +358,7 @@
                 caseToggle = !caseToggle;
                 document.getElementById('toggleCase').innerText = caseToggle ? 'Caps' : 'Shift';
             }
-        </script>
-
-        <script>
+        
             let scannerStarted = false;
             const startBarcodeScanner = () => {
                 if (scannerStarted)

@@ -18,14 +18,12 @@
             padding: 20px;
         }
         .scanned-items {
-            flex: 1; /* Takes available space */
-            margin-right: 20px; /* Space between sections */
+            flex: 1;
+            margin-right: 20px;
         }
         .payment-section {
-            flex: 1; /* Takes available space */
+            flex: 1;
         }
-
-        /* Header Styling */
         .my-header {
             background: #f0f0f0;
             padding: 15px;
@@ -44,8 +42,6 @@
             text-decoration: none;
             color: #333;
         }
-
-        /* Scanned Items Section */
         .scanned-items h2 {
             color: #2980b9;
         }
@@ -64,7 +60,6 @@
             margin-top: 20px;
             font-size: 1.2em;
         }
-
         .manual-entry-section {
             background: #f9f9f9;
             padding: 20px;
@@ -84,7 +79,6 @@
             justify-content: flex-start;
             gap: 5px;
         }
-
         .key {
             background: #eee;
             padding: 15px;
@@ -98,14 +92,11 @@
         .key:hover {
             background: #ddd;
         }
-
         .manual-entry {
             display: flex;
             align-items: center;
             margin-bottom: 10px;
         }
-
-        /* Transaction Buttons */
         .transaction-buttons button {
             background: #3498db;
             color: white;
@@ -118,14 +109,15 @@
         .transaction-buttons button:hover {
             background: #2980b9;
         }
+        #barcode-scanner {
+            display: none; /* Hide the camera element */
+        }
     </style>
 </head>
 
 <body>
-    <jsp:include page="navbar.jsp"/>
-    <h1>Hello Teller!</h1>
-
     <div class="container">
+        
         <div class="scanned-items">
             <h2>Scanned Items</h2>
             <c:choose>
@@ -156,20 +148,19 @@
                             </tr>
                         </c:forEach>
                     </table>
-
                     <div class="total-price">
                         Total: <span id="total-price">${totalPrice}</span>
                     </div>
                 </c:otherwise>
             </c:choose>
         </div>
-
         <div class="payment-section">
             <div class="manual-entry-section">
-                <form action="ProductServlet" method="post">
+                <form id="product-form" action="ProductServlet" method="post">
                     <div class="manual-entry">
                         <input type="text" id="manual-sku" name="input-field" placeholder="Enter SKU manually">
                         <button type="submit" name="submit" value="Add-Item">Add Item</button>
+                        <button type="submit" name="submit" value="auto-submit" id = "auto-submit" style ="display: none" ></button>
                     </div>
                     <div>
                         <label for="payment_method">Payment Method:</label>
@@ -181,7 +172,6 @@
                     </div>
                     <button type="submit" name="submit" value="Complete-Sale">Complete Sale</button>
                 </form>
-
                 <div class="keyboard">
                     <div class="key" onclick="appendToInput('1')">1</div>
                     <div class="key" onclick="appendToInput('2')">2</div>
@@ -199,7 +189,6 @@
                     <div class="key" onclick="backspace()">Backspace</div>
                 </div>
             </div>
-
             <div class="transaction-buttons">
                 <button>Return Item</button>
                 <button>IBT Purchase</button>
@@ -211,10 +200,8 @@
             </div>
         </div>
     </div>
-
+    <div id="barcode-scanner"></div>
     <script>
-        let scanningPaused = false;
-
         document.addEventListener('DOMContentLoaded', (event) => {
             initQuagga();
         });
@@ -231,53 +218,66 @@
                 }
             }, function (err) {
                 if (err) {
-                    console.log(err);
+                    console.error('Quagga initialization failed: ', err);
                     return;
                 }
-                console.log("Initialization finished. Ready to start");
+                console.log("Quagga initialization finished. Ready to start");
                 Quagga.start();
             });
 
-            Quagga.onDetected(function (data) {
-                if (!scanningPaused) {
-                    let barcode = data.codeResult.code;
-                    console.log("Barcode detected and processed : [" + barcode + "]", data);
+            Quagga.onProcessed(function (result) {
+                var drawingCtx = Quagga.canvas.ctx.overlay,
+                    drawingCanvas = Quagga.canvas.dom.overlay;
 
-                    // Play beep sound
-                    document.getElementById('beep-sound').play();
-
-                    // Stop Quagga after successful detection
-                    Quagga.stop();
-
-                    // Simulate keyboard input
-                    simulateKeyboardInput(barcode);
-
-                    // Clear the input field
-                    document.querySelector('#input-field').value = '';
-
-                    // Pause scanning for 2 seconds
-                    scanningPaused = true;
-                    setTimeout(() => {
-                        scanningPaused = false;
-                        initQuagga(); // Restart Quagga after pause
-                    }, 2000); // 2 seconds pause
+                if (result) {
+                    if (result.boxes) {
+                        drawingCtx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+                        result.boxes.filter(function (box) {
+                            return box !== result.box;
+                        }).forEach(function (box) {
+                            Quagga.ImageDebug.drawPath(box, {
+                                x: 0,
+                                y: 1
+                            }, drawingCtx, {
+                                color: "green",
+                                lineWidth: 2
+                            });
+                        });
+                    }
+                    if (result.box) {
+                        Quagga.ImageDebug.drawPath(result.box, {
+                            x: 0,
+                            y: 1
+                        }, drawingCtx, {
+                            color: "#00F",
+                            lineWidth: 2
+                        });
+                    }
+                    if (result.codeResult && result.codeResult.code) {
+                        console.log("Code detected: " + result.codeResult.code);
+                    }
                 }
+            });
+
+            Quagga.onDetected(function (data) {
+                let barcode = data.codeResult.code;
+                console.log("Barcode detected and processed: [" + barcode + "]", data);
+
+                // Simulate keyboard input
+                simulateKeyboardInput(barcode);
+
+                // Pause scanning for 2 seconds
+                Quagga.stop();
+                setTimeout(() => Quagga.start(), 2000); // Restart Quagga after 2 seconds
             });
         }
 
         function simulateKeyboardInput(barcode) {
-            let inputField = document.querySelector('#input-field');
+            let inputField = document.querySelector('#manual-sku');
             inputField.value = barcode;
-
-            // Trigger the hidden auto-submit button
+            
             document.getElementById('auto-submit').click();
-
-            // If you need to trigger events as if it was typed
-            let event = new Event('input', {
-                bubbles: true,
-                cancelable: true,
-            });
-            inputField.dispatchEvent(event);
+            document.forms['product-form'].submit();
         }
 
         function appendToInput(value) {
