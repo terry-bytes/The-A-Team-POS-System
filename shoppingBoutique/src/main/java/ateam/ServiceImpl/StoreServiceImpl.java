@@ -27,7 +27,7 @@ public class StoreServiceImpl implements StoreService{
         if(getAllStores().stream()
                 .filter(s -> s.getStore_name().equalsIgnoreCase(store.getStore_name()))
                 .findFirst()
-                .orElse(store)
+                .orElse(null)
                 != null)
             return false;
         return storeDao.addStore(store);

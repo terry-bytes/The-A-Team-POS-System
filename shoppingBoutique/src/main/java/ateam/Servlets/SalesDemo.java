@@ -5,15 +5,30 @@
  */
 package ateam.Servlets;
 
+import ateam.BDconnection.Connect;
+import ateam.DAOIMPL.EmployeeDAOIMPL;
+import ateam.DAOIMPL.StoreDAOIMPL;
+import ateam.Models.Employee;
+import ateam.Models.Sale;
+import ateam.Models.Store;
+import ateam.Service.EmployeeService;
+import ateam.Service.SaleService2;
+import ateam.Service.StoreService;
+import ateam.ServiceImpl.EmployeeServiceImpl;
+import ateam.ServiceImpl.SaleServiceImpl;
+import ateam.ServiceImpl.StoreServiceImpl;
 import java.io.IOException;
 
+
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 
 
@@ -23,6 +38,9 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet(name = "SalesDemo", urlPatterns = {"/SalesDemo"})
 public class SalesDemo extends HttpServlet {
+    private final SaleService2 saleService = new SaleServiceImpl();
+    private final StoreService storeService = new StoreServiceImpl(new StoreDAOIMPL(new Connect().connectToDB()));
+    private final EmployeeService employeeService = new EmployeeServiceImpl(new EmployeeDAOIMPL());
     
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -40,6 +58,16 @@ public class SalesDemo extends HttpServlet {
         salesData.put("Sandton Branch", 201);
         salesData.put("Gomora Branch", 160);
         salesData.put("Fourways Branch", 313);
+        
+        List<Sale> sales = saleService.getAllSales();
+        List<Store> stores = storeService.getAllStores();
+        List<Employee> employees = employeeService.getAllEmployees();
+        
+        HttpSession session = request.getSession(false);
+        
+        session.setAttribute("Employees", employees);
+        session.setAttribute("Stores", stores);
+        session.setAttribute("Sales", sales);
         
         request.setAttribute("salesData", salesData);
         request.getRequestDispatcher("managerDashboard.jsp").forward(request, response);

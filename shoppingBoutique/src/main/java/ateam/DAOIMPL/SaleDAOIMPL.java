@@ -2,9 +2,12 @@ package ateam.DAOIMPL;
 
 import ateam.BDconnection.Connect;
 import ateam.DAO.SaleDAO;
+import ateam.Models.Sale;
 
 import java.math.BigDecimal;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -83,5 +86,32 @@ public class SaleDAOIMPL implements SaleDAO {
             Logger.getLogger(SaleDAOIMPL.class.getName()).log(Level.SEVERE, null, ex);
         }
         return success;
+    }
+
+    @Override
+    public List<Sale> getAllSales() {
+        List<Sale> sales = new ArrayList<>();
+        if(connection != null){
+            String sql = "SELECT sales_ID, sales_date, total_amount, payment_method, employee_ID, store_ID FROM sales";
+            try(PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+                try(ResultSet resultSet = preparedStatement.executeQuery()){
+                    while(resultSet.next()){
+                        Sale sale = new Sale();
+                        sale.setEmployee_ID(resultSet.getInt("employee_ID"));
+                        sale.setPayment_method(resultSet.getString("payment_method"));
+                        sale.setSales_ID(resultSet.getInt("sales_ID"));
+                        sale.setSales_date(resultSet.getTimestamp("sales_date"));
+                        sale.setStore_ID(resultSet.getInt("store_Id"));
+                        sale.setTotal_amount(resultSet.getDouble("total_amount"));
+                        
+                        sales.add(sale);
+                    }
+                }
+                
+            } catch (SQLException ex) {
+                Logger.getLogger(SaleDAOIMPL.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return sales;
     }
 }
