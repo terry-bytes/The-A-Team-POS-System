@@ -44,6 +44,7 @@ public class ProductServlet extends HttpServlet {
             throws ServletException, IOException {
 
         HttpSession session = request.getSession();
+        Employee manager = (Employee) request.getSession(false).getAttribute("Employee");
         List<Product> scannedItems = (List<Product>) session.getAttribute("scannedItems");
         if (scannedItems == null) {
             scannedItems = new ArrayList<>();
