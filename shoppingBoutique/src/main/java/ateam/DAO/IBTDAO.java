@@ -14,7 +14,8 @@ import java.util.List;
  */
 public interface IBTDAO {
     List<IBT> getAllProducts(int product_ID);
-    boolean sendIBTRequest(int product_ID, int store_ID,String store_name);
+    boolean sendIBTRequest(int product_ID, int store_ID,String store_name, int product_quantity);
     List<IBT> receiveIBTRequest(int store_ID);
     boolean deleteRequestedIBT(int store_ID);
+    boolean checkForIBTNotification(int store_ID);
 }

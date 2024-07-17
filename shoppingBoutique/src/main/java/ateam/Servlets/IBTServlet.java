@@ -83,22 +83,40 @@ public class IBTServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        switch(request.getParameter("IBT_switch")) {
-            case "check_stores":
-                handleIBTStores(request, response);
-                break;
-                
-            case "Request IBT":
-                handleIBTRequest(request, response);
-                break;
-                
-            case "Check_IBT":
-                handleReceivingIBTRequest(request, response);
-                break;
-            
-            case "Approve":
-                handleDeletingIBTRequest(request, response);
-                break;
+       String action = request.getParameter("action");
+
+        if ("handleIBTNotification".equals(action)) {
+            handleIBTNotification(request, response);
+                    
+        } else {
+            switch (request.getParameter("IBT_switch")) {
+                case "Check Stores":
+                    handleIBTStores(request, response);
+                    break;
+
+                case "Request IBT":
+                    handleIBTRequest(request, response);
+                    break;
+
+                case "Approve":
+                    handleDeletingIBTRequest(request, response);
+                    break;
+
+                case "Send IBT":
+                    request.getRequestDispatcher("IBTSentDashboard.jsp").forward(request, response);
+                    break;
+
+                case "IBT_Requests":
+                    handleReceivingIBTRequest(request, response);
+                    break;
+
+                case "Manage IBT's":
+                     // Set session attribute to indicate there are pending IBT requests
+                    request.getSession().setAttribute("ibtNotifications", true);
+                    // Forward to the management page
+                    request.getRequestDispatcher("IBTMainDashboard.jsp").forward(request, response);
+                    break;
+            }
         }
     }
 
@@ -113,8 +131,8 @@ public class IBTServlet extends HttpServlet {
     }// </editor-fold>
 
     private void handleIBTStores(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        
         int product_id = (Integer.parseInt(request.getParameter("e_product_ID")));
+        request.setAttribute("product_id", product_id);
         List<IBT> Stores = ibtService.getAllProducts(product_id);
         request.setAttribute("Stores", Stores);
         request.getRequestDispatcher("IBTSentDashboard.jsp").forward(request, response);
@@ -122,11 +140,13 @@ public class IBTServlet extends HttpServlet {
     
     private void handleIBTRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int product_id = (Integer.parseInt(request.getParameter("product_id")));
+        System.out.println("AND CHECKER " + product_id);
+        int product_quantity = (Integer.parseInt(request.getParameter("e_product_qautity")));
         int store_id = (Integer.parseInt(request.getParameter("store_id")));
         HttpSession session = request.getSession(false);
         Store sent_store_name = (Store) session.getAttribute("store");
         String store_name = sent_store_name.getStore_name();
-        boolean success = ibtService.sendIBTRequest(product_id, store_id,store_name);
+        boolean success = ibtService.sendIBTRequest(product_id, store_id,store_name, product_quantity);
         if (success) {
         request.setAttribute("message", "IBT sent successfully");
     } else {
@@ -135,15 +155,11 @@ public class IBTServlet extends HttpServlet {
         request.getRequestDispatcher("IBTSentDashboard.jsp").forward(request, response);
     }
     
-    private void handleReceivingIBTRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        int store_id = 1;
-        List<IBT> Stores = ibtService.receiveIBTRequest(store_id);
-        request.setAttribute("Stores", Stores);
-        request.getRequestDispatcher("IBTReceiveDashboard.jsp").forward(request, response);
-    }
-    
+   
     private void handleDeletingIBTRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
-         int store_id = 4;
+       HttpSession session = request.getSession(false);
+        Store store_ID = (Store) session.getAttribute("store");
+        int store_id = store_ID.getStore_ID();
          boolean success = ibtService.deleteRequestedIBT(store_id);
           if (success) {
         request.setAttribute("message", "IBT Approved successfully");
@@ -151,5 +167,46 @@ public class IBTServlet extends HttpServlet {
         request.setAttribute("message", "Failed to Approve IBT");
     }
           request.getRequestDispatcher("IBTReceiveDashboard.jsp").forward(request, response);
+    }
+    
+    private void handleIBTNotification(HttpServletRequest request, HttpServletResponse response) {
+//   HttpSession session = request.getSession(false);
+//        Store sent_store_name = (Store) session.getAttribute("store");
+//        int store_id = sent_store_name.getStore_ID();
+    boolean success = false;
+    HttpSession session = request.getSession(false);
+    int store_id = 0;
+    if (session != null) {
+    Store sent_store_name = (Store) session.getAttribute("store");
+    if (sent_store_name != null) {
+        store_id = sent_store_name.getStore_ID();
+        System.out.println("Store ID - Notification " + store_id );
+        // Proceed with using store_id
+    } else {
+        // Handle case where sent_store_name is null
+        // Maybe redirect or show an error message
+    }
+    } else {
+    // Handle case where session is null
+    // This should typically not happen unless session management is disabled
+    }
+         success = ibtService.checkForIBTNotification(store_id);
+        System.out.println("Boolean result - Notification " + success);
+        
+        // Respond with success status (true or false)
+        try (PrintWriter out = response.getWriter()) {
+            out.print(success);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    private void handleReceivingIBTRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
+        Store store_ID = (Store) session.getAttribute("store");
+        int store_id = store_ID.getStore_ID();
+        List<IBT> Stores = ibtService.receiveIBTRequest(store_id);
+        request.setAttribute("Stores", Stores);
+        request.getRequestDispatcher("IBTReceiveDashboard.jsp").forward(request, response);
     }
 }

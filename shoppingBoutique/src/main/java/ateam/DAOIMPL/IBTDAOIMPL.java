@@ -56,14 +56,15 @@ public class IBTDAOIMPL implements  IBTDAO{
 
      
     @Override
-    public boolean sendIBTRequest(int product_ID, int store_ID, String store_name) {
+    public boolean sendIBTRequest(int product_ID, int store_ID, String store_name, int product_quantity) {
         boolean success = false;
         try {
-            preparedStatement = connection.prepareStatement("INSERT INTO IBTRequest (store_ID, product_ID, requestFlag, requested_store) VALUES (?,?,?,?)");
+            preparedStatement = connection.prepareStatement("INSERT INTO IBTRequest (store_ID, product_ID, requestFlag, requested_store, quantity) VALUES (?,?,?,?,?)");
             preparedStatement.setInt(1, store_ID);
             preparedStatement.setInt(2, product_ID);
             preparedStatement.setInt(3, 1);
             preparedStatement.setString(4, store_name);
+            preparedStatement.setInt(5, product_quantity);
             int rowsAffected = preparedStatement.executeUpdate();
         if (rowsAffected > 0) {
             success = true;
@@ -81,7 +82,7 @@ public class IBTDAOIMPL implements  IBTDAO{
     public List<IBT> receiveIBTRequest(int store_ID) {
         List<IBT> Stores = new ArrayList();
         try {
-            preparedStatement = connection.prepareStatement("SELECT store_ID, product_id, requested_store FROM IBTRequest WHERE store_ID = ?");
+            preparedStatement = connection.prepareStatement("SELECT store_ID, product_id, requested_store, quantity FROM IBTRequest WHERE store_ID = ?");
             preparedStatement.setInt(1, store_ID);
             resultSet = preparedStatement.executeQuery();
             while(resultSet.next()) {
@@ -89,6 +90,7 @@ public class IBTDAOIMPL implements  IBTDAO{
                 ibt.setProductID(resultSet.getInt("product_ID"));
                 ibt.setStoreID(resultSet.getInt("store_ID"));
                 ibt.setRequestedtore(resultSet.getString("requested_store"));
+                ibt.setQuantity(resultSet.getInt("quantity"));
                 Stores.add(ibt);
             }
         } catch (SQLException ex) {
@@ -117,6 +119,23 @@ public class IBTDAOIMPL implements  IBTDAO{
         }
         return success;
     }
+    
+    @Override
+    public boolean checkForIBTNotification(int store_ID) {
+    boolean success = false;
+    try {
+        preparedStatement = connection.prepareStatement("SELECT ibt_requested FROM IBTRequest WHERE ibt_requested = ?");
+        preparedStatement.setInt(1, store_ID);
+        resultSet = preparedStatement.executeQuery(); // Use executeQuery() instead of execute()
+
+        if (resultSet.next()) {
+            success = true; // If there's at least one matching row, set success to true
+        }
+    } catch (SQLException ex) {
+        Logger.getLogger(IBTDAOIMPL.class.getName()).log(Level.SEVERE, null, ex);
+    } 
+    return success;
+}
     
     private void close(AutoCloseable... closeables) {
         if (closeables != null) {

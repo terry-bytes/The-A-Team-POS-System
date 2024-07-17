@@ -16,8 +16,8 @@
     <body>
         <h1>IBT Receive Dashboard</h1>
         <form action="IBTServlet" method="post">
-            <label>IBT Requests needed for approval</label>
-            <input type="submit" value="Check_IBT" name="IBT_switch">   
+            <h2>IBT Requests needed for approval</h2>
+            
         </form>
         
         <% 
@@ -27,8 +27,9 @@
     %>
     <form action="IBTServlet" method="post">
         <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
-            <h2>Requested Store ID: <%= i.getStoreID() %></h2>
+            <p>Requested Store: <%= i.getRequestedtore() %></p>
             <p>Requested Product ID: <%= i.getProductID() %></p>
+            <p>Quantity requested: <%= i.getQuantity() %></p>
             
             <input type="submit" value="Approve" name="IBT_switch">
             <input type="hidden" value="<%= i.getProductID() %>" name="product_id">
@@ -40,7 +41,7 @@
     } else {
     %>
     <p><%= request.getAttribute("message") %></p>
-    <p>No stores found.</p>
+    <p>No requests found.</p>
     <% 
     } 
     %>

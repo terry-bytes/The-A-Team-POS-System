@@ -10,6 +10,7 @@ package ateam.Models;
  * @author carme
  */
 public class IBT {
+    private String storeName;
     private int productID;
     private int storeID;
     private int quantity;
@@ -45,5 +46,13 @@ public class IBT {
 
     public void setRequestedtore(String requestedtore) {
         this.requestedtore = requestedtore;
+    }
+
+    public String getStoreName() {
+        return storeName;
+    }
+
+    public void setStoreName(String storeName) {
+        this.storeName = storeName;
     }
 }
