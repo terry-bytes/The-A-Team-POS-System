@@ -39,6 +39,8 @@ public class EmployeeServlet extends HttpServlet {
     private final StoreService storeService;
 
     private final EmailService emailService;
+    
+    
 
 
     public EmployeeServlet() {
@@ -170,10 +172,10 @@ public class EmployeeServlet extends HttpServlet {
         newEmployee.setEmail(email);
         newEmployee.setStore_ID(storeId);
         newEmployee.setEmployeePassword(hashedPassword);
-
+        newEmployee = employeeService.getEmployeeById(storeId);
         newEmployee.setRole(role);
-        String msg = "Dear " +newEmployee.getFirstName()+" "+newEmployee.getLastName()+"\nWelcome aboard! You have been successfully added to Carols Boutique."+
-                    " We're excited to have you on our team.\n";
+        String msg = "Dear " +newEmployee.getFirstName()+" "+newEmployee.getLastName()+",\nWelcome aboard! Your employee ID is "+newEmployee.getEmployees_id()+
+                    ". We're excited to have you on our team.\n";
         String otp = generateOTP();
         Email emailDetails = new Email("ramovhatp@gmail.com", "xaed clmt qpis ctvf");
         emailDetails.setReceiver(email);
