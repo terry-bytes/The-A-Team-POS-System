@@ -6,8 +6,6 @@ import java.util.List;
 
 public interface SalesItemDAO {
 
-    boolean addItemToSale(int salesId, SalesItem item);
-
-    boolean removeSaleItem(int salesItemId);
+ void saveSalesItem(SalesItem salesItem);
 }
 
