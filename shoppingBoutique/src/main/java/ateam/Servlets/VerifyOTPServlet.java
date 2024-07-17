@@ -73,7 +73,7 @@ public class VerifyOTPServlet extends HttpServlet {
                         + manager.getFirstName() + " " + manager.getLastName() + "\n"
                         + manager.getRole() + "(" + stores.getStore_name() + ")\n"
                         + "Carols Boutique\n"
-                        + "011 028 0987";
+                        + stores.getStore_phone();
 
                 Email emailDetails = new Email("ramovhatp@gmail.com", "xaed clmt qpis ctvf");
                 emailDetails.setReceiver(newEmployee.getEmail());

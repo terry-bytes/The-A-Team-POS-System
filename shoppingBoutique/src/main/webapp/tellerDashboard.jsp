@@ -1,36 +1,125 @@
 <%@page import="ateam.Models.Product"%>
-<%@ page import="ateam.Models.Employee" %>
-<%@ page import="java.util.List" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> 
+<%@page import="ateam.Models.Employee"%>
+<%@page import="java.util.List"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Barcode Scanner</title>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
-        <style>
-            /* ... your existing styles ... */
-            .manual-entry {
-                display: flex;
-                align-items: center;
-                margin-bottom: 10px;
-            }
-            #manual-sku {
-                width: 200px;
-                margin-right: 10px;
-            }
-        </style>
-    </head>
+<head>
+    <title>Barcode Scanner</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            color: #333;
+        }
+        .container {
+            display: flex;
+            padding: 20px;
+        }
+        .scanned-items {
+            flex: 1;
+            margin-right: 20px;
+        }
+        .payment-section {
+            flex: 1;
+        }
+        .my-header {
+            background: #f0f0f0;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .my-nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .my-nav li {
+            display: inline;
+            margin-right: 20px;
+        }
+        .my-nav a {
+            text-decoration: none;
+            color: #333;
+        }
+        .scanned-items h2 {
+            color: #2980b9;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+        }
+        th {
+            background: #f5f5f5;
+        }
+        .total-price {
+            margin-top: 20px;
+            font-size: 1.2em;
+        }
+        .manual-entry-section {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        #manual-sku {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .keyboard {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            gap: 5px;
+        }
+        .key {
+            background: #eee;
+            padding: 15px;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 1.2em;
+            flex: 0 0 auto;
+        }
+        .key:hover {
+            background: #ddd;
+        }
+        .manual-entry {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .transaction-buttons button {
+            background: #3498db;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            margin-top: 5px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .transaction-buttons button:hover {
+            background: #2980b9;
+        }
+        #barcode-scanner {
+            display: none; /* Hide the camera element */
+        }
+    </style>
+</head>
 
-
-    <body>
+<body>
+    <div class="container">
         
-        <div class="container">
-        </div>
-
         <div class="scanned-items">
             <h2>Scanned Items</h2>
-
             <c:choose>
                 <c:when test="${empty scannedItems}">
                     <p class="message">No items found</p>
@@ -42,13 +131,13 @@
                             <th>Name</th>
                             <th>Quantity</th>
                             <th>Price</th>
-                            <th>Action</th> 
+                            <th>Action</th>
                         </tr>
-                        <c:forEach var="item" items="${scannedItems}"> 
+                        <c:forEach var="item" items="${scannedItems}">
                             <tr>
                                 <td>${item.product_SKU}</td>
                                 <td>${item.product_name}</td>
-                                <td>${item.scanCount}</td> 
+                                <td>${item.scanCount}</td>
                                 <td>${item.product_price}</td>
                                 <td>
                                     <form action="ProductServlet" method="post" style="display:inline;">
@@ -59,52 +148,150 @@
                             </tr>
                         </c:forEach>
                     </table>
-
-
                     <div class="total-price">
                         Total: <span id="total-price">${totalPrice}</span>
                     </div>
                 </c:otherwise>
             </c:choose>
         </div>
-
-        <form action="ProductServlet" method="post">
-            <div class="manual-entry">
-                <input type="text" id="manual-sku" name="input-field" placeholder="Enter SKU manually">
-                <button type="submit" name="submit" value="Add-Item">Add Item</button>
+        <div class="payment-section">
+            <div class="manual-entry-section">
+                <form id="product-form" action="ProductServlet" method="post">
+                    <div class="manual-entry">
+                        <input type="text" id="manual-sku" name="input-field" placeholder="Enter SKU manually">
+                        <button type="submit" name="submit" value="Add-Item">Add Item</button>
+                        <button type="submit" name="submit" value="auto-submit" id = "auto-submit" style ="display: none" ></button>
+                    </div>
+                    <div>
+                        <label for="payment_method">Payment Method:</label>
+                        <select id="payment_method" name="payment_method">
+                            <option value="cash">Cash</option>
+                            <option value="card">Card</option>
+                            <option value="cardAndcash">Card & Cash</option>
+                        </select>
+                    </div>
+                    <button type="submit" name="submit" value="Complete-Sale">Complete Sale</button>
+                </form>
+                <div class="keyboard">
+                    <div class="key" onclick="appendToInput('1')">1</div>
+                    <div class="key" onclick="appendToInput('2')">2</div>
+                    <div class="key" onclick="appendToInput('3')">3</div>
+                    <div class="key" onclick="appendToInput('4')">4</div>
+                    <div class="key" onclick="appendToInput('5')">5</div>
+                    <div class="key" onclick="appendToInput('6')">6</div>
+                    <div class="key" onclick="appendToInput('7')">7</div>
+                    <div class="key" onclick="appendToInput('8')">8</div>
+                    <div class="key" onclick="appendToInput('9')">9</div>
+                    <div class="key" onclick="appendToInput('0')">0</div>
+                    <div class="key" onclick="appendToInput('-')">-</div>
+                    <div class="key" onclick="appendToInput('.')">.</div>
+                    <div class="key" onclick="clearInput()">C</div>
+                    <div class="key" onclick="backspace()">Backspace</div>
+                </div>
             </div>
-
-            <div>
-                <label for="payment_method">Payment Method:</label>
-                <select id="payment_method" name="payment_method">
-                    <option value="cash">Cash</option>
-                    <option value="card">Card</option>
-                    <option value="cardAndcash">Card & Cash</option>
-                </select>
+            <div class="transaction-buttons">
+                <button>Return Item</button>
+                <button>IBT Purchase</button>
+                <button>View Reports</button>
+                <button>Void Sale</button>
+                <button>Remove Item</button>
+                <button>Search Item</button>
+                <button>Lay Away</button>
             </div>
-            <video id="barcode-scanner" style="display: none;"></video>
-            <input type="hidden" name="input-field" id="input-field" placeholder="Scanned barcode will appear here">
-            <button type="submit" name="submit" id="auto-submit" value="auto-submit" style="display: none;"></button>
+        </div>
+    </div>
+    <div id="barcode-scanner"></div>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            initQuagga();
+        });
 
-
-
-            <form action="ProductServlet" method="post" style="display:inline;">
-                <button type="submit" name="submit" value="Complete-Sale">Complete Sale</button>
-            </form>
-
-            <script>
-                // ... (your existing JavaScript code for Quagga and keyboard input) ...
-
-                // Modify simulateKeyboardInput function to also populate the manual input field
-                function simulateKeyboardInput(barcode) {
-                    let inputField = document.querySelector('#input-field');
-                    let manualInputField = document.querySelector('#manual-sku'); // Update
-                    inputField.value = barcode;
-                    manualInputField.value = barcode; // Update
-
-                    // ... (rest of your existing code) ...
+        function initQuagga() {
+            Quagga.init({
+                inputStream: {
+                    name: "Live",
+                    type: "LiveStream",
+                    target: document.querySelector('#barcode-scanner'),
+                },
+                decoder: {
+                    readers: ["code_128_reader", "ean_reader", "ean_8_reader"]
                 }
-            </script>
+            }, function (err) {
+                if (err) {
+                    console.error('Quagga initialization failed: ', err);
+                    return;
+                }
+                console.log("Quagga initialization finished. Ready to start");
+                Quagga.start();
+            });
 
-    </body>
+            Quagga.onProcessed(function (result) {
+                var drawingCtx = Quagga.canvas.ctx.overlay,
+                    drawingCanvas = Quagga.canvas.dom.overlay;
+
+                if (result) {
+                    if (result.boxes) {
+                        drawingCtx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+                        result.boxes.filter(function (box) {
+                            return box !== result.box;
+                        }).forEach(function (box) {
+                            Quagga.ImageDebug.drawPath(box, {
+                                x: 0,
+                                y: 1
+                            }, drawingCtx, {
+                                color: "green",
+                                lineWidth: 2
+                            });
+                        });
+                    }
+                    if (result.box) {
+                        Quagga.ImageDebug.drawPath(result.box, {
+                            x: 0,
+                            y: 1
+                        }, drawingCtx, {
+                            color: "#00F",
+                            lineWidth: 2
+                        });
+                    }
+                    if (result.codeResult && result.codeResult.code) {
+                        console.log("Code detected: " + result.codeResult.code);
+                    }
+                }
+            });
+
+            Quagga.onDetected(function (data) {
+                let barcode = data.codeResult.code;
+                console.log("Barcode detected and processed: [" + barcode + "]", data);
+
+                // Simulate keyboard input
+                simulateKeyboardInput(barcode);
+
+                // Pause scanning for 2 seconds
+                Quagga.stop();
+                setTimeout(() => Quagga.start(), 2000); // Restart Quagga after 2 seconds
+            });
+        }
+
+        function simulateKeyboardInput(barcode) {
+            let inputField = document.querySelector('#manual-sku');
+            inputField.value = barcode;
+            
+            document.getElementById('auto-submit').click();
+            document.forms['product-form'].submit();
+        }
+
+        function appendToInput(value) {
+            document.querySelector('#manual-sku').value += value;
+        }
+
+        function clearInput() {
+            document.querySelector('#manual-sku').value = '';
+        }
+
+        function backspace() {
+            let inputField = document.querySelector('#manual-sku');
+            inputField.value = inputField.value.slice(0, -1);
+        }
+    </script>
+</body>
 </html>
