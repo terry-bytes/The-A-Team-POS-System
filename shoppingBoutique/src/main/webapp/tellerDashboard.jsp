@@ -112,11 +112,50 @@
         #barcode-scanner {
             display: none; /* Hide the camera element */
         }
+        .right-section {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+            }
+        .left-section {
+                flex: 1;
+                padding-right: 20px;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+            }
+            .user-info {
+                display: flex;
+                align-items: center;
+                margin-bottom: 20px;
+            }
+
+            .user-info img {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                margin-right: 10px;
+            }
     </style>
 </head>
 
 <body>
     <div class="container">
+        <div class ="left-section">
+        <div class="user-info">
+                        <img src="images.jpeg" alt="User Avatar">
+                        <div>
+                            <%
+                                Employee loggedInUser = (Employee) session.getAttribute("Employee");
+                                if (loggedInUser != null) {
+                                    out.print(loggedInUser.getFirstName() + " " + loggedInUser.getLastName());
+                                } else {
+                                    out.print("Username");
+                                }
+                            %>
+                        </div>
+                    </div>
         
         <div class="scanned-items">
             <h2>Scanned Items</h2>
@@ -154,6 +193,8 @@
                 </c:otherwise>
             </c:choose>
         </div>
+        </div>
+                        
         <div class="payment-section">
             <div class="manual-entry-section">
                 <form id="product-form" action="ProductServlet" method="post">
@@ -200,6 +241,7 @@
             </div>
         </div>
     </div>
+    <audio id="beep-sound" src="beep.mp3" preload="auto"></audio>
     <div id="barcode-scanner"></div>
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {
@@ -262,6 +304,9 @@
             Quagga.onDetected(function (data) {
                 let barcode = data.codeResult.code;
                 console.log("Barcode detected and processed: [" + barcode + "]", data);
+                
+                // Play beep sound
+                   document.getElementById('beep-sound').play();
 
                 // Simulate keyboard input
                 simulateKeyboardInput(barcode);
