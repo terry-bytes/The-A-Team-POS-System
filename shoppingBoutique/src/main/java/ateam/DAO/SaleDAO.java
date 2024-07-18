@@ -15,4 +15,7 @@ public interface SaleDAO {
     boolean finalizeSale(int salesId, String paymentMethod);
     
     List<Sale> getAllSales();
+
+int saveSale(Sale sale);
+
 }

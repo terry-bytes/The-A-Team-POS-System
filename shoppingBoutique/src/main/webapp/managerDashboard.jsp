@@ -150,7 +150,7 @@
                     responsive: true,
                     plugins: {
                         legend: {
-                            position: 'top'
+                            position: 'right'
                         },
                         tooltip: {
                             callbacks: {
@@ -168,9 +168,10 @@
                 }
             });
 
+            const monthYear = document.getElementById('date');
             // Function to Filter Sales
-            function filterSales() {
-                const monthYear = document.getElementById('date').value;
+            document.addEventListener('change', function() {
+                
 
                 if (!monthYear) {
                     alert('Please select a month and year.');
@@ -233,7 +234,7 @@
                         }
                     }
                 });
-            }
+            });
 
             // Call the filterSales function on button click
             document.querySelector('button[onclick="filterSales()"]').addEventListener('click', filterSales);
