@@ -17,12 +17,19 @@ import ateam.Service.StoreService;
 import ateam.ServiceImpl.EmployeeServiceImpl;
 import ateam.ServiceImpl.SaleServiceImpl;
 import ateam.ServiceImpl.StoreServiceImpl;
+import com.google.gson.Gson;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -52,7 +59,8 @@ public class SalesDemo extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
-        // Generate fake data, while waiting for database.
+        
+        
         Map<String, Integer> salesData = new HashMap<>();
         salesData.put("Midrand Branch", 189);
         salesData.put("Sandton Branch", 201);
@@ -78,6 +86,18 @@ public class SalesDemo extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
+        switch(request.getParameter("submit")){
+            case "filter":
+            {
+                try {
+                    handleMonthReport(request, response);
+                } catch (ParseException ex) {
+                    Logger.getLogger(SalesDemo.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                break;
+            }
+
+        }
     }
 
     /**
@@ -90,4 +110,29 @@ public class SalesDemo extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
+    private void handleMonthReport(HttpServletRequest request, HttpServletResponse response) throws ParseException, ServletException, IOException{
+        int storeId = Integer.parseInt(request.getParameter("storeId"));
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(dateFormatter(request.getParameter("date")));
+        
+        int month = calendar.get(Calendar.MONTH) + 1;
+        int year = calendar.get(Calendar.YEAR);
+        
+        Map<String, Integer> report = saleService.generateStoreMonthReport(storeId, month, year);
+        
+        Gson gson = new Gson();
+        String json = gson.toJson(report);
+        
+         if (json == null || json.isEmpty()) {
+            json = "{}"; // Set to empty JSON object if there's no data
+        }
+        
+        request.setAttribute("monthlReport", json);
+        response.sendRedirect("SalesDemo");
+    }
+    
+    private Date dateFormatter(String date) throws ParseException{
+        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM");
+        return inputFormat.parse(date);
+    }
 }

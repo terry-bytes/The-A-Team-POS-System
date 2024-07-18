@@ -111,7 +111,7 @@ public class SaleDAOIMPL implements SaleDAO {
                         sale.setPayment_method(resultSet.getString("payment_method"));
                         sale.setSales_ID(resultSet.getInt("sales_ID"));
                         sale.setSales_date(resultSet.getTimestamp("sales_date"));
-                        sale.setStore_ID(resultSet.getInt("store_Id"));
+                        sale.setStore_ID(resultSet.getInt("store_ID"));
                         sale.setTotal_amount(resultSet.getBigDecimal("total_amount"));
                         
                         sales.add(sale);
@@ -128,6 +128,35 @@ public class SaleDAOIMPL implements SaleDAO {
     @Override
     public int startNewSale(int employeeId, int storeId) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public List<Sale> getSalesbyStoreId(int storeId) {
+        List<Sale> sales = new ArrayList<>();
+        if(connection != null){
+            String sql ="SELECT sales_ID, sales_date, total_amount, payment_method, employee_ID "
+                    + "FROM sales "
+                    + "WHERE store_ID = ?";
+            try(PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+                preparedStatement.setInt(1, storeId);
+                try(ResultSet resultSet = preparedStatement.executeQuery()){
+                    while(resultSet.next()){
+                        Sale sale = new Sale();
+                        sale.setEmployee_ID(resultSet.getInt("employee_ID"));
+                        sale.setPayment_method(resultSet.getString("payment_method"));
+                        sale.setSales_ID(resultSet.getInt("sales_ID"));
+                        sale.setSales_date(resultSet.getTimestamp("sales_date"));
+                        
+                        sale.setTotal_amount(resultSet.getBigDecimal("total_amount"));
+                        
+                        sales.add(sale);
+                    }
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(SaleDAOIMPL.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return sales;
     }
 
 }

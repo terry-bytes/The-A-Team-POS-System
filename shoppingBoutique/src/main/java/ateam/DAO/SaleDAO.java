@@ -16,6 +16,6 @@ public interface SaleDAO {
     
     List<Sale> getAllSales();
 
-int saveSale(Sale sale);
-
+    int saveSale(Sale sale);
+    List<Sale> getSalesbyStoreId(int storeId);
 }

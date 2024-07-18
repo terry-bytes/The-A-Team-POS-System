@@ -77,7 +77,20 @@
                 <!-- Monthly Sales in a Store -->
                 <div class="two">
                     <h4>Sale of the Month</h4>
-                    <input id="date" name="date" type="month" />
+                        <form action="SalesDemo" method="post">
+                            <div>
+                                <select class="select-box" name="storeId">
+                                    <% if(stores != null) {
+                                        for(Store store : stores) { %>
+                                        <option value="<%=store.getStore_ID() %>"><%=store.getStore_name() %></option>
+                                        <% } } %>
+                                </select>
+                            </div>
+                        
+                            <input id="date" name="date" type="month" />
+                            <button type="submit" name="submit" value="filter">Filter</button>
+                        </form>
+                    
                     <button onclick="filterSales()">Filter</button>
                     <div class="input-submit">
                         <input name="submit" value="download" hidden />
@@ -86,7 +99,7 @@
                 </div>
                 <div class="graphBox">
                     <div class="box">
-                        <canvas id="monthSalesChart"></canvas>
+                        <canvas id="monthlySalesChart"></canvas>
                     </div>
                     <div class="box">
                         <canvas id="salesPieChart"></canvas>
@@ -99,8 +112,9 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // Retrieve the sales data from JSP
-            const sales = <%= new Gson().toJson(request.getSession(false).getAttribute("Sales")) %>;
-
+       
+            const monthlyReport = JSON.parse('${monthlReport}');
+            console.log(monthlyReport);
             // Chart for Sales Data
             var ctx = document.getElementById('salesChart').getContext('2d');
             var salesChart = new Chart(ctx, {
@@ -170,74 +184,45 @@
 
             const monthYear = document.getElementById('date');
             // Function to Filter Sales
-            document.addEventListener('change', function() {
-                
+          
+            
+            const dates = Object.keys(monthlyReport);
+    const salesCounts = Object.values(monthlyReport);
 
-                if (!monthYear) {
-                    alert('Please select a month and year.');
-                    return;
-                }
-
-                const [year, month] = monthYear.split('-'); // Correct split for month-year format
-                const filteredSales = sales.filter(sale => 
-                    sale.timestamp.startsWith(`${year}-${month}`)
-                );
-
-                const salesPerStore = filteredSales.reduce((acc, sale) => {
-                    acc[sale.storeId] = (acc[sale.storeId] || 0) + sale.amount;
-                    return acc;
-                }, {});
-
-                const storeIds = Object.keys(salesPerStore);
-                const totals = Object.values(salesPerStore);
-
-                const monthSales = document.getElementById('monthSalesChart').getContext('2d');
-
-                new Chart(monthSales, {
-                    type: 'bar',
-                    data: {
-                        labels: storeIds,
-                        datasets: [{
-                            label: 'Total Sales',
-                            data: totals,
-                            backgroundColor: 'rgba(255, 99, 132, 1)'
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: {
-                                position: 'top'
-                            },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(tooltipItem) {
-                                        return `Store ${tooltipItem.label}: $${tooltipItem.raw.toFixed(2)}`;
-                                    }
-                                }
-                            }
-                        },
-                        scales: {
-                            x: {
-                                title: {
-                                    display: true,
-                                    text: 'Store ID'
-                                }
-                            },
-                            y: {
-                                title: {
-                                    display: true,
-                                    text: 'Total Sales'
-                                },
-                                beginAtZero: true
-                            }
-                        }
+    // Create the bar chart
+    const ctxM = document.getElementById('monthlySalesChart').getContext('2d');
+    new Chart(ctxM, {
+        type: 'bar',
+        data: {
+            labels: dates,
+            datasets: [{
+                label: 'Number of Sales',
+                data: salesCounts,
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Date'
                     }
-                });
-            });
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Number of Sales'
+                    },
+                    beginAtZero: true
+                }
+            }
+        }
+    });
 
-            // Call the filterSales function on button click
-            document.querySelector('button[onclick="filterSales()"]').addEventListener('click', filterSales);
+            
         });
     </script>
     <% } %> 
