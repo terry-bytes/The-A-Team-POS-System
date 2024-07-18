@@ -58,6 +58,7 @@ public class ProductServlet extends HttpServlet {
             case "Add-Item":
             case "auto-submit":
                 List<Product> foundProducts = productService.getProductBySKU(sku);
+                request.getSession(true).setAttribute("foundProducts", foundProducts);
                 if (!foundProducts.isEmpty()) {
                     Product productToAdd = foundProducts.get(0);
 
@@ -113,6 +114,10 @@ public class ProductServlet extends HttpServlet {
                     Logger.getLogger(ProductServlet.class.getName()).log(Level.SEVERE, "Failed to save sale");
                 }
                 break;
+                
+                 case "Inventory":
+                     request.getRequestDispatcher("replenishStock.jsp").forward(request, response);
+                     break;
 
             // ... (other cases: Complete-Sale, Remove-Item, etc.)
         }

@@ -1,17 +1,15 @@
 package ateam.DAO;
 
 import ateam.Models.Inventory;
+import java.sql.SQLException;
 import java.util.List;
 
+
 public interface InventoryDAO {
-
-    boolean addInventory(Inventory inventory, int addedByEmployeeId);
-
-    Inventory getInventoryById(int inventory_ID);
-
-    List<Inventory> getAllInventories();
-
-    boolean updateInventory(Inventory inventory);
-
-    boolean deleteInventory(int inventory_ID);
+    
+    
+    Inventory getInventoryByProductAndStore(int product_ID, int store_ID) throws SQLException;
+    void updateInventory(Inventory inventory) throws SQLException;
+    List<Inventory> getInventoryByStore(int store_ID) throws SQLException;
+    
 }
