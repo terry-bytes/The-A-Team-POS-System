@@ -1,62 +1,55 @@
-<%-- 
-    Document   : managerDashboard
-    Created on : Jul 10, 2024, 1:27:16 PM
-    Author     : Train 01
---%>
-
-<%@page import="java.util.Map"%>
-<%@page import="ateam.Models.Role"%>
-<%@page import="ateam.Models.Employee"%>
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Admin Dashboard</title>
+        <title>Manager Dashboard</title>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/report.css">
-        
+        <script>
+            $(document).ready(function() {
+                // Trigger a click on "IBT Requests" button in IBTMainDashboard.jsp
+                $("a[href='IBTMainDashboard.jsp']").click(function() {
+                    // Post a message to parent window (IBTMainDashboard.jsp)
+                    window.postMessage("refreshIBTNotifications", "*");
+                });
+            });
+        </script>
     </head>
     <body>
-        
-        <% Employee employee = (Employee) request.getSession(false).getAttribute("Employee"); 
-           Map<String, Integer> salesData = (Map<String, Integer>) request.getAttribute("salesData");
-           
-           if(employee != null){
-            if(salesData != null && !salesData.isEmpty()){
-            StringBuilder labels = new StringBuilder();
-            StringBuilder data = new StringBuilder();
-            int totalSales = 0;
+        <% 
+            Employee employee = (Employee) request.getSession(false).getAttribute("Employee"); 
+            Map<String, Integer> salesData = (Map<String, Integer>) request.getAttribute("salesData");
 
-            for(Map.Entry<String, Integer> entry : salesData.entrySet()){
-                if(entry.getValue() > totalSales)
-                     totalSales += entry.getValue();
-                labels.append("'").append(entry.getKey())
-                        .append("',");
-                data.append(String.format("%.2f",(entry.getValue() * 100.0 / totalSales))).append(",");
-            }
+            if (employee != null) {
+                if (salesData != null && !salesData.isEmpty()) {
+                    StringBuilder labels = new StringBuilder();
+                    StringBuilder data = new StringBuilder();
+                    int totalSales = 0;
 
+                    for (Map.Entry<String, Integer> entry : salesData.entrySet()) {
+                        if (entry.getValue() > totalSales)
+                            totalSales += entry.getValue();
+                        labels.append("'").append(entry.getKey()).append("',");
+                        data.append(String.format("%.2f", (entry.getValue() * 100.0 / totalSales))).append(",");
+                    }
 
-            if(labels.length() > 0){
-                labels.setLength(labels.length() - 1);
-                data.setLength(data.length() - 1);
-            }
+                    if (labels.length() > 0) {
+                        labels.setLength(labels.length() - 1);
+                        data.setLength(data.length() - 1);
+                    }
         %>
         <jsp:include page="navbar.jsp"/>
         <div class="manager-container">
             <div class="sidebar">
-                
-                    <a href="employees?submit=getAddEmployee" >Add Employee</a>
-                    <a href="employees?submit=getAddEmployee" >Download Reports</a>
-                    <a href="#" >Manage IBT</a>
+                <a href="employees?submit=getAddEmployee">Add Employee</a>
+                <a href="employees?submit=getAddEmployee">Download Reports</a>
+                <a href="#">Manage IBT</a>
             </div>
-            
             <div class="menu-content">
                 <div class='heading'>
                     <h1>Reports</h1>
                 </div>
-
-                
                 <div class="report">
                     <div class="two">
                         <h4>Top achieving Store</h4>
@@ -66,19 +59,16 @@
                         </div>
                     </div>
                     <div class="graphBox">
-
                         <div class="box">
-                            <canvas id="salesChart" ></canvas>
+                            <canvas id="salesChart"></canvas>
                         </div>
                         <div class="box">
-                            <canvas id="salesPieChart" ></canvas>
+                            <canvas id="salesPieChart"></canvas>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        
-        
         <script>
             var ctx = document.getElementById('salesChart').getContext('2d');
             var ctxP = document.getElementById('salesPieChart').getContext('2d');
@@ -107,8 +97,8 @@
                     }
                 }
             });
-            
-            var salesChart = new Chart(ctxP, {
+
+            var salesPieChart = new Chart(ctxP, {
                 type: 'pie',
                 data: {
                     labels: [<%= labels.toString() %>],
@@ -131,7 +121,7 @@
                         tooltip: {
                             label: function(context){
                                 let label = context.label || '';
-                                if(context.parsed !== null){
+                                if (context.parsed !== null) {
                                     let percentage = context.parsed + '%';
                                     label += ': ' + percentage;
                                 }
@@ -142,10 +132,11 @@
                 }
             });
         </script>
-        <%} %> 
-        
-        <%} else {%>
-        <jsp:include page="unauthorized.jsp" />
-        <%}%>
+        <% 
+                } 
+            } else {
+        %>
+        <jsp:include page="unauthorized.jsp"/>
+        <% } %>
     </body>
 </html>
