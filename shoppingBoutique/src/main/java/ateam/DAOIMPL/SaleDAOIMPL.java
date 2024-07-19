@@ -23,7 +23,12 @@ import java.util.logging.Logger;
 public class SaleDAOIMPL implements SaleDAO {
     private Connection connection;
 
-    public SaleDAOIMPL() {
+
+
+
+    
+    public SaleDAOIMPL(){
+
         this.connection = new Connect().connectToDB();
     }
     @Override
@@ -125,6 +130,7 @@ public class SaleDAOIMPL implements SaleDAO {
         return sales;
     }
 
+
     @Override
     public int startNewSale(int employeeId, int storeId) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
@@ -158,5 +164,6 @@ public class SaleDAOIMPL implements SaleDAO {
         }
         return sales;
     }
+
 
 }

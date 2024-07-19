@@ -138,6 +138,7 @@
                 margin-right: 10px;
             }
 
+
             .transaction-buttons {
                 display: flex;
                 flex-wrap: wrap;
@@ -297,12 +298,12 @@
             }
         </style>
     </head>
-  
+
+
 <body>
     <div class="container">
         <div class ="left-section">
         <div class="user-info">
-
                         <img src="images.jpeg" alt="User Avatar">
                         <div>
                             <%

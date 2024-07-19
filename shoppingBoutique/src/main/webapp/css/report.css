@@ -23,6 +23,7 @@ body{
 }
 
 .sidebar{
+
    position: relative;
    top: 0;
    bottom: 0;
@@ -32,18 +33,25 @@ body{
    width: 280px;
    overflow: hidden;
    box-shadow: 0 20px 35px rgba(0, 0, 0, 0.1);
+
 }
 
 
 .sidebar a{
     color: #fff;
+
     padding: 30px;
+
     text-decoration: none;
 }
 
 .menu-content{
     margin-left: 300px;
     padding: 1px 10px;
+}
+
+.menu-content .heading{
+    padding: 20px 0;
 }
 
 .graphBox{

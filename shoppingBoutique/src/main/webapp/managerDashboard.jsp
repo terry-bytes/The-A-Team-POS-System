@@ -52,9 +52,11 @@
             <jsp:include page="sidebar.jsp"/>
         </div>
         
+
         <div class="menu-content">
             <div class='heading'>
                 <h1>Reports</h1>
+
             </div>
 
             <div class="report">
@@ -182,7 +184,11 @@
                 }
             });
 
+<<<<<<< HEAD
             const monthYear = document.getElementById('date');
+=======
+
+>>>>>>> cdb254db34f95fc361f467c4ecdf655822f956ca
             // Function to Filter Sales
           
             
@@ -231,4 +237,5 @@
     <jsp:include page="unauthorized.jsp" />
     <% } %>
 </body>
+
 </html>

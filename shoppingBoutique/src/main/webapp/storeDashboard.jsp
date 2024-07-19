@@ -10,7 +10,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Barcode Scanner</title>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
-        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/store.css"
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/store.css" />
     </head>
     <body>
         <% Employee employee = (Employee) request.getSession(false).getAttribute("Employee");
@@ -99,6 +99,10 @@
                 </form>
             </div>
         </div>
+<<<<<<< HEAD
+=======
+
+>>>>>>> cdb254db34f95fc361f467c4ecdf655822f956ca
 
         <script>
             let totalPrice = 0;
