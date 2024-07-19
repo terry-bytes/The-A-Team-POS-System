@@ -237,7 +237,13 @@
                 <button>Void Sale</button>
                 <button>Remove Item</button>
                 <button>Search Item</button>
-                <button>Lay Away</button>
+                <button onclick="redirectToAnotherPage()">Lay Away</button>
+                <script>
+    function redirectToAnotherPage() {
+        // Redirect to another JSP page
+        window.location.href = 'LayawayDashboard.jsp'; // Replace 'AnotherPage.jsp' with your actual JSP page path
+    }
+</script>
             </div>
         </div>
     </div>

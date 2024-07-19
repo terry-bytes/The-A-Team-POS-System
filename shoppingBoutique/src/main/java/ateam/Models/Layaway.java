@@ -16,4 +16,8 @@ public class Layaway {
     private Timestamp start_date; 
     private Timestamp expiry_date; 
     private String layaway_status; 
+    private String customerEmail;
+    private int productID;
+    private int productQuantity;
+    private String customerNumber;
 }

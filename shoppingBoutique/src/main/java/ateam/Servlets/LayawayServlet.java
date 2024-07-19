@@ -1,0 +1,230 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package ateam.Servlets;
+
+import ateam.BDconnection.Connect;
+import ateam.DAOIMPL.LayawayDaoImpl;
+import ateam.Models.Email;
+import ateam.Models.Employee;
+import ateam.Models.Layaway;
+import ateam.Service.LayawayService;
+import ateam.ServiceImpl.LayawayServiceIMPL;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+/**
+ *
+ * @author carme
+ */
+@WebServlet(name = "LayawayServlet", urlPatterns = {"/LayawayServlet"})
+public class LayawayServlet extends HttpServlet {
+    
+    private LayawayService layawayService =  new LayawayServiceIMPL(new LayawayDaoImpl(new Connect().connectToDB()));;
+    private static final long serialVersionUID = 1L;
+    private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private ScheduledExecutorService schedulerr;
+    
+    @Override
+     public void init() throws ServletException {
+        super.init();
+        schedulerr = Executors.newScheduledThreadPool(1);
+    }
+     
+    @Override
+     public void destroy() {
+        super.destroy();
+        schedulerr.shutdown();
+    }
+
+
+    /**
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        try (PrintWriter out = response.getWriter()) {
+            /* TODO output your page here. You may use following sample code. */
+            out.println("<!DOCTYPE html>");
+            out.println("<html>");
+            out.println("<head>");
+            out.println("<title>Servlet LayawayServlet</title>");            
+            out.println("</head>");
+            out.println("<body>");
+            out.println("<h1>Servlet LayawayServlet at " + request.getContextPath() + "</h1>");
+            out.println("</body>");
+            out.println("</html>");
+        }
+    }
+
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    /**
+     * Handles the HTTP <code>GET</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        processRequest(request, response);
+    }
+
+    /**
+     * Handles the HTTP <code>POST</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String action = request.getParameter("action");
+        
+        String layawaySwitch = request.getParameter("layaway_switch");
+        System.out.println("layaway_switch parameter value: " + layawaySwitch);
+       switch(layawaySwitch) {
+           case "Add Layaway":
+               handleAddingLayaway(request, response);
+               break;
+           case "View Layaway":
+               handleSearchingLayawayByID(request, response);
+               break;
+           case "View all Layaways":
+               handleViewAllLayaways(request, response);
+               break;
+           case "Update Layaway":
+               handleUpdatingLayaways(request, response);
+               break;
+           case "Delete Layaway":
+               handleDeletingLayaways(request, response);
+               break;
+       }
+    }
+
+    /**
+     * Returns a short description of the servlet.
+     *
+     * @return a String containing servlet description
+     */
+    @Override
+    public String getServletInfo() {
+        return "Short description";
+    }// </editor-fold>
+    
+    private void handleAddingLayaway(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
+        Employee employee = (Employee) session.getAttribute("Employee");
+        
+        Layaway layaway = new Layaway();
+        
+        // Parse buttonClickTime and expiryTime from request parameters
+        String buttonClickTimeString = request.getParameter("buttonClickTime");
+        String expiryTimeString = request.getParameter("expiryTime");
+        
+         // Parse Timestamps with correct format
+        Timestamp buttonClickTime = Timestamp.valueOf(buttonClickTimeString.replace("T", " ").substring(0, 19));
+        Timestamp expiryTime = Timestamp.valueOf(expiryTimeString.replace("T", " ").substring(0, 19));
+    
+        // Set other parameters in Layaway object
+        layaway.setCustomerEmail(request.getParameter("customer_email"));
+        layaway.setCustomerNumber(request.getParameter("customer_number"));
+        layaway.setEmployee_ID(employee.getEmployee_ID());
+        layaway.setLayaway_status("PENDING");
+        layaway.setStart_date(buttonClickTime);
+        layaway.setExpiry_date(expiryTime);
+        layaway.setProductID(Integer.parseInt(request.getParameter("product_ID")));
+        layaway.setProductQuantity(Integer.parseInt(request.getParameter("product_quantity")));
+        System.out.println(layaway.toString());
+        System.out.println(request.getParameter("customer_email"));
+        // Add layaway to database
+        boolean success = layawayService.addLayaway(layaway);
+        if (success) {
+         request.setAttribute("message", "Layaway saved successfully");
+ 
+            // Schedule the test method to run after 5 seconds
+            schedulerr.schedule(() -> sendFirstEmail(), 5, TimeUnit.SECONDS);
+        } else {
+            request.setAttribute("message", "Failed to save Layaway");
+    }
+        request.getRequestDispatcher("LayawayDashboard.jsp").forward(request, response);
+    }
+    
+    private void handleSearchingLayawayByID(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        Layaway layaway = layawayService.getLayawayById(Integer.parseInt(request.getParameter("layaway_ID")));
+        request.setAttribute("LayawaySearch", layaway);
+        request.getRequestDispatcher("LayawayDashboard.jsp").forward(request, response);
+    }
+    
+    private void handleViewAllLayaways(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        List<Layaway> layaways = layawayService.getAllLayaways();
+        request.setAttribute("Layaways", layaways);
+        request.getRequestDispatcher("LayawayDashboard.jsp").forward(request, response);
+    }
+    
+    private void handleUpdatingLayaways(HttpServletRequest request, HttpServletResponse response) {
+        Layaway layaway = new Layaway();
+        layaway.setLayaway_ID(Integer.parseInt(request.getParameter("new_layaway_ID")));
+        layaway.setProductID(Integer.parseInt(request.getParameter("new_product_ID")));
+        layaway.setProductQuantity(Integer.parseInt(request.getParameter("new_product_quantity")));
+        boolean success = layawayService.updateLayaway(layaway);
+    }
+    
+    private void handleDeletingLayaways(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        boolean success = layawayService.deleteLayaway(Integer.parseInt(request.getParameter("drop_layaway_ID")));
+        if (success) {
+         request.setAttribute("message", "Layaway Deleted successfully");
+ 
+            // Schedule the test method to run after 5 seconds
+            schedulerr.schedule(() -> sendFirstEmail(), 5, TimeUnit.SECONDS);
+        } else {
+            request.setAttribute("message", "Failed to Delete Layaway");
+    }
+        request.getRequestDispatcher("LayawayDashboard.jsp").forward(request, response);
+    }
+    
+    private void sendFirstEmail() {
+        System.out.println("Hello World");
+    }
+    
+//    private void sendSecondEmail() {
+//        String msg = "Dear " + newEmployee.getFirstName() + " " + newEmployee.getLastName() + ",\nWelcome aboard! Your employee ID is " + employee.getEmployees_id()
+//                        + ". We're excited to have you on our team.\n\n\n\nBest regards,\n"
+//                        + manager.getFirstName() + " " + manager.getLastName() + "\n"
+//                        + manager.getRole() + "(" + stores.getStore_name() + ")\n"
+//                        + "Carols Boutique\n"
+//                        + stores.getStore_phone();
+//
+//                Email emailDetails = new Email("ramovhatp@gmail.com", "xaed clmt qpis ctvf");
+//                emailDetails.setReceiver(newEmployee.getEmail());
+//                emailDetails.setSubject("Welcome to Carols Boutique! Your Registration is Complete");
+//                emailDetails.setMessage(msg);
+//
+//                emailService.sendMail(emailDetails);
+//    }
+}
