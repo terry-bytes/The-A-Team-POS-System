@@ -214,7 +214,7 @@
                    datasets: [{
                         label: 'Sales of the month',
                         data: [<%=monthData.toString()%>],
-                        backgroundColor: ['rgba(255, 99, 132, 1)']
+                        backgroundColor: ['rgba(255, 99, 132, 0.2)']
                     }]
                },
                options: {

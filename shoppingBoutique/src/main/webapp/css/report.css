@@ -16,7 +16,7 @@ and open the template in the editor.
 }
 
 body{
-    background: #dfe9f5;
+    background-image: linear-gradient(to right, #277af6, #0098f7, #48b2ef, #85c7e5, #bfd9e0);
 }
 .manager-container{
     display: flex;  
@@ -24,7 +24,7 @@ body{
 
 .sidebar{
 
-   position: relative;
+   position: fixed;
    top: 0;
    bottom: 0;
    height: 100vh;
