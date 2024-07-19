@@ -390,6 +390,8 @@
                     <div class="key" onclick="backspace()">Backspace</div>
                 </div>
             </div>
+             <form id="product-form" action="ProductServlet" method="post">
+
             <div class="transaction-buttons">
                 <button>Return Item</button>
                 <button>IBT Purchase</button>
@@ -398,7 +400,9 @@
                 <button>Remove Item</button>
                 <button>Search Item</button>
                 <button>Lay Away</button>
+                <button type="submit" name ="submit" value ="Inventory">Inventory Management</button>
             </div>
+            </form>
         </div>
     </div>
     <audio id="beep-sound" src="beep.mp3" preload="auto"></audio>
