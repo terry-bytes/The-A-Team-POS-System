@@ -64,67 +64,54 @@
 </head>
 <body>
     
-<% 
+<%  
     Employee employee= (Employee)request.getSession(false).getAttribute("Employee");
     List<Product> product = (List<Product>)request.getSession(false).getAttribute("foundProducts");
 %>
     <div class="container">
-        <h1>Replenish Stock</h1>
-        <form action="ReplenishStockServlet" method="post">
-            <div class="form-group">
-                <label for="product_ID">Product ID</label>
-                <input type="number" id="product_ID" name="product_ID"  required>
-            </div>
-            <div class="form-group">
-                <label for="store_ID">Store ID</label>
-                <input type="number" id="store_ID" name="store_ID" value ="<%=employee.getStore_ID()%>" readonly  required>
-            </div>
-            <div class="form-group">
-                <label for="quantity">Quantity to Add</label>
-                <input type="number" id="quantity" name="quantity" placeholder ="0"  required>
-            </div>
-            <div class="form-group">
-                <label for="employee_ID">Employee ID</label>
-                <input type="number" id="employee_ID" name="employee_ID" value="<%=employee.getEmployee_ID()%>" readonly  required>
-            </div>
-            <button type="submit">Replenish Stock</button>
-        </form>
+        <h1>Add Stock</h1>
+        
+            <form action="InventoryServlet" method="post">
+                <label for="employeeId">Employee ID:</label>
+                <input type="number" id ="employeeId" name="employeeId" value="<%=employee.getEmployee_ID()%>" readonly><br><br>
+                <label for="productId">Product ID:</label>
+                <input type="number" id="productId" name="productId" required><br><br>
+                <label for="additionalStock">Additional Stock:</label>
+                <input type="number" id="additionalStock" name="additionalStock" required><br><br>
+                <label for="storeId">Store ID:</label>
+                <input type="number" id="storeId" name="storeId" value="<%=employee.getStore_ID()%>" required readonly><br><br>
+                <input type="submit" value="Replenish Stock">
+            </form>
 
-        <c:if test="${not empty message}">
-            <div class="message">
-                <c:out value="${message}"/>
-            </div>
-        </c:if>
 
-        <c:if test="${not empty inventoryList}">
-            <h2>Updated Inventory</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Inventory ID</th>
-                        <th>Product ID</th>
-                        <th>Store ID</th>
-                        <th>Quantity</th>
-                        <th>Reorder Point</th>
-                        <th>Last Updated</th>
-                        <th>Added by Employee ID</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <c:forEach var="inventory" items="${inventoryList}">
-                        <tr>
-                            <td>${inventory.inventory_ID}</td>
-                            <td>${inventory.product_ID}</td>
-                            <td>${inventory.store_ID}</td>
-                            <td>${inventory.inventory_quantity}</td>
-                            <td>${inventory.reorder_point}</td>
-                            <td><fmt:formatDate value="${inventory.last_updated}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
-                            <td>${inventory.added_by_employee_ID}</td>
-                        </tr>
-                    </c:forEach>
-                </tbody>
-            </table>
-        </c:if>
+     <h1>Inventory View</h1>
+    <p>${message}</p>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Inventory ID</th>
+                <th>Product ID</th>
+                <th>Store ID</th>
+                <th>Quantity</th>
+                <th>Reorder Point</th>
+                <th>Last Updated</th>
+                <th>Updated By Employee ID</th>
+            </tr>
+        </thead>
+        <tbody>
+            <c:forEach var="inventory" items="${inventoryList}">
+                <tr>
+                    <td>${inventory.inventory_ID}</td>
+                    <td>${inventory.product_ID}</td>
+                    <td>${inventory.store_ID}</td>
+                    <td>${inventory.inventory_quantity}</td>
+                    <td>${inventory.reorder_point}</td>
+                    <td>${inventory.last_updated}</td>
+                    <td>${inventory.updated_by_employee_ID}</td>
+                </tr>
+            </c:forEach>
+        </tbody>
+    </table>
     </div>
 </body>
 </html>

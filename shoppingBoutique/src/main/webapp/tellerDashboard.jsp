@@ -315,9 +315,9 @@
                 // Simulate keyboard input
                 simulateKeyboardInput(barcode);
 
-                // Pause scanning for 2 seconds
+                // Pause scanning for 5 seconds
                 Quagga.stop();
-                setTimeout(() => Quagga.start(), 2000); // Restart Quagga after 2 seconds
+                setTimeout(() => Quagga.start(), 5000); // Restart Quagga after 5 seconds
             });
         }
 
