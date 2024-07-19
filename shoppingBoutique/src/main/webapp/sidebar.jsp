@@ -17,7 +17,7 @@
     <body>
         <% Employee employee = (Employee) request.getSession(false).getAttribute("Employee");%>
         
-        <nav>
+        <nav class="sidebar">
             <ul class="nav">
                 <li class="logo">
                     <h4>CB</h4>

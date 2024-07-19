@@ -22,29 +22,6 @@ body{
     display: flex;  
 }
 
-.sidebar{
-
-   position: fixed;
-   top: 0;
-   bottom: 0;
-   height: 100vh;
-   left: 0;
-   background: #fff;
-   width: 280px;
-   overflow: hidden;
-   box-shadow: 0 20px 35px rgba(0, 0, 0, 0.1);
-
-}
-
-
-.sidebar a{
-    color: #fff;
-
-    padding: 30px;
-
-    text-decoration: none;
-}
-
 .menu-content{
     margin-left: 300px;
     padding: 1px 10px;
