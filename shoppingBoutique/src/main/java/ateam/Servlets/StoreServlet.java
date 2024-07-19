@@ -61,7 +61,7 @@ public class StoreServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        switch(request.getParameter("storeSwitch")) {
+        switch(request.getParameter("submit")) {
             case "View_Stores":
                 handleViewAllStores(request, response);
                 break;

@@ -137,8 +137,168 @@
                 border-radius: 50%;
                 margin-right: 10px;
             }
-    </style>
-</head>
+
+
+            .transaction-buttons {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: flex-end;
+                gap: 10px;
+                margin-bottom: 20px;
+            }
+
+            .transaction-buttons button {
+                padding: 8px;
+                font-size: 14px;
+                cursor: pointer;
+                width: 150px;
+            }
+
+            .scanned-items {
+                flex: 1;
+                border: 1px solid #ccc;
+                padding: 10px;
+                margin-bottom: 10px;
+                max-height: 400px; /* Increased height */
+                overflow-y: auto;  /* Allow vertical scrolling */
+            }
+
+            .scanned-items h2 {
+                margin-top: 0;
+            }
+
+            #item-list {
+                list-style-type: none;
+                padding: 0;
+                overflow-y: auto;
+                max-height: 500px; /* Increased height */
+                margin-bottom: 20px;
+            }
+
+            .total-price {
+                font-size: 1.5em;
+                margin-top: auto;
+                text-align: right;
+            }
+
+            .right-section {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+            }
+
+            .keyboard {
+                width: 100%;
+                max-width: 400px;
+                align-self: flex-end;
+                border: 1px solid #ccc;
+                padding: 10px;
+                font-size: 16px;
+            }
+
+            .keyboard-row {
+                display: flex;
+            }
+
+            .key {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 50px;
+                height: 50px;
+                border: 1px solid #ccc;
+                margin: 5px;
+                cursor: pointer;
+            }
+
+            input[type="text"] {
+                width: calc(100% - 20px);
+                padding: 10px;
+                margin-bottom: 10px;
+                border: 1px solid #ccc;
+            }
+
+            #toggleCase {
+                background-color: #ccc;
+                font-weight: bold;
+            }
+
+            #complete-sale {
+                padding: 10px;
+                font-size: 16px;
+                cursor: pointer;
+
+                text-align: center;
+                border: none;
+                background-color: #4CAF50;
+                color: white;
+                width: 150px;
+            }
+            .container {
+                display: flex;
+            }
+            .left-section, .right-section {
+                padding: 20px;
+                border: 1px solid #ccc;
+            }
+            .left-section {
+                width: 50%;
+            }
+            .right-section {
+                width: 50%;
+            }
+            .scanned-items ul {
+                list-style: none;
+                padding: 0;
+            }
+            .scanned-items ul li {
+                display: flex;
+                justify-content: space-between;
+            }
+            .keyboard {
+                display: flex;
+                flex-direction: column;
+            }
+            .keyboard-row {
+                display: flex;
+            }
+            .key {
+                padding: 10px;
+                margin: 2px;
+                border: 1px solid #ccc;
+                cursor: pointer;
+                user-select: none;
+            }
+            #interactive {
+                width: 100%;
+                height: 400px;
+            }
+            #barcode-scanner {
+                position: fixed;
+                top: -100px; /* Move off-screen */
+                left: -100px; /* Move off-screen */
+                width: 1px; /* Set minimal width */
+                height: 1px; /* Set minimal height */
+                opacity: 0; /* Hide visually */
+                pointer-events: none; /* Disable interaction */
+                z-index: -1; /* Ensure it's behind other elements */
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            th, td {
+                border: 1px solid black;
+                padding: 8px;
+                text-align: left;
+            }
+            th {
+                background-color: #f2f2f2;
+            }
+        </style>
+    </head>
+
 
 <body>
     <div class="container">
@@ -257,7 +417,7 @@
                 inputStream: {
                     name: "Live",
                     type: "LiveStream",
-                    target: document.querySelector('#barcode-scanner'),
+                    target: document.querySelector('#barcode-scanner')
                 },
                 decoder: {
                     readers: ["code_128_reader", "ean_reader", "ean_8_reader"]
