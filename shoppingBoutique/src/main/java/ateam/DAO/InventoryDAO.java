@@ -1,15 +1,16 @@
 package ateam.DAO;
 
 import ateam.Models.Inventory;
-import java.sql.SQLException;
 import java.util.List;
+
 
 
 public interface InventoryDAO {
     
     
-    Inventory getInventoryByProductAndStore(int product_ID, int store_ID) throws SQLException;
-    void updateInventory(Inventory inventory) throws SQLException;
-    List<Inventory> getInventoryByStore(int store_ID) throws SQLException;
+    void logInventoryTransaction(Inventory inventory) throws Exception;
+    int getPreviousQuantity(int productId) throws Exception;
+    void updateProductQuantity(int productId, int newQuantity) throws Exception;
+    List<Inventory> getAllInventories() throws Exception;
     
 }

@@ -1,4 +1,3 @@
-package ateam.Servlets;
 
 import ateam.DAO.ProductDAO;
 import ateam.DAO.SaleDAO;
@@ -12,22 +11,18 @@ import ateam.Models.Sale;
 import ateam.Models.SalesItem;
 import ateam.Service.ProductService;
 import ateam.ServiceImpl.ProductServiceImpl;
-import com.google.gson.Gson;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.http.HttpSession;
 
 @WebServlet("/ProductServlet")
@@ -35,9 +30,8 @@ public class ProductServlet extends HttpServlet {
 
     private ProductDAO productDAO = new ProductDAOIMPL();
     private final ProductService productService = new ProductServiceImpl(productDAO);
-     private SaleDAO saleDAO = new SaleDAOIMPL();
+    private SaleDAO saleDAO = new SaleDAOIMPL();
     private SalesItemDAO salesItemDAO = new SalesItemDAOIMPL();
-    
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -79,11 +73,11 @@ public class ProductServlet extends HttpServlet {
                     }
                 }
                 break;
-                 case "Complete-Sale":
+            case "Complete-Sale":
                 Sale newSale = new Sale();
                 newSale.setSales_date(new Timestamp(System.currentTimeMillis()));
                 newSale.setTotal_amount(BigDecimal.valueOf(calculateTotalPrice(scannedItems)));
-                newSale.setPayment_method(request.getParameter("payment_method")); 
+                newSale.setPayment_method(request.getParameter("payment_method"));
 
                 Employee loggedInUser = (Employee) session.getAttribute("Employee");
                 if (loggedInUser != null) {
@@ -96,6 +90,7 @@ public class ProductServlet extends HttpServlet {
 
                 int newSalesID = saleDAO.saveSale(newSale);
                 if (newSalesID != -1) { // Check if sale was saved successfully
+                    List<SalesItem> salesItems = new ArrayList<>();
                     for (Product item : scannedItems) {
                         SalesItem salesItem = new SalesItem();
                         salesItem.setSales_ID(newSalesID);
@@ -104,20 +99,24 @@ public class ProductServlet extends HttpServlet {
                         salesItem.setUnit_price(BigDecimal.valueOf(item.getProduct_price()));
 
                         salesItemDAO.saveSalesItem(salesItem);
+                        salesItems.add(salesItem);
                     }
+
+                    // Update stock quantities
+                    ((SaleDAOIMPL) saleDAO).updateStockQuantities(salesItems);
 
                     // Clear cart and reset total after successful sale
                     scannedItems.clear();
-            double totalPrice = 0.0;
+                    double totalPrice = 0.0;
                 } else {
                     // Handle sale saving failure (error message, etc.)
                     Logger.getLogger(ProductServlet.class.getName()).log(Level.SEVERE, "Failed to save sale");
                 }
                 break;
-                
-                 case "Inventory":
-                     request.getRequestDispatcher("replenishStock.jsp").forward(request, response);
-                     break;
+
+            case "Inventory":
+                request.getRequestDispatcher("replenishStock.jsp").forward(request, response);
+                break;
 
             // ... (other cases: Complete-Sale, Remove-Item, etc.)
         }
@@ -130,7 +129,6 @@ public class ProductServlet extends HttpServlet {
         request.getRequestDispatcher("tellerDashboard.jsp").forward(request, response);
     }
 
-    // ... (calculateTotalPrice and other existing methods)
     private double calculateTotalPrice(List<Product> scannedItems) {
         double totalPrice = 0.0;
         for (Product item : scannedItems) {
