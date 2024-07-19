@@ -26,6 +26,8 @@
        List<Employee> employees = (List<Employee>) request.getSession(false).getAttribute("Employees");
        List<Store> stores = (List<Store>) request.getSession(false).getAttribute("Stores");
        Map<String, Integer> salesData = (Map<String, Integer>) request.getAttribute("salesData");
+       Map<String, Integer> monthSales = (Map<String, Integer>) request.getSession(false).getAttribute("report");
+       
        
        if(employee != null){
         if(salesData != null && !salesData.isEmpty()){
@@ -115,8 +117,6 @@
         document.addEventListener('DOMContentLoaded', () => {
             // Retrieve the sales data from JSP
        
-            const monthlyReport = JSON.parse('${monthlReport}');
-            console.log(monthlyReport);
             // Chart for Sales Data
             var ctx = document.getElementById('salesChart').getContext('2d');
             var salesChart = new Chart(ctx, {
@@ -184,54 +184,50 @@
                 }
             });
 
-<<<<<<< HEAD
+
             const monthYear = document.getElementById('date');
-=======
 
->>>>>>> cdb254db34f95fc361f467c4ecdf655822f956ca
             // Function to Filter Sales
-          
             
-            const dates = Object.keys(monthlyReport);
-    const salesCounts = Object.values(monthlyReport);
-
-    // Create the bar chart
-    const ctxM = document.getElementById('monthlySalesChart').getContext('2d');
-    new Chart(ctxM, {
-        type: 'bar',
-        data: {
-            labels: dates,
-            datasets: [{
-                label: 'Number of Sales',
-                data: salesCounts,
-                backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                x: {
-                    title: {
-                        display: true,
-                        text: 'Date'
-                    }
-                },
-                y: {
-                    title: {
-                        display: true,
-                        text: 'Number of Sales'
-                    },
-                    beginAtZero: true
-                }
-            }
-        }
-    });
+          
 
             
         });
     </script>
-    <% } %> 
+    
+    
+    <% if(monthSales != null){
+        StringBuilder monthLabels = new StringBuilder();
+        StringBuilder monthData = new StringBuilder();
+        for(Map.Entry<String, Integer> entry : monthSales.entrySet()){
+            monthLabels.append("'").append(entry.getKey()).append("',");
+            monthData.append(entry.getValue()).append(",");
+        }
+        %>
+        
+        <script>
+            var monthCtx = document.getElementById("monthlySalesChart").getContext('2d');
+            var monthBar = new Chart(monthCtx, {
+               type: 'bar',
+               data: {
+                   labels: [<%=monthLabels.toString() %>],
+                   datasets: [{
+                        label: 'Sales of the month',
+                        data: [<%=monthData.toString()%>],
+                        backgroundColor: ['rgba(255, 99, 132, 1)']
+                    }]
+               },
+               options: {
+                    scales: {
+                        y: {
+                          beginAtZero: true
+                        }
+                    }
+                }
+            });
+        </script>
+        
+    <% } }%> 
 
     <% } else { %>
     <jsp:include page="unauthorized.jsp" />

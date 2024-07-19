@@ -127,6 +127,8 @@ public class SalesDemo extends HttpServlet {
             json = "{}"; // Set to empty JSON object if there's no data
         }
         
+        HttpSession session = request.getSession(false);
+        session.setAttribute("report", report);
         request.setAttribute("monthlReport", json);
         response.sendRedirect("SalesDemo");
     }
