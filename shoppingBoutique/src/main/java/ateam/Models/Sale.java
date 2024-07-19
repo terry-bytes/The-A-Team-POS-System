@@ -1,5 +1,6 @@
 package ateam.Models;
 
+import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,10 +12,12 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 public class Sale {
 
-    private int sales_ID; 
-    private Timestamp sales_date; 
-    private double total_amount; 
-    private String payment_method;
-    private int employee_ID;
-    private int store_ID; 
+    private int Sales_ID; 
+    private Timestamp Sales_date; 
+    private BigDecimal Total_amount; 
+    private String Payment_method;
+    private int Employee_ID;
+    private int Store_ID; 
+
+  
 }

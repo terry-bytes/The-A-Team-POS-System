@@ -39,6 +39,8 @@ public class EmployeeServlet extends HttpServlet {
     private final StoreService storeService;
 
     private final EmailService emailService;
+    
+    
 
 
     public EmployeeServlet() {
@@ -155,6 +157,7 @@ public class EmployeeServlet extends HttpServlet {
        String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
       
 
+
         int storeId;
         if(role == Role.Manager){
             storeId = Integer.parseInt(request.getParameter("managerStoreId"));
@@ -169,9 +172,9 @@ public class EmployeeServlet extends HttpServlet {
         newEmployee.setEmail(email);
         newEmployee.setStore_ID(storeId);
         newEmployee.setEmployeePassword(hashedPassword);
-
+        
         newEmployee.setRole(role);
-
+        
         String otp = generateOTP();
         Email emailDetails = new Email("ramovhatp@gmail.com", "xaed clmt qpis ctvf");
         emailDetails.setReceiver(email);
@@ -183,6 +186,9 @@ public class EmployeeServlet extends HttpServlet {
         request.getSession().setAttribute("newEmployee", newEmployee);
 
         response.sendRedirect(request.getContextPath() + "/verifyOTP.jsp");
+        
+        
+        
     }
 
     private String generateOTP() {
@@ -248,7 +254,7 @@ public class EmployeeServlet extends HttpServlet {
                     request.getRequestDispatcher("admin.jsp").forward(request, response);
                     break;
                 case Manager:
-                    request.getRequestDispatcher("managerDashboard.jsp").forward(request, response);
+                    response.sendRedirect("SalesDemo");
                     break;
                 default:
                     request.getRequestDispatcher("tellerDashboard.jsp").forward(request, response);
