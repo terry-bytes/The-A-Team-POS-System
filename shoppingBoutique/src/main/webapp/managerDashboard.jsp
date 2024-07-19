@@ -28,7 +28,7 @@
        List<Store> stores = (List<Store>) request.getSession(false).getAttribute("Stores");
        Map<String, Integer> salesData = (Map<String, Integer>) request.getAttribute("salesData");
        Map<String, Integer> monthSales = (Map<String, Integer>) request.getSession(false).getAttribute("report");
-       
+       Map<String, Integer> topEmp = (Map<String, Integer>) request.getSession(false).getAttribute("topSellingEmp");
        
        if(employee != null){
         if(salesData != null && !salesData.isEmpty()){
@@ -105,6 +105,39 @@
                 <div class="graphBox">
                     <div class="box">
                         <canvas id="monthlySalesChart"></canvas>
+                    </div>
+                    <div class="box">
+                        <canvas id="salesPieChart"></canvas>
+                    </div>
+                </div>
+                                
+                                
+                                <!<!-- Top selling employeee  -->
+                <div class="two">
+                    <h4>Top Selling Employee</h4>
+                        <form action="SalesDemo" method="post">
+                            <div>
+                                <select class="select-box" name="storeId">
+                                    <% if(stores != null) {
+                                        for(Store store : stores) { %>
+                                        <option value="<%=store.getStore_ID() %>"><%=store.getStore_name() %></option>
+                                        <% } } %>
+                                </select>
+                            </div>
+                        
+                           
+                            <button type="submit" name="submit" value="filter">Filter</button>
+                        </form>
+                    
+                    
+                    <div class="input-submit">
+                        <input name="submit" value="download" hidden />
+                        <button class="submit-btn" id="submit">Download</button>
+                    </div>
+                </div>
+                <div class="graphBox">
+                    <div class="box">
+                        <canvas id="topEmpBar"></canvas>
                     </div>
                     <div class="box">
                         <canvas id="salesPieChart"></canvas>
@@ -215,7 +248,11 @@
                    datasets: [{
                         label: 'Sales of the month',
                         data: [<%=monthData.toString()%>],
-                        backgroundColor: ['rgba(255, 99, 132, 1)']
+                        backgroundColor: 'rgba(61, 179, 242, 0.2)',  // Light blue background color
+                        borderColor: 'rgba(61, 179, 242, 1)',
+                        borderWidth: 2,
+                        borderRadius: 5,
+                        borderSkipped: false
                     }]
                },
                options: {
@@ -228,7 +265,45 @@
             });
         </script>
         
-    <% } }%> 
+    <% }%> 
+        
+    <!<!-- Top Selling Emp data -->    
+    <% if(topEmp != null){
+        StringBuilder topEmpLabels = new StringBuilder();
+        StringBuilder topEmpData = new StringBuilder();
+        for(Map.Entry<String, Integer> entry : topEmp.entrySet()){
+            topEmpLabels.append("'").append(entry.getKey()).append("',");
+            topEmpData.append(entry.getValue()).append(",");
+        }
+        %>    
+        <script>
+            var topCtx = document.getElementById("topEmpBar").getContext('2d');
+            console.log(<%=topEmpLabels.toString()%>);
+            var topEmpBar = new Chart(topCtx, {
+                type: 'bar',
+                data: {
+                    labels: [<%=topEmpLabels.toString()%>],
+                    datasets:[{
+                        label: 'Top selling employee',
+                        data: [<%=topEmpData.toString()%>],
+                        backgroundColor: 'rgba(61, 179, 242, 0.2)',  // Light blue background color
+                        borderColor: 'rgba(61, 179, 242, 1)',
+                        borderWidth: 2,
+                        borderRadius: 5,
+                        borderSkipped: false
+                    }]
+                },
+               options: {
+                    scales: {
+                        y: {
+                          beginAtZero: true
+                        }
+                    }
+                }
+            });
+        </script>
+        <% }%>
+    <% }%> 
 
     <% } else { %>
     <jsp:include page="unauthorized.jsp" />

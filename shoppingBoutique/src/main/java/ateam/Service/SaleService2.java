@@ -1,6 +1,7 @@
 package ateam.Service;
 
 
+import ateam.Models.Employee;
 import ateam.Models.Sale;
 import java.util.List;
 import java.util.Map;
@@ -17,4 +18,6 @@ import java.util.Map;
 public interface SaleService2 {
     List<Sale> getAllSales();
     Map<String, Integer> generateStoreMonthReport(int storeId, int month, int year);
+    Map<String, Integer> generateTopSellingEmployee(List<Employee> employees);
+    Map<String, Integer> generateTopSellingEmployee(int storeId);
 }

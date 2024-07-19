@@ -16,33 +16,10 @@ and open the template in the editor.
 }
 
 body{
-    background: #dfe9f5;
+    background-image: linear-gradient(to right, #277af6, #0098f7, #48b2ef, #85c7e5, #bfd9e0);
 }
 .manager-container{
     display: flex;  
-}
-
-.sidebar{
-
-   position: relative;
-   top: 0;
-   bottom: 0;
-   height: 100vh;
-   left: 0;
-   background: #fff;
-   width: 280px;
-   overflow: hidden;
-   box-shadow: 0 20px 35px rgba(0, 0, 0, 0.1);
-
-}
-
-
-.sidebar a{
-    color: #fff;
-
-    padding: 30px;
-
-    text-decoration: none;
 }
 
 .menu-content{
