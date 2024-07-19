@@ -6,10 +6,11 @@ package ateam.ServiceImpl;
 
 import ateam.DAO.SaleDAO;
 import ateam.DAOIMPL.SaleDAOIMPL;
+import ateam.Models.Employee;
+import ateam.Models.Role;
 import ateam.Models.Sale;
 import ateam.Models.Store;
 import ateam.Service.SaleService2;
-import ateam.reports.SaleInfo;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -18,6 +19,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 
 
@@ -37,59 +39,11 @@ public class SaleServiceImpl implements SaleService2{
         return saleDao.getAllSales();
     }
     
-    /*
-    I want to build a report based on the sales 
-    I have List<Store>, List<Sale>.
-    List<Store> in Store, I have instance variable called Store_name and other instance variable
-    List<Sale> in Sale, i have instance variable store_ID, sales_date and other instance variable
-    these data come from my database which i have implemented
-    i want to send data into jsp with cleaned data so I can display a bargraph.
-    this method should return Map collection 
-    could you please help generate the monthSale perstore. 
-    so in this method the Integer should be the total number of sales per store which I have to calculate it here
-    the String is the name of the store and timestamp is the date which the sale was made on
-    */
-    public Map<String, Map<Integer, Integer>> generateMonthSaleReport(List<Store> stores){
-        List<Sale> sales = saleDao.getAllSales();
-        Map<Integer, String> storeIdToName = new HashMap<>();
-        for (Store store : stores) {
-            storeIdToName.put(store.getStore_ID(), store.getStore_name());
-        }
-
-        Map<String, Map<Integer, Integer>> storeSalesInfoMap = new HashMap<>();
-
-        for (Sale sale : sales) {
-            String storeName = storeIdToName.get(sale.getStore_ID());
-            if (storeName != null) {
-                // Extract the month and year from the sales date
-                Timestamp salesDate = sale.getSales_date();
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTimeInMillis(salesDate.getTime());
-                int month = calendar.get(Calendar.MONTH) + 1; // Months are 0-based in Calendar, so add 1
-                int year = calendar.get(Calendar.YEAR);
-
-                // Create a key for the month and year (e.g., 202401 for January 2024)
-                int monthYear = year * 100 + month;
-
-                // Initialize the map for the store if not already present
-                storeSalesInfoMap.putIfAbsent(storeName, new HashMap<>());
-
-                // Get the map for the store
-                Map<Integer, Integer> monthSalesMap = storeSalesInfoMap.get(storeName);
-
-                // Update the sales count for the monthYear
-                monthSalesMap.put(monthYear, monthSalesMap.getOrDefault(monthYear, 0) + 1);
-            }
-        }
-
-        return storeSalesInfoMap;
-    }
-    
     public Map<String, Integer> generateStoreMonthReport(int storeId, int month, int year){
         List<Sale> sales = saleDao.getSalesbyStoreId(storeId);
         
         
-        Map<String, Integer> salesReport = new HashMap<>();
+        Map<String, Integer> salesReport = new TreeMap<>();
         
         Calendar startCalendar = Calendar.getInstance();
         startCalendar.set(year, month - 1, 1, 0, 0, 0);
@@ -113,5 +67,58 @@ public class SaleServiceImpl implements SaleService2{
         }
         return salesReport;
     }
+    
+    /*
+    Goal: Report for top selling employees across the company or in certain store
+    UI: I think i need a form to select a store but when it load it should give employees of the company
+        with their total sales
+    breakdown: calculate the total sales,
+               calculate total sales per each employee
+               separates employee according to their store
+               then calculate the total sale for that store 
+               build a report for that store.
+    I think i might need to have to methods to achieve this
+    one method is gonna calculate the total sales of the company
+    another is for the store to 
+    */
+
+    /*
+    have all the sales and employees
+    add sales into an employee
+        how to add sales into employee?
+        loop through the sales, check the employee id
+        check if the employee does exist in collection 
+            if it doesn't exist then 
+                add to a collection then add 1
+            if it does then add 1
+    */
+    @Override
+    public Map<String, Integer> generateTopSellingEmployee(List<Employee> employees) {
+        List<Sale> sales = saleDao.getAllSales();
+        
+        Map<String, Integer> topSellingEmployee = new TreeMap<>();
+        Map<Integer, Integer> employeeSales = new HashMap<>();
+        for(Sale sale : sales){
+           int employee_Id = sale.getEmployee_ID();
+           employeeSales.put(employee_Id, employeeSales.getOrDefault(employee_Id, 0)+ 1);
+        }
+        
+        for(Employee employee : employees){
+            if(employee.getRole() == Role.Teller){
+                int employee_Id = employee.getEmployee_ID();
+                String employeeName = employee.getFirstName();
+                int totalSales = employeeSales.getOrDefault(employee_Id, 0);
+                topSellingEmployee.put(employeeName, totalSales);
+            }
+        }
+        return topSellingEmployee;
+    }
+
+    @Override
+    public Map<String, Integer> generateTopSellingEmployee(int storeId) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+    
+    
     
 }

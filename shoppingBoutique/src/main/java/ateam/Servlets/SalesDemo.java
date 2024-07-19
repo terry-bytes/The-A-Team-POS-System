@@ -70,12 +70,14 @@ public class SalesDemo extends HttpServlet {
         List<Sale> sales = saleService.getAllSales();
         List<Store> stores = storeService.getAllStores();
         List<Employee> employees = employeeService.getAllEmployees();
+        Map<String, Integer> topSellingEmployee = saleService.generateTopSellingEmployee(employees);
         
         HttpSession session = request.getSession(false);
         
         session.setAttribute("Employees", employees);
         session.setAttribute("Stores", stores);
         session.setAttribute("Sales", sales);
+        session.setAttribute("topSellingEmp", topSellingEmployee);
         
         request.setAttribute("salesData", salesData);
         request.getRequestDispatcher("managerDashboard.jsp").forward(request, response);
