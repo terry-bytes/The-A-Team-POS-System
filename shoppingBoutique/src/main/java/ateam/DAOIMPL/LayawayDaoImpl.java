@@ -97,6 +97,7 @@ public class LayawayDaoImpl implements LayawayDAO{
                         layaway.setLayaway_status(resultSet.getString("layaway_status"));
                         layaway.setProductID(resultSet.getInt("product_ID"));
                         layaway.setProductQuantity(resultSet.getInt("product_quantity"));
+                        layaway.setCustomerNumber(resultSet.getString("contact"));
                         layaways.add(layaway);
                     }
                 }

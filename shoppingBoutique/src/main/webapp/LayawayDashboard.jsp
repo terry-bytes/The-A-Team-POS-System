@@ -12,6 +12,70 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Layaway Dashboard Page</title>
+         <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        form {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        form h2 {
+            margin-bottom: 10px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="text"], input[type="submit"] {
+            padding: 8px;
+            width: 200px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+        input[type="submit"] {
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 3px;
+        }
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        p {
+            margin: 5px 0;
+        }
+    </style>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function() {
@@ -34,8 +98,10 @@
                     action: "addLayaway",
                     product_ID: $("#product_ID").val(),
                     product_quantity: $("#product_quantity").val(),
+                    customer_email: $("#customer_email").val(),
                     buttonClickTime: buttonClickTime,
                     expiryTime: expiryTime,
+                    customer_number: $("#customer_number").val(),
                     layaway_switch: $("input[name='layaway_switch']").val()  
                 },
                 success: function(response) {
@@ -67,55 +133,96 @@
             <input type="submit" value="Add Layaway"><br><br>
         </form> 
             
-        <form action="LayawayServlet" method="post">
-            <h2>Search for Layaway via Layaway ID</h2>
-            <label>Enter the Layaway ID:</label>
-            <input type="text" name="layaway_ID"><br><br>
-            <input type="submit" value="View Layaway" name="layaway_switch"><br><br>
-            <% Layaway layawayID = (Layaway)request.getAttribute("LayawaySearch");
-           if(layawayID != null) {
-            %>
-            <p>Layaway ID: <%=layawayID.getLayaway_ID()%></p>
-            <p>Customer Email: <%=layawayID.getCustomerEmail()%></p>
-            <p>Employee ID: <%=layawayID.getEmployee_ID()%></p
-            <p>Start Date: <%=layawayID.getStart_date()%></p>
-            <p>Expiray Date: <%=layawayID.getExpiry_date()%></p>
-            <p>Layaway Status: <%=layawayID.getLayaway_status()%></p>
-            <p>Product ID: <%=layawayID.getProductID()%></p>
-            <p>Product Quantity: <%=layawayID.getProductQuantity()%></p>
-            <%}%>
-        </form>
-            
-            <form action="LayawayServlet" method="post">
-            <h2>View all Layaways</h2>
-            <input type="submit" value="View all Layaways" name="layaway_switch"><br><br>
-            <ul>
-            <% 
+        <!-- Form for searching a layaway by ID -->
+    <form action="LayawayServlet" method="post">
+        <h2>Search for Layaway via Layaway ID</h2>
+        <label>Enter the Layaway ID:</label>
+        <input type="text" name="layaway_ID"><br><br>
+        <input type="submit" value="View Layaway" name="layaway_switch"><br><br>
+        
+        <!-- Display searched layaway data in a table -->
+        <% Layaway layawayID = (Layaway) request.getAttribute("LayawaySearch"); %>
+        <% if (layawayID != null) { %>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Layaway ID</th>
+                    <th>Employee ID</th>
+                    <th>Start Date</th>
+                    <th>Expiry Date</th>
+                    <th>Status</th>
+                    <th>Customer Email</th>
+                    <th>Product ID</th>
+                    <th>Product Quantity</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><%= layawayID.getLayaway_ID() %></td>
+                    <td><%= layawayID.getEmployee_ID() %></td>
+                    <td><%= layawayID.getStart_date() %></td>
+                    <td><%= layawayID.getExpiry_date() %></td>
+                    <td><%= layawayID.getLayaway_status() %></td>
+                    <td><%= layawayID.getCustomerEmail() %></td>
+                    <td><%= layawayID.getProductID() %></td>
+                    <td><%= layawayID.getProductQuantity() %></td>
+                </tr>
+            </tbody>
+        </table>
+        <% } else { %>
+        <p>No layaway found with the given ID.</p>
+        <% } %>
+    </form>
+
+    <!-- Form for viewing all layaways -->
+    <form action="LayawayServlet" method="post">
+        <h2>View all Layaways</h2>
+        <input type="submit" value="View all Layaways" name="layaway_switch"><br><br>
+        
+        <!-- Display all layaways in a table -->
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Layaway ID</th>
+                    <th>Employee ID</th>
+                    <th>Start Date</th>
+                    <th>Expiry Date</th>
+                    <th>Status</th>
+                    <th>Customer Email</th>
+                    <th>Product ID</th>
+                    <th>Product Quantity</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% 
                 List<Layaway> layaways = (List<Layaway>) request.getAttribute("Layaways");
                 if (layaways != null && !layaways.isEmpty()) {
                     for (Layaway layaway : layaways) {
-            %>
-                        <li>
-                            Layaway ID: <%= layaway.getLayaway_ID() %><br>
-                            Employee ID: <%= layaway.getEmployee_ID() %><br>
-                            Start Date: <%= layaway.getStart_date() %><br>
-                            Expiry Date: <%= layaway.getExpiry_date() %><br>
-                            Status: <%= layaway.getLayaway_status() %><br>
-                            Customer Email: <%= layaway.getCustomerEmail() %><br>
-                            Contact: <%= layaway.getCustomerNumber() %><br>
-                            Product ID: <%= layaway.getProductID() %><br>
-                            Product Quantity: <%= layaway.getProductQuantity() %><br>
-                        </li>
-            <% 
+                %>
+                <tr>
+                    <td><%= layaway.getLayaway_ID() %></td>
+                    <td><%= layaway.getEmployee_ID() %></td>
+                    <td><%= layaway.getStart_date() %></td>
+                    <td><%= layaway.getExpiry_date() %></td>
+                    <td><%= layaway.getLayaway_status() %></td>
+                    <td><%= layaway.getCustomerEmail() %></td>
+                    <td><%= layaway.getProductID() %></td>
+                    <td><%= layaway.getProductQuantity() %></td>
+                </tr>
+                <% 
                     }
                 } else {
-            %>
-                    <li>No layaways found.</li>
-            <% 
+                %>
+                <tr>
+                    <td colspan="8">No layaways found.</td>
+                </tr>
+                <% 
                 }
-            %>
-        </ul>
-            </form>
+                %>
+            </tbody>
+        </table>
+    </form>
+
             
         <form action="LayawayServlet" method="post">
             <h2>Update a Layaway</h2>
