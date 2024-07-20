@@ -192,6 +192,7 @@ public class LayawayServlet extends HttpServlet {
         layaway.setLayaway_ID(Integer.parseInt(request.getParameter("new_layaway_ID")));
         layaway.setProductID(Integer.parseInt(request.getParameter("new_product_ID")));
         layaway.setProductQuantity(Integer.parseInt(request.getParameter("new_product_quantity")));
+        layaway.setLayaway_status(request.getParameter("new_layaway_status"));
         boolean success = layawayService.updateLayaway(layaway);
     }
     
