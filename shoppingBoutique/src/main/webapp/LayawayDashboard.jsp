@@ -12,7 +12,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Layaway Dashboard Page</title>
-         <style>
+        <style>
         body {
             font-family: Arial, sans-serif;
             line-height: 1.6;
