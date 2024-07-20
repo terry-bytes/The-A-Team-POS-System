@@ -8,7 +8,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Replenish Stock</title>
+    <title>Add Stock</title>
     <style>
         body {
             font-family: 'Open Sans', sans-serif;
