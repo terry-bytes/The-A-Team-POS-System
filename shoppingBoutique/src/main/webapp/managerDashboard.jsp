@@ -112,7 +112,7 @@
                 </div>
                                 
                                 
-                                <!<!-- Top selling employeee  -->
+                                <!-- Top selling employeee  -->
                 <div class="two">
                     <h4>Top Selling Employee</h4>
                         <form action="SalesDemo" method="post">
@@ -126,7 +126,7 @@
                             </div>
                         
                            
-                            <button type="submit" name="submit" value="filter">Filter</button>
+                            <button type="submit" name="submit" value="topEmp">Filter</button>
                         </form>
                     
                     
