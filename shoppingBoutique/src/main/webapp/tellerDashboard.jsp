@@ -333,7 +333,7 @@
                     <form action="ViewReportsServlet" method="post">
                         <button type="submit">View Reports</button>
                     </form>
-                    <form action="ViewReportsServlet" method="post">
+                    <form action="ProductServlet" method="post">
                         <button type="submit" name ="submit" value ="Inventory">Inventory Management</button>
                     </form>
                 </div>

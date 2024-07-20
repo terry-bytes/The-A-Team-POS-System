@@ -62,6 +62,7 @@ public class InventoryServlet extends HttpServlet {
             request.setAttribute("inventoryList", inventoryList);
             request.getRequestDispatcher("replenishStock.jsp").forward(request, response);
         } catch (Exception ex) {
+            request.setAttribute("message","couldnt load the jsp");
             Logger.getLogger(InventoryServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
