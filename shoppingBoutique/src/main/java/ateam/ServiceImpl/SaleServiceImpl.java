@@ -17,6 +17,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -115,8 +116,37 @@ public class SaleServiceImpl implements SaleService2{
     }
 
     @Override
-    public Map<String, Integer> generateTopSellingEmployee(int storeId) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public Map<String, Integer> generateTopSellingEmployee(int storeId, List<Employee> employees) {
+        List<Sale> sales = saleDao.getSalesbyStoreId(storeId);
+        
+        return getTopSellingEmployees(sales, employees);
+    }
+    
+    private Map<String, Integer> getTopSellingEmployees(List<Sale> sales, List<Employee> employees) {
+        Map<String, Integer> topSellingEmployees = new TreeMap<>();
+        Map<Integer, Integer> employeeSales = new HashMap<>();
+
+        // Use iterator for sales list
+        Iterator<Sale> salesIterator = sales.iterator();
+        while (salesIterator.hasNext()) {
+            Sale sale = salesIterator.next();
+            int employeeId = sale.getEmployee_ID();
+            employeeSales.put(employeeId, employeeSales.getOrDefault(employeeId, 0) + 1);
+        }
+
+        // Use iterator for employees list
+        Iterator<Employee> employeesIterator = employees.iterator();
+        while (employeesIterator.hasNext()) {
+            Employee employee = employeesIterator.next();
+            if (employee.getRole() == Role.Teller) {
+                int employeeId = employee.getEmployee_ID();
+                String employeeName = employee.getFirstName();
+                int totalSales = employeeSales.getOrDefault(employeeId, 0);
+                topSellingEmployees.put(employeeName, totalSales);
+            }
+        }
+
+        return topSellingEmployees;
     }
     
     

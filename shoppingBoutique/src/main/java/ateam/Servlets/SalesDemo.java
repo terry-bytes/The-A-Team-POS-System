@@ -90,15 +90,17 @@ public class SalesDemo extends HttpServlet {
         processRequest(request, response);
         switch(request.getParameter("submit")){
             case "filter":
-            {
+           
                 try {
                     handleMonthReport(request, response);
                 } catch (ParseException ex) {
                     Logger.getLogger(SalesDemo.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 break;
-            }
-
+            case "topEmp":
+                handleRequestTopEmployeeByStore(request, response);
+                break;
+                
         }
     }
 
@@ -138,5 +140,16 @@ public class SalesDemo extends HttpServlet {
     private Date dateFormatter(String date) throws ParseException{
         SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM");
         return inputFormat.parse(date);
+    }
+    
+    private void handleRequestTopEmployeeByStore(HttpServletRequest request, HttpServletResponse response) throws IOException{
+        List<Employee> emp = employeeService.getAllEmployees();
+        
+        Map<String, Integer> topSellingEmp = saleService.generateTopSellingEmployee(
+                Integer.parseInt(request.getParameter("storeId")), emp);
+        
+        HttpSession session = request.getSession(false);
+        session.setAttribute("topSellingEmp", topSellingEmp);
+        response.sendRedirect("SalesDemo");
     }
 }

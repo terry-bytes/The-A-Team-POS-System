@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 @WebServlet("/ProductServlet")
 public class ProductServlet extends HttpServlet {
@@ -117,6 +118,13 @@ public class ProductServlet extends HttpServlet {
                     break;
 
                 case "Complete-Sale":
+                    BigDecimal totalAmount = BigDecimal.valueOf(calculateTotalPrice(scannedItems));
+
+                    if (totalAmount.compareTo(BigDecimal.ZERO) <= 0) { // Check if total is zero or negative
+                        Logger.getLogger(ProductServlet.class.getName()).log(Level.WARNING, "Invalid total amount: " + totalAmount);
+                        request.setAttribute("errorMessage", "Total amount cannot be zero or negative.");
+                        break; // Don't proceed with saving the sale
+                    }
                     Sale newSale = new Sale();
                     newSale.setSales_date(new Timestamp(System.currentTimeMillis()));
                     newSale.setTotal_amount(BigDecimal.valueOf(calculateTotalPrice(scannedItems)));
@@ -153,9 +161,15 @@ public class ProductServlet extends HttpServlet {
                 // ... (other cases)
             }
 
-            double totalPrice = calculateTotalPrice(scannedItems);
+           List<BigDecimal> totalPricePerItem = scannedItems.stream()
+                .map(item -> BigDecimal.valueOf(item.getProduct_price()).multiply(BigDecimal.valueOf(item.getScanCount())))
+                .collect(Collectors.toList());
+
+            double totalPrice = calculateTotalPrice(scannedItems); // For display purposes (can be BigDecimal)
             request.setAttribute("scannedItems", scannedItems);
             request.setAttribute("totalPrice", totalPrice);
+            request.setAttribute("totalPricePerItem", totalPricePerItem); 
+
             request.getRequestDispatcher("tellerDashboard.jsp").forward(request, response);
         } catch (Exception e) {
             Logger.getLogger(ProductServlet.class.getName()).log(Level.SEVERE, "Error in ProductServlet", e);
@@ -175,7 +189,7 @@ public class ProductServlet extends HttpServlet {
     private String getManagerHashedPassword(int storeID) {
         String hashedPassword = null;
         try (Connection conn = dbConnect.connectToDB();
-             PreparedStatement stmt = conn.prepareStatement("SELECT employee_password FROM employees WHERE store_ID = ? AND role = 'Manager'")) {
+                PreparedStatement stmt = conn.prepareStatement("SELECT employee_password FROM employees WHERE store_ID = ? AND role = 'Manager'")) {
             stmt.setInt(1, storeID);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {

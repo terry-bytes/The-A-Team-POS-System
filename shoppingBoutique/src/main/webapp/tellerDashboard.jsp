@@ -1,7 +1,8 @@
 <%@page import="ateam.Models.Product"%>
 <%@page import="ateam.Models.Employee"%>
 <%@page import="java.util.List"%>
-<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <!DOCTYPE html>
 <html>
@@ -265,6 +266,7 @@
                                 <input type="text" id="card_amount" name="card_amount">
                             </div>
                         </div>
+                        <input type="hidden" id="scanned-items-count" name="scannedItemsCount" value="<c:out value='${fn:length(scannedItems)}'/>">
                         <button type="submit" name="submit" value="Complete-Sale">Complete Sale</button>
                     </form>
                     <div class="keyboard">
@@ -343,6 +345,33 @@
         <video id="barcode-scanner" autoplay></video>
 
         <script>
+            function validateForm() {
+                const scannedRows = document.querySelectorAll('.scanned-items table tr');
+                const itemCount = scannedRows.length - 1; 
+
+                if (itemCount === 0) {
+                    alert("Add at least one item before completing the sale.");
+                    return false;
+                }
+                return true; 
+            }
+
+            function checkPaymentMethod() {
+                var paymentMethod = document.getElementById("payment_method").value;
+                var cardDetails = document.getElementById("card-details");
+                var cashCardAmount = document.getElementById("cash-card-amount");
+
+                if (paymentMethod === "card") {
+                    cardDetails.style.display = "block";
+                    cashCardAmount.style.display = "none";
+                } else if (paymentMethod === "cardAndcash") {
+                    cardDetails.style.display = "block";
+                    cashCardAmount.style.display = "block";
+                } else {
+                    cardDetails.style.display = "none";
+                    cashCardAmount.style.display = "none";
+                }
+            }
 
             let isCapsLock = false;
 
