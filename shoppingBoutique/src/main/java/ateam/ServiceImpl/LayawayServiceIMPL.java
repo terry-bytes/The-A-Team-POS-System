@@ -46,4 +46,9 @@ public class LayawayServiceIMPL implements LayawayService {
     public boolean deleteLayaway(int layaway_ID) {
         return layawayDAO.deleteLayaway(layaway_ID);
     }   
+
+    @Override
+    public Layaway emailData(String customerEmail) {
+        return layawayDAO.emailData(customerEmail);
+    }
 }

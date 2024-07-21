@@ -102,6 +102,7 @@
                     buttonClickTime: buttonClickTime,
                     expiryTime: expiryTime,
                     customer_number: $("#customer_number").val(),
+                    customer_name: $("#customer_name").val(),
                     layaway_switch: $("input[name='layaway_switch']").val()  
                 },
                 success: function(response) {
@@ -119,12 +120,23 @@
     </head>
     <body>
         <h1>Choose an Option</h1>
+        
+         <%-- Display messages if they exist --%>
+        <%
+            String message = (String) request.getAttribute("message");
+            if (message != null && !message.isEmpty()) {
+        %>
+            <p><%= message %></p>
+        <% } %>
+        
         <form id="addLayawayForm" action="LayawayServlet" method="post">
             <h2>Add a Layaway</h2>
             <label>Enter the Product ID:</label>
             <input type="text" id="product_ID" name="product_ID"><br><br>
             <label>Enter the quantity:</label>
             <input type="text" id="product_quantity" name="product_quantity"><br><br>
+            <label>Enter customer name</label>
+            <input type="text" id="customer_name" name="customer_name"><br><br>
             <label>Enter Customer's Email</label>
             <input type="text" id="customer_email" name="customer_email"><br><br>
             <label>Enter Customer's Cell Phone Number</label>

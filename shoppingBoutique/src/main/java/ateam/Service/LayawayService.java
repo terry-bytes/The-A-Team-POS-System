@@ -24,4 +24,5 @@ public interface LayawayService {
 
     boolean deleteLayaway(int layaway_ID); 
     
+    Layaway emailData(String customerEmail);
 }

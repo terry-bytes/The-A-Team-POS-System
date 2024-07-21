@@ -31,7 +31,7 @@ public class LayawayDaoImpl implements LayawayDAO{
     @Override
     public boolean addLayaway(Layaway layaway) {
         if(connection != null){
-            String sql = "INSERT INTO layaways(employee_ID, start_date, expiry_date, layaway_status, customer_email, contact, product_ID, product_quantity) VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO layaways(employee_ID, start_date, expiry_date, layaway_status, customer_email, contact, product_ID, product_quantity, customer_name) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)";
             try(PreparedStatement preparedStatement = connection.prepareStatement(sql)){
                 preparedStatement.setInt(1, layaway.getEmployee_ID());
                 preparedStatement.setTimestamp(2, layaway.getStart_date());
@@ -41,6 +41,7 @@ public class LayawayDaoImpl implements LayawayDAO{
                 preparedStatement.setString(6, layaway.getCustomerNumber());
                 preparedStatement.setInt(7, layaway.getProductID());
                 preparedStatement.setInt(8, layaway.getProductQuantity());
+                preparedStatement.setString(9, layaway.getCustomerName());
                 
                 if(preparedStatement.executeUpdate() > 0) return true;
             } catch (SQLException ex) {
@@ -142,7 +143,27 @@ public class LayawayDaoImpl implements LayawayDAO{
         return false;
     }
     
-    public void emailData() {
-        
+    @Override
+    public Layaway emailData(String customerEmail) {
+        Layaway emailLayaway = new Layaway();
+        if(connection != null) {
+            String sql = "SELECT layaway_ID, start_date, expiry_date, product_ID, product_quantity FROM layaways WHERE customer_email = ?";
+            try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                preparedStatement.setString(1, customerEmail);
+                try(ResultSet resultSet  = preparedStatement.executeQuery()) {
+                    if(resultSet.next()) {
+                        emailLayaway.setLayaway_ID(resultSet.getInt("layaway_ID"));
+                        emailLayaway.setStart_date(resultSet.getTimestamp("start_date"));
+                        emailLayaway.setExpiry_date(resultSet.getTimestamp("expiry_date"));
+                        emailLayaway.setProductID(resultSet.getInt("product_ID"));
+                        emailLayaway.setProductQuantity(resultSet.getInt("product_quantity"));
+                    }
+                }
+                
+            } catch (SQLException ex) {
+                Logger.getLogger(LayawayDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return emailLayaway;
     }
 }

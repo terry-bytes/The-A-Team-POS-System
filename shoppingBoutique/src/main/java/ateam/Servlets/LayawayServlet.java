@@ -10,7 +10,9 @@ import ateam.DAOIMPL.LayawayDaoImpl;
 import ateam.Models.Email;
 import ateam.Models.Employee;
 import ateam.Models.Layaway;
+import ateam.Service.EmailService;
 import ateam.Service.LayawayService;
+import ateam.ServiceImpl.EmailServiceImpl;
 import ateam.ServiceImpl.LayawayServiceIMPL;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -38,6 +40,9 @@ public class LayawayServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private ScheduledExecutorService schedulerr;
+    private final EmailService emailService;
+    private String globalEmailAddress;
+    private String globalCustomerName;
     
     @Override
      public void init() throws ServletException {
@@ -50,6 +55,10 @@ public class LayawayServlet extends HttpServlet {
         super.destroy();
         schedulerr.shutdown();
     }
+     
+     public LayawayServlet() {
+         this.emailService = new EmailServiceImpl();
+     }
 
 
     /**
@@ -111,6 +120,7 @@ public class LayawayServlet extends HttpServlet {
        switch(layawaySwitch) {
            case "Add Layaway":
                handleAddingLayaway(request, response);
+               sendFirstEmail(request, response);
                break;
            case "View Layaway":
                handleSearchingLayawayByID(request, response);
@@ -160,15 +170,16 @@ public class LayawayServlet extends HttpServlet {
         layaway.setExpiry_date(expiryTime);
         layaway.setProductID(Integer.parseInt(request.getParameter("product_ID")));
         layaway.setProductQuantity(Integer.parseInt(request.getParameter("product_quantity")));
-        System.out.println(layaway.toString());
-        System.out.println(request.getParameter("customer_email"));
+        layaway.setCustomerName(request.getParameter("customer_name"));
+        globalEmailAddress = request.getParameter("customer_email");
+        globalCustomerName = request.getParameter("customer_name");
         // Add layaway to database
         boolean success = layawayService.addLayaway(layaway);
         if (success) {
          request.setAttribute("message", "Layaway saved successfully");
  
             // Schedule the test method to run after 5 seconds
-            schedulerr.schedule(() -> sendFirstEmail(), 5, TimeUnit.SECONDS);
+            schedulerr.schedule(() -> sendSecondEmail(), 5, TimeUnit.SECONDS);
         } else {
             request.setAttribute("message", "Failed to save Layaway");
     }
@@ -187,13 +198,21 @@ public class LayawayServlet extends HttpServlet {
         request.getRequestDispatcher("LayawayDashboard.jsp").forward(request, response);
     }
     
-    private void handleUpdatingLayaways(HttpServletRequest request, HttpServletResponse response) {
+    private void handleUpdatingLayaways(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Layaway layaway = new Layaway();
         layaway.setLayaway_ID(Integer.parseInt(request.getParameter("new_layaway_ID")));
         layaway.setProductID(Integer.parseInt(request.getParameter("new_product_ID")));
         layaway.setProductQuantity(Integer.parseInt(request.getParameter("new_product_quantity")));
         layaway.setLayaway_status(request.getParameter("new_layaway_status"));
         boolean success = layawayService.updateLayaway(layaway);
+        if (success) {
+         request.setAttribute("message", "Layaway Updated successfully");
+ 
+           
+        } else {
+            request.setAttribute("message", "Failed to Update Layaway");
+    }
+        request.getRequestDispatcher("LayawayDashboard.jsp").forward(request, response);
     }
     
     private void handleDeletingLayaways(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -202,30 +221,51 @@ public class LayawayServlet extends HttpServlet {
          request.setAttribute("message", "Layaway Deleted successfully");
  
             // Schedule the test method to run after 5 seconds
-            schedulerr.schedule(() -> sendFirstEmail(), 5, TimeUnit.SECONDS);
+            //schedulerr.schedule(() -> sendFirstEmail(), 5, TimeUnit.SECONDS);
         } else {
             request.setAttribute("message", "Failed to Delete Layaway");
     }
         request.getRequestDispatcher("LayawayDashboard.jsp").forward(request, response);
     }
     
-    private void sendFirstEmail() {
-        System.out.println("Hello World");
-    }
-    
-//    private void sendSecondEmail() {
-//        String msg = "Dear " + newEmployee.getFirstName() + " " + newEmployee.getLastName() + ",\nWelcome aboard! Your employee ID is " + employee.getEmployees_id()
-//                        + ". We're excited to have you on our team.\n\n\n\nBest regards,\n"
+    private void sendFirstEmail(HttpServletRequest request, HttpServletResponse response) {
+        //System.out.println("Hello World");
+        String customerName = request.getParameter("customer_name");
+        String customerEmail = request.getParameter("customer_email");
+        Layaway emailLayaway = layawayService.emailData(customerEmail);
+        
+        
+        String msg = "Dear " + customerName + " "  + ",\nCongratulations! Your Layaway ID is " + emailLayaway.getLayaway_ID()
+                        + ". We're excited to have your new Layaway. Please collect it before the " + emailLayaway.getExpiry_date() + "Your layaway product is: " + emailLayaway.getProductID() +"\n\n\n\nBest regards,\n";
 //                        + manager.getFirstName() + " " + manager.getLastName() + "\n"
 //                        + manager.getRole() + "(" + stores.getStore_name() + ")\n"
 //                        + "Carols Boutique\n"
 //                        + stores.getStore_phone();
-//
-//                Email emailDetails = new Email("ramovhatp@gmail.com", "xaed clmt qpis ctvf");
-//                emailDetails.setReceiver(newEmployee.getEmail());
-//                emailDetails.setSubject("Welcome to Carols Boutique! Your Registration is Complete");
-//                emailDetails.setMessage(msg);
-//
-//                emailService.sendMail(emailDetails);
-//    }
+
+                Email emailDetails = new Email("ramovhatp@gmail.com", "xaed clmt qpis ctvf");
+                emailDetails.setReceiver(customerEmail);
+                emailDetails.setSubject("Hello From Carols Boutique! Your Layaway Request is Complete");
+                emailDetails.setMessage(msg);
+
+                emailService.sendMail(emailDetails);
+    }
+    
+    private void sendSecondEmail() {
+        String customerEmail = globalEmailAddress;
+        String customerName = globalCustomerName;
+        Layaway emailLayaway = layawayService.emailData(customerEmail);
+        String msg = "Dear " + customerName + " "  + ",\nImportant! Your Layaway ID: " + emailLayaway.getLayaway_ID()
+                        + ". This is a gentle reminder to collect your layaway. You have 12 hours left. Please collect it before the " + emailLayaway.getExpiry_date() + "Your layaway product is: " + emailLayaway.getProductID() +"\n\n\n\nBest regards,\n";
+//                        + manager.getFirstName() + " " + manager.getLastName() + "\n"
+//                        + manager.getRole() + "(" + stores.getStore_name() + ")\n"
+//                        + "Carols Boutique\n"
+//                        + stores.getStore_phone();
+
+                Email emailDetails = new Email("ramovhatp@gmail.com", "xaed clmt qpis ctvf");
+                emailDetails.setReceiver(customerEmail);
+                emailDetails.setSubject("Hello From Carols Boutique! Your Layaway Request is Complete");
+                emailDetails.setMessage(msg);
+
+                emailService.sendMail(emailDetails);
+    }
 }
