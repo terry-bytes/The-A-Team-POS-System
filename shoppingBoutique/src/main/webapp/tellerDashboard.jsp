@@ -321,7 +321,7 @@
                         <button type="submit">Return Item</button>
                     </form>
                     <form action="LayAwayServlet" method="post">
-                        <button type="submit">Lay Away</button>
+                      <button onclick="redirectToAnotherPage()">Lay Away</button>
                     </form>
                     <form action="VoidSaleServlet" method="post">
                         <button type="submit">Void Sale</button>
@@ -345,15 +345,19 @@
         <video id="barcode-scanner" autoplay></video>
 
         <script>
+            function redirectToAnotherPage() {
+                // Redirect to another JSP page
+                window.location.href = 'LayawayDashboard.jsp'; // Replace 'AnotherPage.jsp' with your actual JSP page path
+            }
             function validateForm() {
                 const scannedRows = document.querySelectorAll('.scanned-items table tr');
-                const itemCount = scannedRows.length - 1; 
+                const itemCount = scannedRows.length - 1;
 
                 if (itemCount === 0) {
                     alert("Add at least one item before completing the sale.");
                     return false;
                 }
-                return true; 
+                return true;
             }
 
             function checkPaymentMethod() {
