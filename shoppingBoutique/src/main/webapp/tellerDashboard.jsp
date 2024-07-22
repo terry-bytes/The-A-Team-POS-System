@@ -320,7 +320,7 @@
                     <form action="ReturnItemServlet" method="post">
                         <button type="submit">Return Item</button>
                     </form>
-                    <form action="LayAwayServlet" method="post">
+                    <form action="LayawayDashboard.jsp" method="post">
                       <button onclick="redirectToAnotherPage()">Lay Away</button>
                     </form>
                     <form action="VoidSaleServlet" method="post">
@@ -329,7 +329,7 @@
                     <form action="RemoveItemServlet" method="post">
                         <button type="submit">Remove Item</button>
                     </form>
-                    <form action="SearchItemServlet" method="post">
+                    <form action="listProductVariants.jsp" method="post">
                         <button type="submit">Search Item</button>
                     </form>
                     <form action="ViewReportsServlet" method="post">
