@@ -329,7 +329,7 @@
                     <form action="RemoveItemServlet" method="post">
                         <button type="submit">Remove Item</button>
                     </form>
-                    <form action="SearchItemServlet" method="post">
+                    <form action="listProductVariants.jsp" method="post">
                         <button type="submit">Search Item</button>
                     </form>
                     <form action="ViewReportsServlet" method="post">
