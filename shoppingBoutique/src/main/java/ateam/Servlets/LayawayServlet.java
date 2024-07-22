@@ -263,7 +263,7 @@ public class LayawayServlet extends HttpServlet {
 
                 Email emailDetails = new Email("ramovhatp@gmail.com", "xaed clmt qpis ctvf");
                 emailDetails.setReceiver(customerEmail);
-                emailDetails.setSubject("Hello From Carols Boutique! Your Layaway Request is Complete");
+                emailDetails.setSubject("Hello From Carols Boutique! Your Layaway Request is Going to expire!!!");
                 emailDetails.setMessage(msg);
 
                 emailService.sendMail(emailDetails);
