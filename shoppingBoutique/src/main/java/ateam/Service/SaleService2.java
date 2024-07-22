@@ -20,6 +20,6 @@ public interface SaleService2 {
     List<Sale> getAllSales();
     Map<String, Integer> generateStoreMonthReport(int storeId, int month, int year);
     Map<String, Integer> generateTopSellingEmployee(List<Employee> employees);
-    Map<String, Integer> generateTopSellingEmployee(int storeId, List<Employee> employees);
-    Map<String, EmployeeMonthSales> generateTopEmployee(List<Employee> employees);
+    Map<String, Integer> generateTopSellingEmployee(int storeId, List<Employee> employee);
+
 }

@@ -15,6 +15,6 @@ import java.util.List;
 public interface InventoryService {
     
    void replenishStock(int product_ID, int store_ID, int quantity, int employee_ID) throws SQLException;
-    Inventory getInventoryByProductAndStore(int product_ID, int store_ID) throws SQLException;
-    List<Inventory> getInventoryByStore(int store_ID) throws SQLException;
+   List<Inventory>getAll() throws Exception;
+    
 }

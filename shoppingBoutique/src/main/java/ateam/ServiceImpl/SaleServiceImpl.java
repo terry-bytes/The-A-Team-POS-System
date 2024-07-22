@@ -18,6 +18,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -30,7 +31,6 @@ import java.util.TreeMap;
  */
 public class SaleServiceImpl implements SaleService2{
     private final SaleDAO saleDao;
- 
     
     public SaleServiceImpl(){
         this.saleDao = new SaleDAOIMPL();
@@ -43,10 +43,11 @@ public class SaleServiceImpl implements SaleService2{
     public Map<String, Integer> generateStoreMonthReport(int storeId, int month, int year){
         List<Sale> sales = saleDao.getSalesbyStoreId(storeId);
         
+        // LocalDate/Time, Duration
         
         Map<String, Integer> salesReport = new TreeMap<>();
         
-        Calendar startCalendar = Calendar.getInstance();
+        Calendar startCalendar = Calendar.getInstance(); 
         startCalendar.set(year, month - 1, 1, 0, 0, 0);
         startCalendar.set(Calendar.MILLISECOND, 0);
         Timestamp startDate = new Timestamp(startCalendar.getTimeInMillis());
@@ -69,7 +70,7 @@ public class SaleServiceImpl implements SaleService2{
         return salesReport;
     }
     
-    /*
+    /**
     Goal: Report for top selling employees across the company or in certain store
     UI: I think i need a form to select a store but when it load it should give employees of the company
         with their total sales
@@ -81,6 +82,7 @@ public class SaleServiceImpl implements SaleService2{
     I think i might need to have to methods to achieve this
     one method is gonna calculate the total sales of the company
     another is for the store to 
+    * 
     */
 
     /*
@@ -95,55 +97,14 @@ public class SaleServiceImpl implements SaleService2{
     */
     @Override
     public Map<String, Integer> generateTopSellingEmployee(List<Employee> employees) {
-        List<Sale> sales = saleDao.getAllSales();
-        
+        List<Sale> sales = saleDao.getAllSales();       
         return topEmp(sales, employees);
     }
 
     @Override
     public Map<String, Integer> generateTopSellingEmployee(int storeId, List<Employee> employees) {
         List<Sale> sales = saleDao.getSalesbyStoreId(storeId);
-  
         return topEmp(sales, employees);
-    }
-
-    /*
-    Goal: I want to develop a report for top selling employee accross the company
-    i have the list of sales and employee
-    i have created a DTO called EmployeeMonthSales which will hold the total number of sales and storeId
-    so what i want to achieve with this i want to return a treeMap that hold a string name of the employee
-    and employeemonthSales which is total sales for that employee and store Id
-    the store id will help when filtering in client side
-    problem I have is how am I gonna achieve this and how am I gonna fill the employeeMonthSale DTO for each employee
-    */
-    @Override
-    public Map<String, EmployeeMonthSales> generateTopEmployee(List<Employee> employees) {
-       List<Sale> sales = saleDao.getAllSales();
-       
-       Map<String, EmployeeMonthSales> employeeSalesMap = new TreeMap<>();
-       for(Sale sale : sales){
-           int employee_Id = sale.getEmployee_ID();
-           int storeId = sale.getStore_ID();
-           
-           Employee employee = employees.stream()
-                   .filter(emp -> emp.getEmployee_ID() == employee_Id)
-                   .findFirst()
-                   .orElse(null);
-           if(employee == null)
-               continue;
-           
-           String employeeName = employee.getFirstName();
-           EmployeeMonthSales employeeMonthSales = employeeSalesMap.get(employeeName);
-           if(employeeMonthSales == null){
-               employeeMonthSales = new EmployeeMonthSales(storeId, 1);
-               employeeSalesMap.put(employeeName, employeeMonthSales);
-           }else{
-               int total = employeeSalesMap.get(employeeName).getTotalSales();
-               employeeMonthSales.setTotalSales(total+1);
-               
-           }
-       }
-       return employeeSalesMap;
     }
     
     private Map<String, Integer> topEmp(List<Sale> sales, List<Employee> employees){

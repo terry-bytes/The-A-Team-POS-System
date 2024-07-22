@@ -29,7 +29,7 @@
                 </li>
                 <li>
                     <i class="fa fa-users" aria-hidden="true"></i>
-                    <a href="#" class="nav-item">My Employees</a>
+                    <a href="employees?submit=getAddEmployee" class="nav-item">My Employees</a>
                 </li>
                 <li>
                     <i class="fa fa-shopping-bag" aria-hidden="true"></i>
