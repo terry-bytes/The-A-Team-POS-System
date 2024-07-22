@@ -320,7 +320,7 @@
                     <form action="ReturnItemServlet" method="post">
                         <button type="submit">Return Item</button>
                     </form>
-                    <form action="LayAwayServlet" method="post">
+                    <form action="LayawayDashboard.jsp" method="post">
                       <button onclick="redirectToAnotherPage()">Lay Away</button>
                     </form>
                     <form action="VoidSaleServlet" method="post">
