@@ -17,6 +17,7 @@ import ateam.Service.StoreService;
 import ateam.ServiceImpl.EmployeeServiceImpl;
 import ateam.ServiceImpl.SaleServiceImpl;
 import ateam.ServiceImpl.StoreServiceImpl;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.text.ParseException;
@@ -28,8 +29,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -90,15 +93,28 @@ public class SalesDemo extends HttpServlet {
         processRequest(request, response);
         switch(request.getParameter("submit")){
             case "filter":
-            {
+            
                 try {
                     handleMonthReport(request, response);
                 } catch (ParseException ex) {
                     Logger.getLogger(SalesDemo.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 break;
-            }
-
+            case "topEmpByStore":
+                int storeId = Integer.parseInt(request.getParameter("storeId"));
+                List<Employee> employees = employeeService.getAllEmployees();
+                Map<String, Integer> topSellingEmpByStore = saleService.generateTopSellingEmployee(storeId, employees);
+                
+                List<String> labels = topSellingEmpByStore.keySet().stream().collect(Collectors.toList());
+                List<Integer> data = topSellingEmpByStore.values().stream().collect(Collectors.toList());
+                
+                Map<String, Object> jsonResponse = new HashMap<>();
+                jsonResponse.put("labels", labels);
+                jsonResponse.put("data", data);
+                
+                response.setContentType("application/json");
+                response.getWriter().write(new ObjectMapper().writeValueAsString(jsonResponse));
+                break;
         }
     }
 

@@ -1,4 +1,5 @@
 
+<%@page import="ateam.DTO.EmployeeMonthSales"%>
 <%-- 
     Document   : managerDashboard
     Created on : Jul 10, 2024, 1:27:16 PM
@@ -112,12 +113,12 @@
                 </div>
                                 
                                 
-                                <!<!-- Top selling employeee  -->
+                                <!-- Top selling employeee  -->
                 <div class="two">
                     <h4>Top Selling Employee</h4>
                         <form action="SalesDemo" method="post">
                             <div>
-                                <select class="select-box" name="storeId">
+                                <select id="employeeSalesPerStore" class="select-box" name="storeId">
                                     <% if(stores != null) {
                                         for(Store store : stores) { %>
                                         <option value="<%=store.getStore_ID() %>"><%=store.getStore_name() %></option>
@@ -277,30 +278,63 @@
         }
         %>    
         <script>
-            var topCtx = document.getElementById("topEmpBar").getContext('2d');
-            console.log(<%=topEmpLabels.toString()%>);
-            var topEmpBar = new Chart(topCtx, {
-                type: 'bar',
-                data: {
-                    labels: [<%=topEmpLabels.toString()%>],
-                    datasets:[{
-                        label: 'Top selling employee',
-                        data: [<%=topEmpData.toString()%>],
-                        backgroundColor: 'rgba(61, 179, 242, 0.2)',  // Light blue background color
-                        borderColor: 'rgba(61, 179, 242, 1)',
-                        borderWidth: 2,
-                        borderRadius: 5,
-                        borderSkipped: false
-                    }]
-                },
-               options: {
-                    scales: {
-                        y: {
-                          beginAtZero: true
+            document.addEventListener('DOMContentLoaded', function() {
+                const emp = document.getElementById('employeeSalesPerStore');
+                const topCtx = document.getElementById("topEmpBar").getContext('2d');
+
+                // Initialize the chart with the sorted data
+                const topEmpBar = new Chart(topCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: [<%= topEmpLabels.toString() %>],
+                        datasets: [{
+                            label: 'Top Selling Employee',
+                            data: [<%= topEmpData.toString() %>],
+                            backgroundColor: 'rgba(61, 179, 242, 0.2)',  // Light blue background color
+                            borderColor: 'rgba(61, 179, 242, 1)',
+                            borderWidth: 2,
+                            borderRadius: 5,
+                            borderSkipped: false
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
                         }
                     }
-                }
-            });
+                });
+
+                // Event listener for storeId changes
+                emp.addEventListener('change', function() {
+                    const storeId = emp.value;
+
+                    // Fetch new data based on storeId
+                    fetch('SalesDemo', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: new URLSearchParams({
+                            storeId: storeId,
+                            submit: 'topEmpByStore'  // Include an action parameter if needed for the server logic
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        // Assuming `data` is an object with `labels` and `data` arrays
+                        const labels = data.labels;
+                        const salesData = data.data;
+                        console.log(salesData);
+                        // Update the chart with new data
+                        topEmpBar.data.labels = labels;
+                        topEmpBar.data.datasets[0].data = salesData;
+                        topEmpBar.update();
+                    })
+                    .catch(error => console.error('Error fetching data:'+ error));
+                            });
+                        });
         </script>
         <% }%>
     <% }%> 
