@@ -5,6 +5,7 @@
 package ateam.Service;
 
 import ateam.Models.Inventory;
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -13,10 +14,7 @@ import java.util.List;
  */
 public interface InventoryService {
     
-    boolean addAnInventory(Inventory inventory, int addedByEmployeeId);
-    Inventory getInventoryById(int inventory_ID);
-    List<Inventory> getAllTheInventories();
-    boolean updateTheInventory(Inventory inventory);
-    boolean deleteAnInventory(int inventory_ID);
+   void replenishStock(int product_ID, int store_ID, int quantity, int employee_ID) throws SQLException;
+   List<Inventory>getAll() throws Exception;
     
 }

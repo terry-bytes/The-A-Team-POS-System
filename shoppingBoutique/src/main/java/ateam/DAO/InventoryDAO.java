@@ -3,15 +3,14 @@ package ateam.DAO;
 import ateam.Models.Inventory;
 import java.util.List;
 
+
+
 public interface InventoryDAO {
-
-    boolean addInventory(Inventory inventory, int addedByEmployeeId);
-
-    Inventory getInventoryById(int inventory_ID);
-
-    List<Inventory> getAllInventories();
-
-    boolean updateInventory(Inventory inventory);
-
-    boolean deleteInventory(int inventory_ID);
+    
+    
+    void logInventoryTransaction(Inventory inventory) throws Exception;
+    int getPreviousQuantity(int productId) throws Exception;
+    void updateProductQuantity(int productId, int newQuantity) throws Exception;
+    List<Inventory> getAllInventories() throws Exception;
+    
 }

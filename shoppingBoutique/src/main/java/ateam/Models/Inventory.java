@@ -14,7 +14,9 @@ public class Inventory {
     private int product_ID;
     private int store_ID;
     private int inventory_quantity;
+    private int previous_quantity;
     private int reorder_point;
     private Timestamp last_updated;
-    private int added_by_employee_ID;
+    private int updated_by_employee_ID;
+    
 }
