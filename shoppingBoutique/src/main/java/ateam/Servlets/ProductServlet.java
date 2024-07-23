@@ -69,16 +69,19 @@ public class ProductServlet extends HttpServlet {
                     session.setAttribute("foundProducts", foundProducts);
                     if (!foundProducts.isEmpty()) {
                         Product productToAdd = foundProducts.get(0);
-
                         boolean foundInScannedItems = false;
+
+                        // Check if the product is already in the scannedItems list
                         for (Product scannedItem : scannedItems) {
-                            if (scannedItem.getProduct_SKU().equals(sku)) {
+                            if (scannedItem.equals(productToAdd)) {
+                                // Increase the quantity if the item is already scanned
                                 scannedItem.setScanCount(scannedItem.getScanCount() + 1);
                                 foundInScannedItems = true;
                                 break;
                             }
                         }
 
+                        // If not found, add it to the list with count set to 1
                         if (!foundInScannedItems) {
                             productToAdd.setScanCount(1);
                             scannedItems.add(productToAdd);
@@ -103,8 +106,10 @@ public class ProductServlet extends HttpServlet {
                         for (Product item : scannedItems) {
                             if (item.getProduct_SKU().equals(skuToRemove)) {
                                 if (item.getScanCount() > 1) {
+                                    // Decrease the quantity if more than one
                                     item.setScanCount(item.getScanCount() - 1);
                                 } else {
+                                    // Remove item if scan count is 1
                                     scannedItems.remove(item);
                                 }
                                 break;
@@ -161,14 +166,15 @@ public class ProductServlet extends HttpServlet {
                 // ... (other cases)
             }
 
-           List<BigDecimal> totalPricePerItem = scannedItems.stream()
-                .map(item -> BigDecimal.valueOf(item.getProduct_price()).multiply(BigDecimal.valueOf(item.getScanCount())))
-                .collect(Collectors.toList());
+            // Calculate total price per item and overall total price
+            List<BigDecimal> totalPricePerItem = scannedItems.stream()
+                    .map(item -> BigDecimal.valueOf(item.getProduct_price()).multiply(BigDecimal.valueOf(item.getScanCount())))
+                    .collect(Collectors.toList());
 
             double totalPrice = calculateTotalPrice(scannedItems); // For display purposes (can be BigDecimal)
             request.setAttribute("scannedItems", scannedItems);
             request.setAttribute("totalPrice", totalPrice);
-            request.setAttribute("totalPricePerItem", totalPricePerItem); 
+            request.setAttribute("totalPricePerItem", totalPricePerItem);
 
             request.getRequestDispatcher("tellerDashboard.jsp").forward(request, response);
         } catch (Exception e) {
@@ -188,8 +194,7 @@ public class ProductServlet extends HttpServlet {
 
     private String getManagerHashedPassword(int storeID) {
         String hashedPassword = null;
-        try (Connection conn = dbConnect.connectToDB();
-                PreparedStatement stmt = conn.prepareStatement("SELECT employee_password FROM employees WHERE store_ID = ? AND role = 'Manager'")) {
+        try (Connection conn = dbConnect.connectToDB(); PreparedStatement stmt = conn.prepareStatement("SELECT employee_password FROM employees WHERE store_ID = ? AND role = 'Manager'")) {
             stmt.setInt(1, storeID);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
