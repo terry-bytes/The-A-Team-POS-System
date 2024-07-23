@@ -82,6 +82,7 @@ public class ProductServlet extends HttpServlet {
                         if (!foundInScannedItems) {
                             productToAdd.setScanCount(1);
                             scannedItems.add(productToAdd);
+                            request.setAttribute("ScannedItemsList", scannedItems);
                         }
                     }
                     break;

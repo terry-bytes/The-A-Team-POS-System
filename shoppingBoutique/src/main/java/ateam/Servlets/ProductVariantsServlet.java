@@ -13,7 +13,8 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet(name = "ProductVariantsServlet", urlPatterns = "/productVariants")
+
+   @WebServlet(name = "ProductVariantsServlet", urlPatterns = "/productVariants")
 public class ProductVariantsServlet extends HttpServlet {
 
     private ProductVariantsService productVariantsService;
@@ -22,8 +23,7 @@ public class ProductVariantsServlet extends HttpServlet {
     public void init() throws ServletException {
         super.init();
         try {
-            // Initialize the service here
-            productVariantsService = new ProductVariantsServiceImpl();
+            productVariantsService = new ProductVariantsServiceImpl(); // Ensure correct import
         } catch (Exception e) {
             throw new ServletException("Failed to initialize ProductVariantsServiceImpl", e);
         }

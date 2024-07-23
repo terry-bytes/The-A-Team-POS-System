@@ -119,8 +119,9 @@ public class LayawayServlet extends HttpServlet {
         System.out.println("layaway_switch parameter value: " + layawaySwitch);
        switch(layawaySwitch) {
            case "Add Layaway":
-               handleAddingLayaway(request, response);
-               sendFirstEmail(request, response);
+               //handleAddingLayaway(request, response);
+               //sendFirstEmail(request, response);
+               handleNewLayawayAdding(request, response);
                break;
            case "View Layaway":
                handleSearchingLayawayByID(request, response);
@@ -184,6 +185,31 @@ public class LayawayServlet extends HttpServlet {
             request.setAttribute("message", "Failed to save Layaway");
     }
         request.getRequestDispatcher("LayawayDashboard.jsp").forward(request, response);
+    }
+    
+    private void handleNewLayawayAdding(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
+        Employee employee = (Employee) session.getAttribute("Employee");
+        List<Layaway> scannedItems = (List<Layaway>) session.getAttribute("ScannedItemsList");
+        
+        if (scannedItems != null) {
+            for (Layaway item : scannedItems) {
+                // Output item details to console
+                System.out.println("Product SKU: " + item.getProductSKU());
+                System.out.println("Product Name: " + item.getProductName());
+                System.out.println("Product Price: " + item.getProductPrice());
+                System.out.println("------------------------------------");
+            }
+        } else {
+            // Output message if scannedItems is null or empty
+            System.out.println("No scanned items found.");
+        }
+
+        // Set attribute to indicate showing popup
+        request.setAttribute("showPopup", true);
+        
+        // Forward the request to the JSP
+        request.getRequestDispatcher("tellerDashboard.jsp").forward(request, response);
     }
     
     private void handleSearchingLayawayByID(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

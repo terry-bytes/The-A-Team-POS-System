@@ -93,8 +93,8 @@ public class ProductVariantsDAOImpl implements ProductVariantsDAO {
                 variants.add(new ProductVariants(
                         rs.getInt("variant_ID"),
                         rs.getString("product_SKU"),
-                        rs.getString("size"),
-                        rs.getString("color"),
+                        rs.getString("product_size"),
+                        rs.getString("product_colour"),
                         rs.getInt("store_ID")
                 ));
             }

@@ -21,4 +21,7 @@ public class Layaway {
     private int productQuantity;
     private String customerNumber;
     private String customerName;
+    private String productName;
+    private String productSKU;
+    private int productPrice;
 }

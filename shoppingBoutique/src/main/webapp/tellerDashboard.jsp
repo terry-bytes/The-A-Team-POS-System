@@ -1,3 +1,5 @@
+<%@page import="ateam.Models.Layaway"%>
+<%@page import="java.util.ArrayList"%>
 <%@page import="ateam.Models.Product"%>
 <%@page import="ateam.Models.Employee"%>
 <%@page import="java.util.List"%>
@@ -8,7 +10,52 @@
 <html>
     <head>
         <title>Barcode Scanner</title>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+        <!-- Include jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+    <script type="text/javascript">
+       
+     // Function to show the popup
+        function showPopup() {
+            document.getElementById('popupForm').style.display = 'block';
+        }
+
+        // Function to hide the popup
+        function hidePopup() {
+            document.getElementById('popupForm').style.display = 'none';
+        }
+
+        // Function to submit the popup form via AJAX
+        function submitForm() {
+            var customerName = document.getElementById('customerName').value;
+            var customerSurname = document.getElementById('customerSurname').value;
+            var customerEmail = document.getElementById('customerEmail').value;
+
+            $.ajax({
+                type: 'POST',
+                url: '/LayawayServlet', // Replace with your actual servlet URL
+                data: {
+                    action: 'completeLayaway',
+                    customerName: customerName,
+                    customerSurname: customerSurname,
+                    customerEmail: customerEmail
+                },
+                success: function(response) {
+                    alert('Layaway completed successfully!');
+                    hidePopup(); // Hide the popup after success
+                    location.reload(); // Refresh the page or update as needed
+                },
+                error: function() {
+                    alert('Failed to complete layaway. Please try again.');
+                }
+            });
+        }
+        
+        // Function to close the popup when clicking on close button (X)
+        function closePopup() {
+            hidePopup();
+        }
+    </script>
         <style>
             .green-arrow-button {
                 background-color: #28a745; /* Green background */
@@ -141,7 +188,7 @@
                 background: #2980b9;
             }
             #barcode-scanner {
-                display: none; /* Hide the camera element */
+              
             }
             .right-section {
                 flex: 1;
@@ -167,10 +214,65 @@
                 border-radius: 50%;
                 margin-right: 10px;
             }
+            
+            .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .popup-content {
+            position: relative;
+            background-color: #fff;
+            border: 1px solid #333;
+            width: 50%; /* Adjust width as needed */
+            margin: 10% auto;
+            padding: 20px;
+        }
+
+        .popup-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+        }
         </style>
     </head>
 
     <body>
+        
+         <h1>Layaway Dashboard</h1>
+    <%-- Check if showPopup attribute is true --%>
+    <c:if test="${requestScope.showPopup}">
+        <div id="popupForm" style="display: block; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000;">
+            <div style="position: relative; margin: 10% auto; width: 50%; padding: 20px; background-color: #fff; border: 1px solid #333;">
+                 <span class="popup-close" onclick="closePopup()">&times;</span> <!-- Close button (X) -->
+                 <h1>Process Layaway</h1>
+                <h2>Enter Customer Details</h2>
+                <form id="customerForm">
+                    <label for="customerName">Name:</label>
+                    <input type="text" id="customerName" name="customerName" required><br><br>
+                    <label for="customerSurname">Surname:</label>
+                    <input type="text" id="customerSurname" name="customerSurname" required><br><br>
+                    <label for="customerEmail">Email:</label>
+                    <input type="email" id="customerEmail" name="customerEmail" required><br><br>
+                    <input type="button" value="Submit" onclick="submitForm()">
+                </form>
+            </div>
+        </div>
+        <script>
+            // Call showPopup function when page loads if showPopup attribute is true
+            window.onload = function() {
+                showPopup();
+            }
+        </script>
+    </c:if>
+        
         <div class="container">
             <div class="left-section">
                 <div class="user-info">
@@ -208,12 +310,11 @@
                                         <td>${item.product_name}</td>
                                         <td>${item.scanCount}</td>
                                         <td>${item.product_price}</td>
-                                        <td>
+                                        <td>  
                                             <form action="ProductServlet" method="post" style="display:inline;">
                                                 <input type="hidden" name="sku" value="${item.product_SKU}">
                                                 <button type="submit" name="submit" value="Remove-Item">Remove</button>
                                             </form>
-
                                         </td>
                                     </tr>
                                 </c:forEach>
@@ -269,6 +370,9 @@
                         <input type="hidden" id="scanned-items-count" name="scannedItemsCount" value="<c:out value='${fn:length(scannedItems)}'/>">
                         <button type="submit" name="submit" value="Complete-Sale">Complete Sale</button>
                     </form>
+                        <form action="LayawayServlet" method="post">
+                             <button type="submit" name="layaway_switch" value="Add Layaway">Complete-Layaway</button>
+                        </form>
                     <div class="keyboard">
                         <div class="key" onclick="appendToInput('1')">1</div>
                         <div class="key" onclick="appendToInput('2')">2</div>
@@ -438,31 +542,34 @@
                 }
             });
 
-            function startScanner() {
-                Quagga.init({
-                    inputStream: {
-                        name: "Live",
-                        type: "LiveStream",
-                        target: document.querySelector('#barcode-scanner')
-                    },
-                    decoder: {
-                        readers: ["code_128_reader"]
-                    }
-                }, function (err) {
-                    if (err) {
-                        console.error(err);
-                        return;
-                    }
-                    Quagga.start();
-                });
+            // Modify your startScanner() function to ensure visibility
+function startScanner() {
+    Quagga.init({
+        inputStream: {
+            name: "Live",
+            type: "LiveStream",
+            target: document.querySelector('#barcode-scanner')
+        },
+        decoder: {
+            readers: ["code_128_reader"]
+        }
+    }, function (err) {
+        if (err) {
+            console.error(err);
+            return;
+        }
+        // Show the video element before starting
+        document.getElementById('barcode-scanner').style.display = 'block';
+        Quagga.start();
+    });
 
-                Quagga.onDetected(function (result) {
-                    var code = result.codeResult.code;
-                    document.getElementById("manual-sku").value = code;
-                    document.getElementById("auto-submit").click();
-                    Quagga.stop();
-                });
-            }
+    Quagga.onDetected(function (result) {
+        var code = result.codeResult.code;
+        document.getElementById("manual-sku").value = code;
+        document.getElementById("auto-submit").click();
+        Quagga.stop();
+    });
+}
             startScanner();
         </script>
     </body>
