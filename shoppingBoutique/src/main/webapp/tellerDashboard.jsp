@@ -187,7 +187,7 @@
                     </div>
                 </div>
 
-                <div class="scanned-items">
+              <div class="scanned-items">
                     <h2>Scanned Items</h2>
                     <c:choose>
                         <c:when test="${empty scannedItems}">
@@ -198,6 +198,8 @@
                                 <tr>
                                     <th>Product SKU</th>
                                     <th>Name</th>
+                                    <th>Size</th>
+                                    <th>Color</th>
                                     <th>Quantity</th>
                                     <th>Price</th>
                                     <th>Action</th>
@@ -206,6 +208,8 @@
                                     <tr>
                                         <td>${item.product_SKU}</td>
                                         <td>${item.product_name}</td>
+                                        <td>${item.size}</td>
+                                        <td>${item.color}</td>
                                         <td>${item.scanCount}</td>
                                         <td>${item.product_price}</td>
                                         <td>
@@ -213,7 +217,6 @@
                                                 <input type="hidden" name="sku" value="${item.product_SKU}">
                                                 <button type="submit" name="submit" value="Remove-Item">Remove</button>
                                             </form>
-
                                         </td>
                                     </tr>
                                 </c:forEach>

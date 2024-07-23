@@ -23,49 +23,58 @@ public class ProductDAOIMPL implements ProductDAO {
         this.connection = new Connect().connectToDB();
     }
 
-@Override
-public List<Product> getProductBySKU(String productSKU) {
-    List<Product> products = new ArrayList<>();
-    Product product = null;
-    PreparedStatement preparedStatement = null;
-    ResultSet resultSet = null;
+    @Override
+    public List<Product> getProductBySKU(String productSKU) {
+        List<Product> getProduct = new ArrayList<>();
+        Product product = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
 
-    try {
-        // Split SKU code into base SKU and variant details
-        String[] parts = productSKU.split("-");
-        if (parts.length < 1) {
-            throw new IllegalArgumentException("Invalid SKU format");
+        try {
+            // Decode the barcode
+            String[] parts = productSKU.split("-");
+            if (parts.length != 3) {
+                // Invalid barcode format
+                throw new IllegalArgumentException("Invalid barcode format");
+            }
+
+            String sku = parts[0];
+            String size = parts[1];
+            String color = parts[2];
+
+            String sql = "SELECT p.*, pv.size, pv.color FROM products p "
+                    + "JOIN productvariants pv ON p.product_SKU = pv.product_SKU "
+                    + "WHERE p.product_SKU = ? AND pv.size = ? AND pv.color = ?";
+
+            preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, sku);
+            preparedStatement.setString(2, size);
+            preparedStatement.setString(3, color);
+
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                product = new Product();
+                product.setProduct_ID(resultSet.getInt("product_ID"));
+                product.setProduct_name(resultSet.getString("product_name"));
+                product.setProduct_description(resultSet.getString("product_description"));
+                product.setProduct_price(resultSet.getDouble("product_price"));
+                product.setCategory_ID(resultSet.getInt("category_ID"));
+                product.setProduct_SKU(resultSet.getString("product_SKU"));
+                product.setQuantity_in_stock(resultSet.getInt("quantity_in_stock"));
+                product.setProduct_image_path(resultSet.getString("productImagePath"));
+                product.setSize(resultSet.getString("size"));
+                product.setColor(resultSet.getString("color"));
+                getProduct.add(product);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            close(resultSet, preparedStatement);
         }
-        
-        String baseSKU = parts[0];
-        
-        // Prepare SQL statement to query products by base SKU
-        String sql = "SELECT * FROM products WHERE product_SKU = ?";
-        preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setString(1, baseSKU);
 
-        resultSet = preparedStatement.executeQuery();
-
-        while (resultSet.next()) {
-            product = new Product();
-            product.setProduct_ID(resultSet.getInt("product_ID"));
-            product.setProduct_name(resultSet.getString("product_name"));
-            product.setProduct_description(resultSet.getString("product_description"));
-            product.setProduct_price(resultSet.getDouble("product_price"));
-            product.setCategory_ID(resultSet.getInt("category_ID"));
-            product.setProduct_SKU(resultSet.getString("product_SKU"));
-            product.setQuantity_in_stock(resultSet.getInt("quantity_in_stock"));
-            product.setProduct_image_path(resultSet.getString("productImagePath"));
-            products.add(product);
-        }
-    } catch (SQLException e) {
-        e.printStackTrace();
-    } finally {
-        close(resultSet, preparedStatement);
+        return getProduct;
     }
-
-    return products;
-}
 
     private void close(AutoCloseable... closeables) {
         if (closeables != null) {

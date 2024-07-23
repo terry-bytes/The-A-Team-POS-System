@@ -18,6 +18,8 @@ public class Product {
     private int quantity_in_stock;
     private String product_image_path;
     private int scanCount;
+    private String size;
+    private String color;
 
     @Override
     public boolean equals(Object o) {
