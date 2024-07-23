@@ -19,4 +19,18 @@ public class Product {
     private String product_image_path;
     private int scanCount;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Product product = (Product) o;
+
+        return product_SKU != null ? product_SKU.equals(product.product_SKU) : product.product_SKU == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return product_SKU != null ? product_SKU.hashCode() : 0;
+    }
 }
