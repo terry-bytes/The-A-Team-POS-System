@@ -33,16 +33,20 @@ public class InventoryServiceImpl implements InventoryService {
         // Get previous quantity
         int previousQuantity = 0;
         try {
-            previousQuantity = inventoryDAO.getPreviousQuantity(productId);
+            previousQuantity = inventoryDAO.getPreviousStoreQuantity(productId,storeId);
         } catch (Exception ex) {
             Logger.getLogger(InventoryServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
         inventory.setPrevious_quantity(previousQuantity);
+        
+        
 
-        // Set other properties
-        inventory.setReorder_point(0); // Modify as needed
+        // Set other properties before we add on inventory
+        inventory.setReorder_point(5); 
         inventory.setLast_updated(new Timestamp(System.currentTimeMillis()));
         inventory.setUpdated_by_employee_ID(employeeId);
+        
+        
 
         try {
             // Log inventory transaction
@@ -51,7 +55,7 @@ public class InventoryServiceImpl implements InventoryService {
             Logger.getLogger(InventoryServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        // Update product quantity
+        // Update product quantity as I add on the inventory
         int newQuantity = previousQuantity + additionalStock;
         try {
             inventoryDAO.updateProductQuantity(productId, newQuantity);

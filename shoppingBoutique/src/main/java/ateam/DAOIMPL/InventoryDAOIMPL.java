@@ -31,21 +31,40 @@ public class InventoryDAOIMPL implements InventoryDAO {
         }
     }
 
+//    @Override
+//    public int getPreviousQuantity(int productId) throws Exception {
+//        String sql = "SELECT quantity_in_stock FROM products WHERE product_ID = ?";
+//        try (Connection conn = new Connect().connectToDB();
+//             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+//            pstmt.setInt(1, productId);
+//            try (ResultSet rs = pstmt.executeQuery()) {
+//                if (rs.next()) {
+//                    return rs.getInt("quantity_in_stock");
+//                } else {
+//                    throw new Exception("Product not found.");
+//                }
+//            }
+//        } catch (SQLException ex) {
+//            throw new Exception("Error fetching previous quantity: " + ex.getMessage(), ex);
+//        }
+//    }
+    
     @Override
-    public int getPreviousQuantity(int productId) throws Exception {
-        String sql = "SELECT quantity_in_stock FROM products WHERE product_ID = ?";
+    public int getPreviousStoreQuantity(int productId, int storeID) throws Exception {
+         String sql = "SELECT inventory_quantity FROM inventory WHERE product_ID = ? AND store_ID = ?";
         try (Connection conn = new Connect().connectToDB();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, productId);
+            pstmt.setInt(2, storeID);
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
-                    return rs.getInt("quantity_in_stock");
+                    return rs.getInt("inventory_quantity");
                 } else {
-                    throw new Exception("Product not found.");
+                    throw new Exception("Inventory not found for the specified product and store.");
                 }
             }
         } catch (SQLException ex) {
-            throw new Exception("Error fetching previous quantity: " + ex.getMessage(), ex);
+            throw new Exception("Error fetching previous store quantity: " + ex.getMessage(), ex);
         }
     }
 
@@ -77,6 +96,7 @@ public class InventoryDAOIMPL implements InventoryDAO {
                 inventory.setProduct_ID(rs.getInt("product_ID"));
                 inventory.setStore_ID(rs.getInt("store_ID"));
                 inventory.setInventory_quantity(rs.getInt("inventory_quantity"));
+                inventory.setPrevious_quantity(rs.getInt("previous_quantity"));
                 inventory.setReorder_point(rs.getInt("reorder_point"));
                 inventory.setLast_updated(rs.getTimestamp("last_updated"));
                 inventory.setUpdated_by_employee_ID(rs.getInt("updated_by_employee_ID"));

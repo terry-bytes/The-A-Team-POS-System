@@ -92,6 +92,7 @@
                 <th>Inventory ID</th>
                 <th>Product ID</th>
                 <th>Store ID</th>
+                <th>Previous Quantity</th>
                 <th>Quantity</th>
                 <th>Reorder Point</th>
                 <th>Last Updated</th>
@@ -104,6 +105,7 @@
                     <td>${inventory.inventory_ID}</td>
                     <td>${inventory.product_ID}</td>
                     <td>${inventory.store_ID}</td>
+                    <td>${inventory.previous_quantity }</td>
                     <td>${inventory.inventory_quantity}</td>
                     <td>${inventory.reorder_point}</td>
                     <td>${inventory.last_updated}</td>
