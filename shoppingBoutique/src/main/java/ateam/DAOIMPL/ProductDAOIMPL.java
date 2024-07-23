@@ -23,39 +23,49 @@ public class ProductDAOIMPL implements ProductDAO {
         this.connection = new Connect().connectToDB();
     }
 
-    @Override
-    public List<Product> getProductBySKU(String productSKU) {
-        List<Product> getProduct = new ArrayList();
-        Product product = null;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
+@Override
+public List<Product> getProductBySKU(String productSKU) {
+    List<Product> products = new ArrayList<>();
+    Product product = null;
+    PreparedStatement preparedStatement = null;
+    ResultSet resultSet = null;
 
-        try {
-            preparedStatement = connection.prepareStatement(SQL_SELECT_PRODUCT_BY_SKU);
-            preparedStatement.setString(1, productSKU);
-
-            resultSet = preparedStatement.executeQuery();
-
-            if (resultSet.next()) {
-                product = new Product();
-                product.setProduct_ID(resultSet.getInt("product_ID"));
-                product.setProduct_name(resultSet.getString("product_name"));
-                product.setProduct_description(resultSet.getString("product_description"));
-                product.setProduct_price(resultSet.getDouble("product_price"));
-                product.setCategory_ID(resultSet.getInt("category_ID"));
-                product.setProduct_SKU(resultSet.getString("product_SKU"));
-                product.setQuantity_in_stock(resultSet.getInt("quantity_in_stock"));
-                product.setProduct_image_path(resultSet.getString("productImagePath"));
-                getProduct.add(product);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            close(resultSet, preparedStatement);
+    try {
+        // Split SKU code into base SKU and variant details
+        String[] parts = productSKU.split("-");
+        if (parts.length < 1) {
+            throw new IllegalArgumentException("Invalid SKU format");
         }
+        
+        String baseSKU = parts[0];
+        
+        // Prepare SQL statement to query products by base SKU
+        String sql = "SELECT * FROM products WHERE product_SKU = ?";
+        preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setString(1, baseSKU);
 
-        return getProduct;
+        resultSet = preparedStatement.executeQuery();
+
+        while (resultSet.next()) {
+            product = new Product();
+            product.setProduct_ID(resultSet.getInt("product_ID"));
+            product.setProduct_name(resultSet.getString("product_name"));
+            product.setProduct_description(resultSet.getString("product_description"));
+            product.setProduct_price(resultSet.getDouble("product_price"));
+            product.setCategory_ID(resultSet.getInt("category_ID"));
+            product.setProduct_SKU(resultSet.getString("product_SKU"));
+            product.setQuantity_in_stock(resultSet.getInt("quantity_in_stock"));
+            product.setProduct_image_path(resultSet.getString("productImagePath"));
+            products.add(product);
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    } finally {
+        close(resultSet, preparedStatement);
     }
+
+    return products;
+}
 
     private void close(AutoCloseable... closeables) {
         if (closeables != null) {

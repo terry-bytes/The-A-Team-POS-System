@@ -4,127 +4,79 @@ import ateam.BDconnection.Connect;
 import ateam.DAO.ProductVariantsDAO;
 import ateam.Models.ProductVariants;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class ProductVariantsDAOImpl implements ProductVariantsDAO {
 
-    private final Connection connection;
-
-    public ProductVariantsDAOImpl() {
-        this.connection = new Connect().connectToDB();
-    }
+    private Connect dbConnect = new Connect();
 
     @Override
-    public void addProductVariant(ProductVariants variant) {
-        String query = "INSERT INTO ProductVariants (product_SKU, size, color, store_ID) VALUES (?, ?, ?, ?)";
-        try (PreparedStatement ps = connection.prepareStatement(query)) {
-            ps.setString(1, variant.getProduct_SKU());
-            ps.setString(2, variant.getSize());
-            ps.setString(3, variant.getColor());
-            ps.setInt(4, variant.getStore_ID());
-            ps.executeUpdate();
+    public List<ProductVariants> getVariantsByProductSKU(String productSKU) {
+        List<ProductVariants> variants = new ArrayList<>();
+        String sql = "SELECT * FROM productvariants WHERE product_SKU = ?";
+
+        try (Connection conn = dbConnect.connectToDB(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, productSKU);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                ProductVariants variant = new ProductVariants();
+                variant.setVariant_ID(rs.getInt("variant_ID"));
+                variant.setProduct_SKU(rs.getString("product_SKU"));
+                variant.setSize(rs.getString("size"));
+                variant.setColor(rs.getString("color"));
+                variant.setStore_ID(rs.getInt("store_ID"));
+                variants.add(variant);
+            }
         } catch (SQLException e) {
-            Logger.getLogger(ProductVariantsDAOImpl.class.getName()).log(Level.SEVERE, null, e);
+            e.printStackTrace();
         }
+
+        return variants;
     }
 
     @Override
-    public void updateProductVariant(ProductVariants variant) {
-        String query = "UPDATE ProductVariants SET product_SKU = ?, size = ?, color = ?, store_ID = ? WHERE variant_ID = ?";
-        try (PreparedStatement ps = connection.prepareStatement(query)) {
-            ps.setString(1, variant.getProduct_SKU());
-            ps.setString(2, variant.getSize());
-            ps.setString(3, variant.getColor());
-            ps.setInt(4, variant.getStore_ID());
-            ps.setInt(5, variant.getVariant_ID());
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            Logger.getLogger(ProductVariantsDAOImpl.class.getName()).log(Level.SEVERE, null, e);
+    public ProductVariants getVariantByBarcode(String productSKU) {
+        // Decode the barcode
+        String[] parts = productSKU.split("-");
+        if (parts.length != 3) {
+            // Invalid barcode format
+            throw new IllegalArgumentException("Invalid barcode format");
         }
-    }
 
-    @Override
-    public void deleteProductVariant(int variant_ID) {
-        String query = "DELETE FROM ProductVariants WHERE variant_ID = ?";
-        try (PreparedStatement ps = connection.prepareStatement(query)) {
-            ps.setInt(1, variant_ID);
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            Logger.getLogger(ProductVariantsDAOImpl.class.getName()).log(Level.SEVERE, null, e);
-        }
-    }
+        String sku = parts[0];
+        String size = parts[1];
+        String color = parts[2];
 
-    @Override
-    public ProductVariants getProductVariantById(int variant_ID) {
-        String query = "SELECT * FROM ProductVariants WHERE variant_ID = ?";
-        try (PreparedStatement ps = connection.prepareStatement(query)) {
-            ps.setInt(1, variant_ID);
-            ResultSet rs = ps.executeQuery();
+        ProductVariants variant = null;
+        String sql = "SELECT * FROM productvariants WHERE product_SKU = ? AND size = ? AND color = ?";
+
+        try (Connection conn = dbConnect.connectToDB(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, sku);
+            stmt.setString(2, size);
+            stmt.setString(3, color);
+
+            ResultSet rs = stmt.executeQuery();
+
             if (rs.next()) {
-                return new ProductVariants(
-                        rs.getInt("variant_ID"),
-                        rs.getString("product_SKU"),
-                        rs.getString("size"),
-                        rs.getString("color"),
-                        rs.getInt("store_ID")
-                );
+                variant = new ProductVariants();
+                variant.setVariant_ID(rs.getInt("variant_ID"));
+                variant.setProduct_SKU(rs.getString("product_SKU"));
+                variant.setSize(rs.getString("size"));
+                variant.setColor(rs.getString("color"));
+                variant.setStore_ID(rs.getInt("store_ID"));
             }
         } catch (SQLException e) {
-            Logger.getLogger(ProductVariantsDAOImpl.class.getName()).log(Level.SEVERE, null, e);
+            e.printStackTrace();
         }
-        return null;
-    }
 
-    @Override
-    public List<ProductVariants> searchProductVariants(String product_SKU, String size, String color, int store_ID) {
-        String query = "SELECT * FROM ProductVariants WHERE product_SKU = ? AND size = ? AND color = ? AND store_ID = ?";
-        List<ProductVariants> variants = new ArrayList<>();
-        try (PreparedStatement ps = connection.prepareStatement(query)) {
-            ps.setString(1, product_SKU);
-            ps.setString(2, size);
-            ps.setString(3, color);
-            ps.setInt(4, store_ID);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                variants.add(new ProductVariants(
-                        rs.getInt("variant_ID"),
-                        rs.getString("product_SKU"),
-                        rs.getString("size"),
-                        rs.getString("color"),
-                        rs.getInt("store_ID")
-                ));
-            }
-        } catch (SQLException e) {
-            Logger.getLogger(ProductVariantsDAOImpl.class.getName()).log(Level.SEVERE, null, e);
-        }
-        return variants;
-    }
-
-    @Override
-    public List<ProductVariants> searchProductVariants(String product_SKU, String size, int store_ID) {
-        String query = "SELECT * FROM ProductVariants WHERE product_SKU = ? AND size = ? AND store_ID = ?";
-        List<ProductVariants> variants = new ArrayList<>();
-        try (PreparedStatement ps = connection.prepareStatement(query)) {
-            ps.setString(1, product_SKU);
-            ps.setString(2, size);
-            ps.setInt(3, store_ID);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                variants.add(new ProductVariants(
-                        rs.getInt("variant_ID"),
-                        rs.getString("product_SKU"),
-                        rs.getString("size"),
-                        rs.getString("color"),
-                        rs.getInt("store_ID")
-                ));
-            }
-        } catch (SQLException e) {
-            Logger.getLogger(ProductVariantsDAOImpl.class.getName()).log(Level.SEVERE, null, e);
-        }
-        return variants;
+        return variant;
     }
 }
