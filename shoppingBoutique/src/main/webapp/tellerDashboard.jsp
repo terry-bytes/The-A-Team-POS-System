@@ -443,7 +443,7 @@ function startScanner() {
             target: document.querySelector('#barcode-scanner')
         },
         decoder: {
-            readers: ["code_128_reader"]
+            readers: ["code_128_reader","QR_CODE"]
         }
     }, function (err) {
         if (err) {
