@@ -3,6 +3,7 @@ package ateam.Services.impl;
 import ateam.DAO.InventoryDAO;
 import ateam.DAOIMPL.InventoryDAOIMPL;
 import ateam.Models.Inventory;
+import ateam.Models.SalesItem;
 import ateam.Service.InventoryService;
 
 
@@ -33,7 +34,7 @@ public class InventoryServiceImpl implements InventoryService {
         // Get previous quantity
         int previousQuantity = 0;
         try {
-            previousQuantity = inventoryDAO.getPreviousStoreQuantity(productId,storeId);
+            previousQuantity = inventoryDAO.getPreviousQuantity(productId);
         } catch (Exception ex) {
             Logger.getLogger(InventoryServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -62,6 +63,28 @@ public class InventoryServiceImpl implements InventoryService {
         } catch (Exception ex) {
             Logger.getLogger(InventoryServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
+     }
+     
+     @Override
+    public void processSale(int salesId) throws SQLException {
+        try {
+            List<SalesItem> salesItems = inventoryDAO.getSalesItems(salesId);
+            int storeId = inventoryDAO.getStoreIdFromSales(salesId);
+
+            for (SalesItem salesItem : salesItems) {
+                int productId = salesItem.getProduct_ID();
+                int quantity = salesItem.getQuantity();
+
+                // Decrease the inventory quantity for the specific store and product
+                inventoryDAO.decreaseInventoryQuantity(productId, storeId, quantity);
+
+                // Decrease the product quantity in the products table
+                inventoryDAO.decreaseProductQuantity(productId, quantity);
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(InventoryServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            throw new SQLException("Error processing sale: ");
+                    }
     }
 
     @Override
