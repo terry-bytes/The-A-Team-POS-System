@@ -21,5 +21,5 @@ public interface SaleService2 {
     Map<String, Integer> generateStoreMonthReport(int storeId, int month, int year);
     Map<String, Integer> generateTopSellingEmployee(List<Employee> employees);
     Map<String, Integer> generateTopSellingEmployee(int storeId, List<Employee> employee);
-
+    List<Sale> getAllSalesByStoreId(int storeId);
 }

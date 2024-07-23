@@ -1,6 +1,7 @@
 package ateam.ServiceImpl;
 
 import ateam.DAO.EmployeeDAO;
+import ateam.DAOIMPL.EmployeeDAOIMPL;
 import ateam.Exception.EmployeeNotFoundException;
 import ateam.Exception.InvalidPasswordException;
 import ateam.Models.Employee;
@@ -18,6 +19,10 @@ public class EmployeeServiceImpl implements EmployeeService {
     public EmployeeServiceImpl(EmployeeDAO employeeDAO) {
         this.employeeDAO = employeeDAO;
         
+    }
+    
+    public EmployeeServiceImpl(){
+        this.employeeDAO = new EmployeeDAOIMPL();
     }
 
     @Override

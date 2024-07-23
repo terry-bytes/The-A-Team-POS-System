@@ -235,6 +235,7 @@
         
         <script>
             var monthCtx = document.getElementById("monthlySalesChart").getContext('2d');
+            
             var monthBar = new Chart(monthCtx, {
                 type: 'bar',
                 data: {
@@ -242,7 +243,9 @@
                     datasets: [{
                         label: 'Sales of the month',
                         data: [<%=monthData.toString()%>],
-                        backgroundColor: 'rgba(61, 179, 242, 0.2)',  // Light blue background color
+                        backgroundColor: ['rgba(61, 179, 242, 0.2)',
+                        'rgba(255, 99, 132, 0.2)'
+                        ],
                         borderColor: 'rgba(61, 179, 242, 1)',
                         borderWidth: 1
                     }]

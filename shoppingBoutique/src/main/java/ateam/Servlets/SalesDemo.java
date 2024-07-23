@@ -9,6 +9,7 @@ import ateam.BDconnection.Connect;
 import ateam.DAOIMPL.EmployeeDAOIMPL;
 import ateam.DAOIMPL.StoreDAOIMPL;
 import ateam.Models.Employee;
+import ateam.Models.Reports;
 import ateam.Models.Sale;
 import ateam.Models.Store;
 import ateam.Service.EmployeeService;
@@ -22,6 +23,8 @@ import com.google.gson.Gson;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -51,6 +54,7 @@ public class SalesDemo extends HttpServlet {
     private final SaleService2 saleService = new SaleServiceImpl();
     private final StoreService storeService = new StoreServiceImpl(new StoreDAOIMPL(new Connect().connectToDB()));
     private final EmployeeService employeeService = new EmployeeServiceImpl(new EmployeeDAOIMPL());
+    private final Reports reports = new Reports();
     
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -73,7 +77,7 @@ public class SalesDemo extends HttpServlet {
         List<Sale> sales = saleService.getAllSales();
         List<Store> stores = storeService.getAllStores();
         List<Employee> employees = employeeService.getAllEmployees();
-        Map<String, Integer> topSellingEmployee = saleService.generateTopSellingEmployee(employees);
+        Map<String, Integer> topSellingEmployee = reports.generateTopSellingEmployees();
         
         HttpSession session = request.getSession(false);
         
@@ -118,13 +122,8 @@ public class SalesDemo extends HttpServlet {
 
     private void handleMonthReport(HttpServletRequest request, HttpServletResponse response) throws ParseException, ServletException, IOException{
         int storeId = Integer.parseInt(request.getParameter("storeId"));
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(dateFormatter(request.getParameter("date")));
         
-        int month = calendar.get(Calendar.MONTH) + 1;
-        int year = calendar.get(Calendar.YEAR);
-        
-        Map<String, Integer> report = saleService.generateStoreMonthReport(storeId, month, year);
+        Map<String, Integer> report = reports.generateMonthReportForStore(storeId, dateFormatter(request.getParameter("date")));
         
         Gson gson = new Gson();
         String json = gson.toJson(report);
@@ -139,16 +138,14 @@ public class SalesDemo extends HttpServlet {
         response.sendRedirect("SalesDemo");
     }
     
-    private Date dateFormatter(String date) throws ParseException{
-        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM");
-        return inputFormat.parse(date);
+    private LocalDate dateFormatter(String date) throws ParseException{
+        return LocalDate.parse(date + "-01", DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     }
     
     private void handleRequestTopEmployeeByStore(HttpServletRequest request, HttpServletResponse response) throws IOException{
         
         int storeId = Integer.parseInt(request.getParameter("storeId"));
-        List<Employee> employees = employeeService.getAllEmployees();
-        Map<String, Integer> topSellingEmpByStore = saleService.generateTopSellingEmployee(storeId, employees);
+        Map<String, Integer> topSellingEmpByStore = reports.generateTopSellingEmployees(storeId);
 
         List<String> labels = topSellingEmpByStore.keySet().stream().collect(Collectors.toList());
         List<Integer> data = topSellingEmpByStore.values().stream().collect(Collectors.toList());

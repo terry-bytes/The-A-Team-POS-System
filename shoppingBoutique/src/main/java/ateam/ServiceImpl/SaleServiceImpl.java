@@ -125,5 +125,10 @@ public class SaleServiceImpl implements SaleService2{
         }
         return topSellingEmployee;
     }
+
+    @Override
+    public List<Sale> getAllSalesByStoreId(int storeId) {
+        return saleDao.getSalesbyStoreId(storeId);
+    }
     
 }
