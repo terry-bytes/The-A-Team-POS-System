@@ -79,6 +79,7 @@ public class SalesDemo extends HttpServlet {
         List<Employee> employees = employeeService.getAllEmployees();
         Map<String, Integer> topSellingEmployee = reports.generateTopSellingEmployees();
         
+        
         HttpSession session = request.getSession(false);
         
         session.setAttribute("Employees", employees);
@@ -107,6 +108,14 @@ public class SalesDemo extends HttpServlet {
             case "topEmpByStore":
                 handleRequestTopEmployeeByStore(request, response);
                 break;
+            case "storeAchievedTarget":
+                try {
+                    handleStoreAchieveTarget(request, response);
+                } catch (ParseException ex) {
+                    Logger.getLogger(SalesDemo.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                break;
+
         }
     }
 
@@ -154,6 +163,22 @@ public class SalesDemo extends HttpServlet {
         jsonResponse.put("labels", labels);
         jsonResponse.put("data", data);
 
+        response.setContentType("application/json");
+        response.getWriter().write(new ObjectMapper().writeValueAsString(jsonResponse));
+    }
+    
+    private void handleStoreAchieveTarget(HttpServletRequest request, HttpServletResponse response) throws ParseException, IOException{
+        LocalDate date = dateFormatter(request.getParameter("date"));
+        int target = 10;
+        
+        Map<String, Integer> storeAchievedTarget = reports.StoreAchievedTarget(date, target);
+        
+        List<String> labels = storeAchievedTarget.keySet().stream().collect(Collectors.toList());
+        List<Integer> data = storeAchievedTarget.values().stream().collect(Collectors.toList());
+        
+        Map<String, Object> jsonResponse = new TreeMap<>();
+        jsonResponse.put("labels", labels);
+        jsonResponse.put("data", data);
         response.setContentType("application/json");
         response.getWriter().write(new ObjectMapper().writeValueAsString(jsonResponse));
     }

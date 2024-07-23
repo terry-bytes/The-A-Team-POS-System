@@ -24,6 +24,10 @@ public class ProductServiceImpl implements ProductService {
         productDAO = new ProductDAOIMPL();
 
     }
+    
+    public ProductServiceImpl(){
+        this.productDAO = new ProductDAOIMPL();
+    }
 
     public List<Product> getProductBySKU(String sku) {
 

@@ -5,9 +5,13 @@
 package ateam.Models;
 
 import ateam.Service.EmployeeService;
+import ateam.Service.ProductService;
 import ateam.Service.SaleService2;
+import ateam.Service.StoreService;
 import ateam.ServiceImpl.EmployeeServiceImpl;
+import ateam.ServiceImpl.ProductServiceImpl;
 import ateam.ServiceImpl.SaleServiceImpl;
+import ateam.ServiceImpl.StoreServiceImpl;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -22,21 +26,26 @@ import java.util.stream.Collectors;
  * @author Admin
  */
 public class Reports {
-    private EmployeeService employeeService;
-    private SaleService2 saleService;
-    private int targetSalesPerEmployee;
+    private final EmployeeService employeeService;
+    private final SaleService2 saleService;
+    private final int targetSalesPerEmployee;
+    private final StoreService storeService;
+    private final ProductService productService;
 
-    public Reports(EmployeeService employeeService, SaleService2 saleService, int target) {
+    public Reports(EmployeeService employeeService, SaleService2 saleService, int target, StoreService storeService, ProductService productService) {
         this.employeeService = employeeService;
         this.saleService = saleService;
         this.targetSalesPerEmployee = target;
+        this.storeService = storeService;
+        this.productService = productService;
     }
-
 
     public Reports() {
         targetSalesPerEmployee = 10;
         this.employeeService = new EmployeeServiceImpl();
         this.saleService = new SaleServiceImpl();
+        this.storeService = new StoreServiceImpl();
+        this.productService = new ProductServiceImpl();
     }
     
     public Map<String, Integer> generateTopSellingEmployees(){
@@ -86,4 +95,53 @@ public class Reports {
         }
         return topSellingEmployees;
     }
+    
+    /**
+     * Report of all the stores that have achieved the target for a particular month
+     * what is the target of the month?
+     * is it same for all months?
+     * I need to calculate the total sales for each store for the selected month
+     * 
+     * @params sales
+     * Group store by name @param store id and store name
+     * 
+     * Build a report for 
+     * @param month
+     * @param target
+     * @return Map<String, Integer>
+     * String Map represent the name of the store Integer represent the total number of sales
+    */
+    
+    public Map<String, Integer> StoreAchievedTarget(LocalDate month, int target){
+        List<Store> stores = storeService.getAllStores();
+        List<Sale> sales = saleService.getAllSales();
+        LocalDate firstDay = month.withDayOfMonth(1);
+        LocalDate lastDay = month.withDayOfMonth(month.lengthOfMonth());
+        
+        Map<Integer, Long> salesByStore = sales.stream()
+                .filter(sale -> {
+                    LocalDate saleDate = sale.getSales_date().toLocalDateTime().toLocalDate();
+                    return saleDate.isAfter(firstDay) && saleDate.isBefore(lastDay);
+                })
+                .collect(Collectors.groupingBy(
+                        Sale::getStore_ID,
+                        TreeMap::new,
+                        Collectors.counting()));
+        
+        Map<Integer, String> storeNames = stores.stream()
+                .collect(Collectors.toMap(
+                        Store::getStore_ID,
+                        Store::getStore_name));
+        
+        return salesByStore.entrySet().stream()
+                .filter(sale -> sale.getValue() >= target)
+                .collect(Collectors.toMap(
+                        entry -> storeNames.get(entry.getKey()), 
+                        entry -> entry.getValue().intValue()));
+    }
+    
+    /**
+     * Generate the on the top 40 highest selling products and which store sold the most
+     * 
+     */
 }

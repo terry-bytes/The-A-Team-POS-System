@@ -97,7 +97,7 @@
                                         <% } } %>
                                 </select>
                             </div>
-                            <input id="date" name="date" type="month" />
+                            <input id="date" name="date" type="month" required/>
                             <button type="submit" name="submit" value="filter">Filter</button>
                         </form>
                         <div class="input-submit">
@@ -138,6 +138,28 @@
                     <div class="graphBox">
                         <div class="box">
                             <canvas id="topEmpBar"></canvas>
+                        </div>
+                        <div class="box">
+                            <canvas id="salesPieChart"></canvas>
+                        </div>
+                    </div>
+                                
+                     <!-- Store achieved target for a particular month  -->
+                    <div class="two">
+                        <h4>Stores Achieved target for particular month</h4>
+
+                        <form action="SalesDemo" method="post">
+                            <input id="storeAchievedTarget" name="storeAchievedTarget" type="month" required/>
+                            <button type="submit" name="submit" value="storeAchievedTarget">Filter</button>
+                        </form>
+                        <div class="input-submit">
+                            <input name="submit" value="download" hidden />
+                            <button class="submit-btn" id="submit">Download</button>
+                        </div>
+                    </div>
+                    <div class="graphBox">
+                        <div class="box">
+                            <canvas id="StoreAchievedMonthBar"></canvas>
                         </div>
                         <div class="box">
                             <canvas id="salesPieChart"></canvas>
@@ -322,6 +344,52 @@
                     })
                     .catch(error => console.error('Error fetching data:'+ error));
                             });
+                            
+                const storeAchievedTarget = document.getElementById('storeAchievedTarget');
+                storeAchievedTarget.addEventListener('change', function(){
+                    const date = storeAchievedTarget.value;
+                    
+                    fetch('SalesDemo', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'},
+                        body: new URLSearchParams({date: date, submit:'storeAchievedTarget'})
+                    })
+                            .then(response => response.json())
+                            .then(data => {
+                                const storelabels = data.labels;
+                                const storeData = data.data;
+                                storeAchieved.data.labels = storelabels;
+                                storeAchieved.data.datasets[0].data = storeData;
+                                storeAchieved.update();    
+                }).catch(error => console.error('Error fecthing data: '+ error));
+                });
+                
+                const achievedCtx = document.getElementById("StoreAchievedMonthBar").getContext('2d');
+
+                // Initialize the chart with the sorted data
+                const storeAchieved = new Chart(achievedCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            label: 'Stores Achieved Target For Selected Month',
+                            data: [],
+                            backgroundColor: 'rgba(61, 179, 242, 0.2)',  // Light blue background color
+                            borderColor: 'rgba(61, 179, 242, 1)',
+                            borderWidth: 2,
+                            borderRadius: 5,
+                            borderSkipped: false
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
                         });
         </script>
         <% }%>
