@@ -51,7 +51,7 @@ public class BarcodeGenerator {
 
     public static void main(String[] args) {
         // Example usage
-        List<String> texts = List.of(
+        /*List<String> texts = List.of(
             "0123456789012-S-Red",
             "0123456789012-M-Red",
             "0123456789012-L-Red"
@@ -64,6 +64,6 @@ public class BarcodeGenerator {
         // Ensure the output directory exists
         new File(outputDir).mkdirs();
 
-        generateBarcodes(texts, outputDir, width, height);
+        generateBarcodes(texts, outputDir, width, height);*/
     }
 }

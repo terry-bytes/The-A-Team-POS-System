@@ -142,6 +142,19 @@ public class Reports {
     
     /**
      * Generate the on the top 40 highest selling products and which store sold the most
+     * first, calculate the total sales per
+     *
+     */
+    
+    
+    /**
+     * Generate a report for chosen product, how much was sold and the top sells person for that product across the stores nationwide
+     * I think I have to create a DTO for this because it only want top sells person not people
+     * first calculate the total sales per person for that products
      * 
+     * 
+     * 
+     * @param productId
+     * @return TopEmployeeforProduct
      */
 }
