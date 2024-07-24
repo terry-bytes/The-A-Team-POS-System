@@ -55,8 +55,7 @@ public class InventoryDAOIMPL implements InventoryDAO {
             psProduct.setString(5, productSKU);
             psProduct.setInt(6,product.getQuantity_in_stock());
             psProduct.setString(7,product.getProduct_image_path());
-            psProduct.setString(8,size);
-            psProduct.setString(9, color);
+            
             
             // Set other parameters...
             psProduct.executeUpdate();

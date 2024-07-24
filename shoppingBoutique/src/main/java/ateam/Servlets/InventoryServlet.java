@@ -36,7 +36,7 @@ public class InventoryServlet extends HttpServlet {
             int reorder = 5;
             String productSku = request.getParameter("barcode");
             //String [] sku = productSku.split("-");
-            int productId = Integer.parseInt(request.getParameter("productId"));
+            int productId = 0;
             int additionalStock = Integer.parseInt(request.getParameter("additionalStock"));
             int storeId = ((Employee) request.getSession(false).getAttribute("Employee")).getStore_ID();
             int employeeId = ((Employee) request.getSession(false).getAttribute("Employee")).getEmployee_ID();
