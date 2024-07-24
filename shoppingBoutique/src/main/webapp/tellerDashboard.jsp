@@ -187,7 +187,7 @@
                     </div>
                 </div>
 
-              <div class="scanned-items">
+                <div class="scanned-items">
                     <h2>Scanned Items</h2>
                     <c:choose>
                         <c:when test="${empty scannedItems}">
@@ -236,7 +236,7 @@
                             <video  id="barcode-scanner" autoplay style = "display: none"></video>
                             <input type="text" id="manual-sku" name="input-field" placeholder="Enter SKU manually">
                             <button type="submit" name="submit" value="Add-Item" class="green-arrow-button">Enter</button>
-                            <button type="submit" name="submit" value="auto-submit" id="auto-submit" style="display: none"></button>
+                            <button type="submit" name="submit" value="auto-submit" id="auto-submit" style="display: none;"></button>
                         </div>
                         <div>
                             <label for="payment_method">Payment Method:</label>
@@ -270,6 +270,10 @@
                                 <input type="text" id="card_amount" name="card_amount">
                             </div>
                         </div>
+                         <div>
+                        <label for="customer_email">Customer Email:</label>
+                        <input type="email" id="customer_email" name="customer_email" placeholder="Enter customer email" >
+                    </div>
                         <input type="hidden" id="scanned-items-count" name="scannedItemsCount" value="<c:out value='${fn:length(scannedItems)}'/>">
                         <button type="submit" name="submit" value="Complete-Sale">Complete Sale</button>
                     </form>
@@ -325,7 +329,7 @@
                         <button type="submit">Return Item</button>
                     </form>
                     <form action="LayawayDashboard.jsp" method="post">
-                      <button onclick="redirectToAnotherPage()">Lay Away</button>
+                        <button onclick="redirectToAnotherPage()">Lay Away</button>
                     </form>
                     <form action="VoidSaleServlet" method="post">
                         <button type="submit">Void Sale</button>
@@ -437,74 +441,41 @@
 
             let scanningPaused = false;
 
-function startScanner() {
-    console.log("Starting Quagga...");
-    Quagga.init({
-        inputStream: {
-            name: "Live",
-            type: "LiveStream",
-            target: document.querySelector('#barcode-scanner')
-        },
-        decoder: {
-            readers: ["code_128_reader","QR_CODE"]
-        }
-    }, function (err) {
-        if (err) {
-            console.error("Quagga initialization failed: ", err);
-            return;
-        }
-        console.log("Quagga initialization succeeded.");
-        Quagga.start();
-    });
 
-    Quagga.onDetected(function (data) {
-        if (!scanningPaused) {
-            let barcode = data.codeResult.code;
-            console.log("Barcode detected and processed: [" + barcode + "]", data);
-            
-            // Play beep sound
-            document.getElementById('beep-sound').play();
-            
-            // Stop Quagga after successful detection
-            Quagga.stop();
+            document.addEventListener('DOMContentLoaded', (event) => {
+                initQuagga();
+            });
 
-            // Simulate keyboard input
-            simulateKeyboardInput(barcode);
+            function initQuagga() {
+                Quagga.init({
+                    inputStream: {
+                        name: "Live",
+                        type: "LiveStream",
+                        target: document.querySelector('#barcode-scanner')
+                    },
+                    decoder: {
+                        readers: ["code_128_reader", "ean_reader", "ean_8_reader"]
+                    }
+                }, function (err) {
+                    if (err) {
+                        console.log(err);
+                        return;
+                    }
+                    console.log("Barcode scanner initialized");
+                    Quagga.start();
+                });
 
-            // Pause scanning for 2 seconds
-            scanningPaused = true;
-            setTimeout(() => {
-                scanningPaused = false;
-                startScanner(); // Restart Quagga after pause
-            }, 2000); // 2 seconds pause
-        }
-    });
-}
+                Quagga.onDetected(function (data) {
+                    console.log("Detected code:", data.codeResult.code);
+                    var sku = data.codeResult.code;
+                    document.getElementById('manual-sku').value = sku;
+                    document.getElementById('auto-submit').click();
+                    Quagga.stop();
+                    Quagga.start();
+                });
+            }
 
-function simulateKeyboardInput(barcode) {
-    let inputField = document.querySelector('#manual-sku');
-    inputField.value = barcode;
 
-    // Trigger the hidden auto-submit button
-    document.getElementById('auto-submit').click();
-
-    // If you need to trigger events as if it was typed
-    let event = new Event('input', {
-        bubbles: true,
-        cancelable: true,
-    });
-    inputField.dispatchEvent(event);
-}
-
-document.addEventListener("DOMContentLoaded", function (event) {
-    var scannedValue = document.getElementById("scannedValue").value;
-    if (scannedValue) {
-        document.getElementById("manual-sku").value = scannedValue;
-        document.getElementById("auto-submit").click();
-    }
-});
-
-startScanner();
 
         </script>
     </body>

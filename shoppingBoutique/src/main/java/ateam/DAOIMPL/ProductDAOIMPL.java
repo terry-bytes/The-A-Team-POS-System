@@ -25,17 +25,16 @@ public class ProductDAOIMPL implements ProductDAO {
 
     @Override
     public List<Product> getProductBySKU(String productSKU) {
-        List<Product> getProduct = new ArrayList<>();
+        List<Product> products = new ArrayList<>();
         Product product = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
 
         try {
-            // Decode the barcode
+            // Validate the barcode format
             String[] parts = productSKU.split("-");
             if (parts.length != 3) {
-                // Invalid barcode format
-                throw new IllegalArgumentException("Invalid barcode format");
+                throw new IllegalArgumentException("Invalid barcode format: " + productSKU);
             }
 
             String sku = parts[0];
@@ -53,7 +52,7 @@ public class ProductDAOIMPL implements ProductDAO {
 
             resultSet = preparedStatement.executeQuery();
 
-            if (resultSet.next()) {
+            while (resultSet.next()) {
                 product = new Product();
                 product.setProduct_ID(resultSet.getInt("product_ID"));
                 product.setProduct_name(resultSet.getString("product_name"));
@@ -65,15 +64,19 @@ public class ProductDAOIMPL implements ProductDAO {
                 product.setProduct_image_path(resultSet.getString("productImagePath"));
                 product.setSize(resultSet.getString("size"));
                 product.setColor(resultSet.getString("color"));
-                getProduct.add(product);
+                products.add(product);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            e.printStackTrace(); // Log the SQL exception
+        } catch (IllegalArgumentException e) {
+            // Log the invalid argument exception
+            Logger.getLogger(ProductDAOIMPL.class.getName()).log(Level.SEVERE, e.getMessage(), e);
+            throw e; // Rethrow to be handled by servlet
         } finally {
             close(resultSet, preparedStatement);
         }
 
-        return getProduct;
+        return products;
     }
 
     private void close(AutoCloseable... closeables) {

@@ -5,12 +5,19 @@
 package ateam.Service;
 
 import ateam.Models.Email;
+import ateam.Models.Product;
+import java.math.BigDecimal;
+import java.util.List;
 
 /**
  *
  * @author Train 09
  */
 public interface EmailService {
+
     void sendMail(Email email);
-     void sendPasswordResetMail(String email, String otp);
+
+    void sendPasswordResetMail(String email, String otp);
+
+    void sendSaleReceipt(String toEmail, String salespersonName, String saleTime, List<Product> items, BigDecimal totalAmount, String paymentMethod);
 }

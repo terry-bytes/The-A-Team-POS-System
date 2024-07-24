@@ -1,10 +1,9 @@
 package ateam.Models;
 
 import com.google.zxing.BarcodeFormat;
-import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
-import com.google.zxing.qrcode.QRCodeWriter;
+import com.google.zxing.oned.Code128Writer;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -18,22 +17,22 @@ import java.util.List;
 public class BarcodeGenerator {
 
     public static void generateBarcodes(List<String> texts, String outputDir, int width, int height) {
-        QRCodeWriter qrCodeWriter = new QRCodeWriter();
+        Code128Writer barcodeWriter = new Code128Writer();
 
         for (int i = 0; i < texts.size(); i++) {
             String barcodeText = texts.get(i);
             String filePath = outputDir + "/barcode_" + (i + 1) + ".png"; // Output file path
 
             try {
-                BitMatrix bitMatrix = qrCodeWriter.encode(barcodeText, BarcodeFormat.QR_CODE, width, height);
-                BufferedImage qrImage = MatrixToImageWriter.toBufferedImage(bitMatrix);
+                BitMatrix bitMatrix = barcodeWriter.encode(barcodeText, BarcodeFormat.CODE_128, width, height);
+                BufferedImage barcodeImage = MatrixToImageWriter.toBufferedImage(bitMatrix);
 
                 // Create a new image with additional space for text
                 BufferedImage combinedImage = new BufferedImage(width, height + 50, BufferedImage.TYPE_INT_ARGB);
                 Graphics2D g2d = combinedImage.createGraphics();
-                g2d.drawImage(qrImage, 0, 0, null);
+                g2d.drawImage(barcodeImage, 0, 0, null);
 
-                // Add text below the QR code
+                // Add text below the barcode
                 g2d.setColor(Color.WHITE);
                 g2d.setFont(new Font("Arial", Font.PLAIN, 18));
                 g2d.drawString(barcodeText, 10, height + 30); // Adjust position as needed
@@ -44,15 +43,18 @@ public class BarcodeGenerator {
                 javax.imageio.ImageIO.write(combinedImage, "PNG", outputFile);
 
                 System.out.println("Barcode with text '" + barcodeText + "' generated and saved as " + filePath);
-            } catch (WriterException | IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
 
     public static void main(String[] args) {
+
  
         List<String> texts = Arrays.asList(
+
+
                 "0123456789012-S-Red",
                 "0123456789012-M-Red",
                 "0123456789012-L-Red",
@@ -64,7 +66,7 @@ public class BarcodeGenerator {
         );
         String outputDir = "output"; // Directory to save the barcode images
         int width = 300; // Width of the barcode image
-        int height = 300; // Height of the barcode image
+        int height = 100; // Height of the barcode image
 
         // Ensure the output directory exists
         new File(outputDir).mkdirs();
