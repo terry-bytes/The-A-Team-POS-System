@@ -4,6 +4,7 @@
     Author     : Train 01
 --%>
 
+<%@page import="ateam.Models.Product"%>
 <%@page import="com.google.gson.Gson"%>
 <%@page import="ateam.Models.Store"%>
 <%@page import="ateam.Models.Sale"%>
@@ -21,6 +22,7 @@
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/report.css">
         <!-- Script to trigger notification update on IBT Main Dashboard -->
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="${pageContext.request.contextPath}/js/topSellingEmployee.js"></script>
         <script>
             $(document).ready(function() {
                 // Trigger a click on "IBT Requests" button in IBTMainDashboard.jsp
@@ -40,6 +42,7 @@
         Map<String, Integer> salesData = (Map<String, Integer>) request.getAttribute("salesData");
         Map<String, Integer> monthSales = (Map<String, Integer>) request.getSession(false).getAttribute("report");
         Map<String, Integer> topEmp = (Map<String, Integer>) request.getSession(false).getAttribute("topSellingEmp");
+        List<Product> products = (List<Product>) request.getSession(false).getAttribute("Products");
 
         if(employee != null){
             if(salesData != null && !salesData.isEmpty()){
@@ -165,6 +168,25 @@
                             <canvas id="salesPieChart"></canvas>
                         </div>
                     </div>
+                     
+                     <!-- Top selling employee based on product -->
+                     <% if(products != null){%>
+                     <div class="two">
+                         <h4>Top selling employee based on product</h4>
+                         <div>
+                                <select id="topEmployeeBasedOnProduct" class="select-box" name="productId">
+                                    <% if(products != null) {
+                                        for(Product product : products) { %>
+                                        <option value="<%=product.getProduct_ID() %>"><%=product.getProduct_name() %></option>
+                                        <% } } %>
+                                </select>
+                                <button id="getTopEmployeeButton">Get Top Employee</button>
+                                <div id="topEmployeeResult">
+                                    <!-- Result will be displayed here -->
+                                </div>
+                            </div>
+                     </div>
+                         <%}%>
                 </div>
             </div>
         </div>

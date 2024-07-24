@@ -4,6 +4,7 @@
  */
 package ateam.Service;
 
+import ateam.DTO.TopProductSellEmployee;
 import ateam.Models.SalesItem;
 import java.util.List;
 
@@ -13,4 +14,5 @@ import java.util.List;
  */
 public interface SaleItemsService {
     List<SalesItem> getSalesItemsByProductId(int productId);
+    List<TopProductSellEmployee> getTotalSalesPerProduct();
 }

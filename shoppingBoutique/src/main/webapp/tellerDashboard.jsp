@@ -233,6 +233,7 @@
                 <div class="manual-entry-section">
                     <form id="product-form" action="ProductServlet" method="post">
                         <div class="manual-entry">
+                            <video  id="barcode-scanner" autoplay style = "display: none"></video>
                             <input type="text" id="manual-sku" name="input-field" placeholder="Enter SKU manually">
                             <button type="submit" name="submit" value="Add-Item" class="green-arrow-button">Enter</button>
                             <button type="submit" name="submit" value="auto-submit" id="auto-submit" style="display: none"></button>
@@ -275,7 +276,7 @@
                     <div class="keyboard">
                         <div class="key" onclick="appendToInput('1')">1</div>
                         <div class="key" onclick="appendToInput('2')">2</div>
-                        <div class="key" onclick="appendToInput('3')">3</div>
+                        <div class="key" onclick="appendToInput('3')">3</div> 
                         <div class="key" onclick="appendToInput('4')">4</div>
                         <div class="key" onclick="appendToInput('5')">5</div>
                         <div class="key" onclick="appendToInput('6')">6</div>
@@ -346,6 +347,7 @@
         </div>
 
         <video id="barcode-scanner" autoplay></video>
+        <audio id="beep-sound" src="beep.mp3" preload="auto"></audio>
 
         <script>
             function redirectToAnotherPage() {
@@ -433,40 +435,77 @@
                 }
             }
 
-            document.addEventListener("DOMContentLoaded", function (event) {
-                var scannedValue = document.getElementById("scannedValue").value;
-                if (scannedValue) {
-                    document.getElementById("manual-sku").value = scannedValue;
-                    document.getElementById("auto-submit").click();
-                }
-            });
+            let scanningPaused = false;
 
-            function startScanner() {
-                Quagga.init({
-                    inputStream: {
-                        name: "Live",
-                        type: "LiveStream",
-                        target: document.querySelector('#barcode-scanner')
-                    },
-                    decoder: {
-                        readers: ["code_128_reader"]
-                    }
-                }, function (err) {
-                    if (err) {
-                        console.error(err);
-                        return;
-                    }
-                    Quagga.start();
-                });
+function startScanner() {
+    console.log("Starting Quagga...");
+    Quagga.init({
+        inputStream: {
+            name: "Live",
+            type: "LiveStream",
+            target: document.querySelector('#barcode-scanner')
+        },
+        decoder: {
+            readers: ["code_128_reader","QR_CODE"]
+        }
+    }, function (err) {
+        if (err) {
+            console.error("Quagga initialization failed: ", err);
+            return;
+        }
+        console.log("Quagga initialization succeeded.");
+        Quagga.start();
+    });
 
-                Quagga.onDetected(function (result) {
-                    var code = result.codeResult.code;
-                    document.getElementById("manual-sku").value = code;
-                    document.getElementById("auto-submit").click();
-                    Quagga.stop();
-                });
-            }
-            startScanner();
+    Quagga.onDetected(function (data) {
+        if (!scanningPaused) {
+            let barcode = data.codeResult.code;
+            console.log("Barcode detected and processed: [" + barcode + "]", data);
+            
+            // Play beep sound
+            document.getElementById('beep-sound').play();
+            
+            // Stop Quagga after successful detection
+            Quagga.stop();
+
+            // Simulate keyboard input
+            simulateKeyboardInput(barcode);
+
+            // Pause scanning for 2 seconds
+            scanningPaused = true;
+            setTimeout(() => {
+                scanningPaused = false;
+                startScanner(); // Restart Quagga after pause
+            }, 2000); // 2 seconds pause
+        }
+    });
+}
+
+function simulateKeyboardInput(barcode) {
+    let inputField = document.querySelector('#manual-sku');
+    inputField.value = barcode;
+
+    // Trigger the hidden auto-submit button
+    document.getElementById('auto-submit').click();
+
+    // If you need to trigger events as if it was typed
+    let event = new Event('input', {
+        bubbles: true,
+        cancelable: true,
+    });
+    inputField.dispatchEvent(event);
+}
+
+document.addEventListener("DOMContentLoaded", function (event) {
+    var scannedValue = document.getElementById("scannedValue").value;
+    if (scannedValue) {
+        document.getElementById("manual-sku").value = scannedValue;
+        document.getElementById("auto-submit").click();
+    }
+});
+
+startScanner();
+
         </script>
     </body>
 </html>

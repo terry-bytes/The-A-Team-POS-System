@@ -42,9 +42,13 @@ public class ReportTest {
             salesQuantity.put(slItm.getSales_ID(), slItm.getQuantity());
         }
         
+        String name;
         Map<String, Integer> employeeSales = new HashMap<>();
-        for(Map.Entry<Integer, Integer> entry : salesQuantity.entrySet()){
-            
+        for(Sale sale : sales){
+            if(salesQuantity.containsKey(sale.getSales_ID())){
+                System.out.println("The name of the person who made this sale is "
+                        +sale.getEmployee_ID()+" in sale: "+sale.getSales_ID());
+            }
         }
     }
 }

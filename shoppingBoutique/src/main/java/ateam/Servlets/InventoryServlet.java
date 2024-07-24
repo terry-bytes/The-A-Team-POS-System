@@ -15,6 +15,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 
 @WebServlet("/InventoryServlet")
@@ -32,14 +33,14 @@ public class InventoryServlet extends HttpServlet {
         try {
             
             
-            
+            int reorder = 5;
             int productId = Integer.parseInt(request.getParameter("productId"));
             int additionalStock = Integer.parseInt(request.getParameter("additionalStock"));
             int storeId = ((Employee) request.getSession(false).getAttribute("Employee")).getStore_ID();
             int employeeId = ((Employee) request.getSession(false).getAttribute("Employee")).getEmployee_ID();
             
             try {
-                inventoryService.replenishStock(productId, additionalStock, storeId, employeeId);
+                inventoryService.replenishStock(productId, additionalStock,employeeId, storeId );
                 response.getWriter().write("Stock replenished successfully.");
             } catch (IOException | SQLException e) {
                 response.getWriter().write("Error replenishing stock: " + e.getMessage());
@@ -48,6 +49,16 @@ public class InventoryServlet extends HttpServlet {
             List<Inventory> inventoryList = inventoryService.getAll();
             request.setAttribute("inventoryList", inventoryList);
             request.getRequestDispatcher("replenishStock.jsp").forward(request, response);
+            
+//            List<Integer> reorder_point = inventoryList.stream().map(Inventory::getReorder_Point).collect(Collectors.toList());
+//            if(reorder_point.equals(reorder)){
+//                
+//                
+//                
+//                
+//                
+//            }
+        
         } catch (Exception ex) {
             Logger.getLogger(InventoryServlet.class.getName()).log(Level.SEVERE, null, ex);
         }

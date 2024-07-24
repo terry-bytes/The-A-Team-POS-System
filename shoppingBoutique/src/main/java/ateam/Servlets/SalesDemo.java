@@ -8,14 +8,18 @@ package ateam.Servlets;
 import ateam.BDconnection.Connect;
 import ateam.DAOIMPL.EmployeeDAOIMPL;
 import ateam.DAOIMPL.StoreDAOIMPL;
+import ateam.DTO.TopSellingEmployee;
 import ateam.Models.Employee;
+import ateam.Models.Product;
 import ateam.Models.Reports;
 import ateam.Models.Sale;
 import ateam.Models.Store;
 import ateam.Service.EmployeeService;
+import ateam.Service.ProductService;
 import ateam.Service.SaleService2;
 import ateam.Service.StoreService;
 import ateam.ServiceImpl.EmployeeServiceImpl;
+import ateam.ServiceImpl.ProductServiceImpl;
 import ateam.ServiceImpl.SaleServiceImpl;
 import ateam.ServiceImpl.StoreServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -55,6 +59,7 @@ public class SalesDemo extends HttpServlet {
     private final StoreService storeService = new StoreServiceImpl(new StoreDAOIMPL(new Connect().connectToDB()));
     private final EmployeeService employeeService = new EmployeeServiceImpl(new EmployeeDAOIMPL());
     private final Reports reports = new Reports();
+    private final ProductService productService = new ProductServiceImpl();
     
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -78,10 +83,11 @@ public class SalesDemo extends HttpServlet {
         List<Store> stores = storeService.getAllStores();
         List<Employee> employees = employeeService.getAllEmployees();
         Map<String, Integer> topSellingEmployee = reports.generateTopSellingEmployees();
-        
+        List<Product> products = productService.getAllItems();
         
         HttpSession session = request.getSession(false);
         
+        session.setAttribute("Products", products);
         session.setAttribute("Employees", employees);
         session.setAttribute("Stores", stores);
         session.setAttribute("Sales", sales);
@@ -115,7 +121,8 @@ public class SalesDemo extends HttpServlet {
                     Logger.getLogger(SalesDemo.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 break;
-
+            case "getTopSellingEmployeeBasedOnProduct":
+                handleTopSellingEmployeeBasedOnProduct(request, response);
         }
     }
 
@@ -181,5 +188,16 @@ public class SalesDemo extends HttpServlet {
         jsonResponse.put("data", data);
         response.setContentType("application/json");
         response.getWriter().write(new ObjectMapper().writeValueAsString(jsonResponse));
+    }
+    
+    private void handleTopSellingEmployeeBasedOnProduct(HttpServletRequest request, HttpServletResponse response) throws IOException{
+        TopSellingEmployee topEmp = reports.topSellingEmployeeForProduct(Integer.parseInt(request.getParameter("productId")));
+        
+        String result = "<p>Top Selling employee is " + topEmp.getEmployeeName() + "</p>"
+                      + "<p>Total sales: " + topEmp.getTotalSales() + "</p>"
+                      + "<p>Total sales for this product: " + topEmp.getTotalSalesForProduct() + "</p>";
+        
+        response.setContentType("text/html");
+        response.getWriter().write(result);
     }
 }

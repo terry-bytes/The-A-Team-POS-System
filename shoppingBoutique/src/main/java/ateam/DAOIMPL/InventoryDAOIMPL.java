@@ -3,6 +3,7 @@ package ateam.DAOIMPL;
 import ateam.BDconnection.Connect;
 import ateam.DAO.InventoryDAO;
 import ateam.Models.Inventory;
+import ateam.Models.SalesItem;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -48,6 +49,7 @@ public class InventoryDAOIMPL implements InventoryDAO {
             throw new Exception("Error fetching previous quantity: " + ex.getMessage(), ex);
         }
     }
+        
 
     @Override
     public void updateProductQuantity(int productId, int newQuantity) throws Exception {
@@ -77,6 +79,7 @@ public class InventoryDAOIMPL implements InventoryDAO {
                 inventory.setProduct_ID(rs.getInt("product_ID"));
                 inventory.setStore_ID(rs.getInt("store_ID"));
                 inventory.setInventory_quantity(rs.getInt("inventory_quantity"));
+                inventory.setPrevious_quantity(rs.getInt("previous_quantity"));
                 inventory.setReorder_point(rs.getInt("reorder_point"));
                 inventory.setLast_updated(rs.getTimestamp("last_updated"));
                 inventory.setUpdated_by_employee_ID(rs.getInt("updated_by_employee_ID"));
@@ -86,4 +89,72 @@ public class InventoryDAOIMPL implements InventoryDAO {
         return inventoryList;
     }
      
+ @Override
+    public void decreaseInventoryQuantity(int productId, int storeId, int quantity) throws Exception {
+        String sql = "UPDATE inventory SET inventory_quantity = inventory_quantity - ? WHERE product_ID = ? AND store_ID = ?";
+        try (Connection conn = new Connect().connectToDB();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, quantity);
+            pstmt.setInt(2, productId);
+            pstmt.setInt(3, storeId);
+            pstmt.executeUpdate();
+        } catch (SQLException ex) {
+            throw new Exception("Error decreasing inventory quantity: " + ex.getMessage(), ex);
+        }
+    }
+
+    @Override
+    public void decreaseProductQuantity(int productId, int quantity) throws Exception {
+        String sql = "UPDATE products SET quantity_in_stock = quantity_in_stock - ? WHERE product_ID = ?";
+        try (Connection conn = new Connect().connectToDB();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, quantity);
+            pstmt.setInt(2, productId);
+            pstmt.executeUpdate();
+        } catch (SQLException ex) {
+            throw new Exception("Error decreasing product quantity: " + ex.getMessage(), ex);
+        }
+    }
+
+
+// Helper method to get store ID from sales table
+    @Override 
+    public int getStoreIdFromSales(int salesId) throws Exception {
+    String sql = "SELECT store_ID FROM sales WHERE sales_ID = ?";
+    try (Connection conn = new Connect().connectToDB();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        pstmt.setInt(1, salesId);
+        try (ResultSet rs = pstmt.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt("store_ID");
+            } else {
+                throw new Exception("Sale not found.");
+            }
+        }
+    } catch (SQLException ex) {
+        throw new Exception("Error fetching store ID from sales: " + ex.getMessage(), ex);
+    }
+}
+    
+    
+    @Override
+    public List<SalesItem> getSalesItems(int salesId) throws Exception {
+        String sql = "SELECT product_ID, quantity FROM sales_items WHERE sales_ID = ?";
+        List<SalesItem> salesItemList = new ArrayList<>();
+        try (Connection conn = new Connect().connectToDB();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, salesId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    SalesItem salesItem = new SalesItem();
+                    salesItem.setProduct_ID(rs.getInt("product_ID"));
+                    salesItem.setQuantity(rs.getInt("quantity"));
+                    salesItemList.add(salesItem);
+                }
+            }
+        } catch (SQLException ex) {
+            throw new Exception("Error fetching sales items: " + ex.getMessage(), ex);
+        }
+        return salesItemList;
+    }
 }

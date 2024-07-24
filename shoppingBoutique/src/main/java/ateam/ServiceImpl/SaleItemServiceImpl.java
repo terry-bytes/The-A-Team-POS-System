@@ -6,6 +6,7 @@ package ateam.ServiceImpl;
 
 import ateam.DAO.SalesItemDAO;
 import ateam.DAOIMPL.SalesItemDAOIMPL;
+import ateam.DTO.TopProductSellEmployee;
 import ateam.Models.SalesItem;
 import ateam.Service.SaleItemsService;
 import java.util.List;
@@ -28,5 +29,10 @@ public class SaleItemServiceImpl implements SaleItemsService{
     @Override
     public List<SalesItem> getSalesItemsByProductId(int productId) {
         return salesItemDao.getAllSalesItemByProductId(productId);
+    }
+
+    @Override
+    public List<TopProductSellEmployee> getTotalSalesPerProduct() {
+        return salesItemDao.getTopTotalSalesPerEmployees();
     }
 }
