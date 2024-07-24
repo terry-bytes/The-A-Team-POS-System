@@ -9,7 +9,10 @@ package ateam.ServiceImpl;
  * @author Train 09
  */
 import ateam.Models.Email;
+import ateam.Models.Product;
 import ateam.Service.EmailService;
+import java.math.BigDecimal;
+import java.util.List;
 import javax.mail.*;
 import javax.mail.internet.*;
 import java.util.Properties;
@@ -23,7 +26,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     public EmailServiceImpl() {
-        this.email = new Email("ramovhatp@gmail.com", "celw juwu rdis zplg");
+        this.email = new Email("ramovhatp@gmail.com", "xaed clmt qpis ctvf");
     }
 
     @Override
@@ -73,7 +76,7 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public void sendPasswordResetMail(String email, String otp) {
         final String from = "ramovhatp@gmail.com";
-        final String password = "celw juwu rdis zplg";
+        final String password = "xaed clmt qpis ctvf";
 
         Properties props = new Properties();
         props.put("mail.smtp.host", "smtp.gmail.com");
@@ -97,6 +100,62 @@ public class EmailServiceImpl implements EmailService {
 
             Transport.send(message);
             System.out.println("OTP sent successfully to " + email);
+
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void sendSaleReceipt(String toEmail, String salespersonName, String saleTime, List<Product> items, BigDecimal totalAmount, String paymentMethod) {
+        final String from = "ramovhatp@gmail.com";
+        final String password = "xaed clmt qpis ctvf";
+
+        Properties props = new Properties();
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.host", "smtp.gmail.com");
+        props.put("mail.smtp.port", "587");
+
+        Session session = Session.getInstance(props, new javax.mail.Authenticator() {
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(from, password);
+            }
+        });
+
+        try {
+            MimeMessage message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(from));
+            message.addRecipient(Message.RecipientType.TO, new InternetAddress(toEmail));
+            message.setSubject("Sale Receipt");
+
+            StringBuilder content = new StringBuilder();
+            content.append("Dear Customer,\n\n")
+                    .append("Thank you for your purchase!\n\n")
+                    .append("Sale Details:\n")
+                    .append("Salesperson: ").append(salespersonName).append("\n")
+                    .append("Sale Time: ").append(saleTime).append("\n")
+                    .append("Items Bought:\n");
+
+            for (Product item : items) {
+                content.append("- ").append(item.getProduct_name())
+                        .append(" (SKU: ").append(item.getProduct_SKU())
+                        .append(", Size: ").append(item.getSize())
+                        .append(", Color: ").append(item.getColor())
+                        .append("): ").append(item.getScanCount())
+                        .append(" x ").append(item.getProduct_price()).append("\n");
+            }
+
+            content.append("\nTotal Amount: ").append(totalAmount).append("\n")
+                    .append("Payment Method: ").append(paymentMethod).append("\n\n")
+                    .append("Thank you for shopping with us!\n")
+                    .append("Best regards,\n")
+                    .append("Your Company Name");
+
+            message.setText(content.toString());
+
+            Transport.send(message);
+            System.out.println("Sale receipt sent successfully to " + toEmail);
 
         } catch (MessagingException e) {
             e.printStackTrace();

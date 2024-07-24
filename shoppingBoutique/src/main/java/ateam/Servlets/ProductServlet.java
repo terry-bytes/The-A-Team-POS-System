@@ -11,7 +11,9 @@ import ateam.Models.Employee;
 import ateam.Models.Product;
 import ateam.Models.Sale;
 import ateam.Models.SalesItem;
+import ateam.Service.EmailService;
 import ateam.Service.ProductService;
+import ateam.ServiceImpl.EmailServiceImpl;
 import ateam.ServiceImpl.ProductServiceImpl;
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -41,6 +43,7 @@ public class ProductServlet extends HttpServlet {
     private final ProductService productService = new ProductServiceImpl(productDAO);
     private SaleDAO saleDAO = new SaleDAOIMPL();
     private SalesItemDAO salesItemDAO = new SalesItemDAOIMPL();
+    private EmailService emailService = new EmailServiceImpl();
     private Connect dbConnect = new Connect();
 
     @Override
@@ -142,13 +145,14 @@ public class ProductServlet extends HttpServlet {
                     }
                     break;
 
-                case "Complete-Sale":
+            case "Complete-Sale":
                     BigDecimal totalAmount = BigDecimal.valueOf(calculateTotalPrice(scannedItems));
 
-                    if (totalAmount.compareTo(BigDecimal.ZERO) <= 0) { // Check if total is zero or negative
+                    if (totalAmount.compareTo(BigDecimal.ZERO) <= 0) {
                         request.setAttribute("errorMessage", "Total amount cannot be zero or negative.");
-                        break; // Don't proceed with saving the sale
+                        break;
                     }
+
                     Sale newSale = new Sale();
                     newSale.setSales_date(new Timestamp(System.currentTimeMillis()));
                     newSale.setTotal_amount(totalAmount);
@@ -171,6 +175,13 @@ public class ProductServlet extends HttpServlet {
 
                             salesItemDAO.saveSalesItem(salesItem);
                         }
+
+                      
+                        String salespersonName = loggedInUser.getFirstName() + " " + loggedInUser.getLastName();
+                        String saleTime = newSale.getSales_date().toString();
+                        String customerEmail = request.getParameter("customer_email");
+
+                        emailService.sendSaleReceipt(customerEmail, salespersonName, saleTime, scannedItems, totalAmount, newSale.getPayment_method());
 
                         scannedItems.clear();
                     } else {

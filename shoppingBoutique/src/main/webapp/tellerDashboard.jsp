@@ -269,6 +269,10 @@
                                 <input type="text" id="card_amount" name="card_amount">
                             </div>
                         </div>
+                         <div>
+                        <label for="customer_email">Customer Email:</label>
+                        <input type="email" id="customer_email" name="customer_email" placeholder="Enter customer email" >
+                    </div>
                         <input type="hidden" id="scanned-items-count" name="scannedItemsCount" value="<c:out value='${fn:length(scannedItems)}'/>">
                         <button type="submit" name="submit" value="Complete-Sale">Complete Sale</button>
                     </form>
