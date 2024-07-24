@@ -3,34 +3,142 @@ package ateam.DAOIMPL;
 import ateam.BDconnection.Connect;
 import ateam.DAO.InventoryDAO;
 import ateam.Models.Inventory;
+import ateam.Models.Product;
 import ateam.Models.SalesItem;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
 public class InventoryDAOIMPL implements InventoryDAO {
-
+    
+    
     @Override
-    public void logInventoryTransaction(Inventory inventory) throws Exception {
-        String sql = "INSERT INTO inventory (product_ID, store_ID, inventory_quantity, previous_quantity, reorder_point, last_updated, updated_by_employee_ID) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        try (Connection conn = new Connect().connectToDB();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, inventory.getProduct_ID());
-            pstmt.setInt(2, inventory.getStore_ID());
-            pstmt.setInt(3, inventory.getInventory_quantity());
-            pstmt.setInt(4, inventory.getPrevious_quantity());
-            pstmt.setInt(5, inventory.getReorder_point());
-            pstmt.setTimestamp(6, inventory.getLast_updated());
-            pstmt.setInt(7, inventory.getUpdated_by_employee_ID());
-            pstmt.executeUpdate();
-        } catch (SQLException ex) {
-            throw new Exception("Error logging inventory transaction: " + ex.getMessage(), ex);
+    public void addProductAndInventory(String barcode, int storeID, int quantity,int employeeID) throws SQLException {
+    String[] barcodeParts = barcode.split("-");
+    String productSKU = barcodeParts[0];
+    String size = barcodeParts[1];
+    String color = barcodeParts[2];
+    Product product = new Product();
+    Inventory inventory = new Inventory();
+    Connection conn = null;
+    PreparedStatement psProduct = null;
+    PreparedStatement psVariant = null;
+    PreparedStatement psInventory = null;
+    
+    try {
+        conn = new Connect().connectToDB();
+        conn.setAutoCommit(false); // Start transaction
+
+        // Check if product exists
+        String checkProductSQL = "SELECT product_ID FROM products WHERE product_SKU = ?";
+        psProduct = conn.prepareStatement(checkProductSQL);
+        psProduct.setString(1, productSKU);
+        ResultSet rsProduct = psProduct.executeQuery();
+
+        int productID;
+        if (rsProduct.next()) {
+            productID = rsProduct.getInt("product_ID");
+        } else {
+            // Insert new product if not exists
+            String insertProductSQL = "INSERT INTO products (product_name,product_description,product_price,category_ID,product_SKU,quantity_in_stock,productImagePath,size,color) VALUES (?,?,?,?,?,?,?,?,?)";
+            psProduct = conn.prepareStatement(insertProductSQL, Statement.RETURN_GENERATED_KEYS);
+            psProduct.setString(1,product.getProduct_name() );
+            psProduct.setString (2,product.getProduct_description());
+            psProduct.setDouble(3,product.getProduct_price());
+            psProduct.setInt(4,product.getCategory_ID());
+            psProduct.setString(5, productSKU);
+            psProduct.setInt(6,product.getQuantity_in_stock());
+            psProduct.setString(7,product.getProduct_image_path());
+            psProduct.setString(8,size);
+            psProduct.setString(9, color);
+            
+            // Set other parameters...
+            psProduct.executeUpdate();
+
+            ResultSet generatedKeys = psProduct.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                productID = generatedKeys.getInt(1);
+            } else {
+                throw new SQLException("Creating product failed, no ID obtained.");
+            }
         }
+
+        // Check if variant exists
+        String checkVariantSQL = "SELECT variant_ID FROM productvariants WHERE product_SKU = ? AND size = ? AND color = ? AND store_ID = ?";
+        psVariant = conn.prepareStatement(checkVariantSQL);
+        psVariant.setString(1, productSKU);
+        psVariant.setString(2, size);
+        psVariant.setString(3, color);
+        psVariant.setInt(4, storeID);
+        ResultSet rsVariant = psVariant.executeQuery();
+
+        if (!rsVariant.next()) {
+            // Insert new variant if not exists
+            String insertVariantSQL = "INSERT INTO productvariants (product_SKU, size, color, store_ID) VALUES (?, ?, ?, ?)";
+            psVariant = conn.prepareStatement(insertVariantSQL);
+            psVariant.setString(1, productSKU);
+            psVariant.setString(2, size);
+            psVariant.setString(3, color);
+            psVariant.setInt(4, storeID);
+            psVariant.executeUpdate();
+        }
+        
+        // Set other properties before we add on inventory
+        inventory.setReorder_point(5); 
+        inventory.setLast_updated(new Timestamp(System.currentTimeMillis()));
+        inventory.setUpdated_by_employee_ID(employeeID);
+
+        // Insert into inventory
+        String insertInventorySQL = "INSERT INTO inventory (product_ID, store_ID, inventory_quantity, previous_quantity, reorder_point, last_updated, updated_by_employee_ID) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        psInventory = conn.prepareStatement(insertInventorySQL);
+        psInventory.setInt(1, productID);
+        psInventory.setInt(2, storeID);
+        psInventory.setInt(3, quantity);
+        psInventory.setInt(4,inventory.getPrevious_quantity());
+        psInventory.setInt(5,inventory.getReorder_point());
+        psInventory.setTimestamp(6,inventory.getLast_updated());
+        psInventory.setInt(7,employeeID);
+        // Set other parameters...
+        psInventory.executeUpdate();
+
+        conn.commit(); // Commit transaction
+    } catch (SQLException e) {
+        if (conn != null) {
+            conn.rollback(); // Rollback transaction on error
+        }
+        throw e;
+    } finally {
+        if (psProduct != null) psProduct.close();
+        if (psVariant != null) psVariant.close();
+        if (psInventory != null) psInventory.close();
+        if (conn != null) conn.close();
     }
+}
+
+
+//    @Override
+//    public void logInventoryTransaction(Inventory inventory) throws Exception {
+//        String sql = "INSERT INTO inventory (product_ID, store_ID, inventory_quantity, previous_quantity, reorder_point, last_updated, updated_by_employee_ID) VALUES (?, ?, ?, ?, ?, ?, ?)";
+//        try (Connection conn = new Connect().connectToDB();
+//             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+//            pstmt.setInt(1, inventory.getProduct_ID());
+//            pstmt.setInt(2, inventory.getStore_ID());
+//            pstmt.setInt(3, inventory.getInventory_quantity());
+//            pstmt.setInt(4, inventory.getPrevious_quantity());
+//            pstmt.setInt(5, inventory.getReorder_point());
+//            pstmt.setTimestamp(6, inventory.getLast_updated());
+//            pstmt.setInt(7, inventory.getUpdated_by_employee_ID());
+//            pstmt.executeUpdate();
+//        } catch (SQLException ex) {
+//            throw new Exception("Error logging inventory transaction: " + ex.getMessage(), ex);
+//        }
+//    }
 
     @Override
     public int getPreviousQuantity(int productId) throws Exception {
@@ -157,4 +265,6 @@ public class InventoryDAOIMPL implements InventoryDAO {
         }
         return salesItemList;
     }
+
+    
 }

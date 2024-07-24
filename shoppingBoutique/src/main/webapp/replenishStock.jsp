@@ -72,6 +72,8 @@
         <h1>Add Stock</h1>
         
             <form action="InventoryServlet" method="post">
+                <label for="barcode">Barcode (SKU-Size-Color):</label>
+                <input type="text" id="barcode" name="barcode" required>
                 <label for="employeeId">Employee ID:</label>
                 <input type="number" id ="employeeId" name="employeeId" value="<%=employee.getEmployee_ID()%>" readonly><br><br>
                 <label for="productId">Product ID:</label>

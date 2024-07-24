@@ -2,14 +2,15 @@ package ateam.DAO;
 
 import ateam.Models.Inventory;
 import ateam.Models.SalesItem;
+import java.sql.SQLException;
 import java.util.List;
 
 
 
 public interface InventoryDAO {
     
-    
-    void logInventoryTransaction(Inventory inventory) throws Exception;
+    void addProductAndInventory(String barcode, int storeID, int quantity,int employeeID) throws SQLException;
+    //void logInventoryTransaction(Inventory inventory) throws Exception;
     int getPreviousQuantity(int productId) throws Exception;
     
     void updateProductQuantity(int productId, int newQuantity) throws Exception;

@@ -25,7 +25,7 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Override
-     public void replenishStock(int productId, int additionalStock, int employeeId, int storeId) throws SQLException {
+     public void replenishStock(String productSKU,int productId, int additionalStock, int employeeId, int storeId) throws SQLException {
     Inventory inventory = new Inventory();
         inventory.setProduct_ID(productId);
         inventory.setStore_ID(storeId);
@@ -51,7 +51,7 @@ public class InventoryServiceImpl implements InventoryService {
 
         try {
             // Log inventory transaction
-            inventoryDAO.logInventoryTransaction(inventory);
+            inventoryDAO.addProductAndInventory(productSKU, storeId, additionalStock,employeeId);
         } catch (Exception ex) {
             Logger.getLogger(InventoryServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
         }

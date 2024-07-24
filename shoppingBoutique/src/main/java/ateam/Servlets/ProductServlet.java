@@ -11,8 +11,13 @@ import ateam.Models.Employee;
 import ateam.Models.Product;
 import ateam.Models.Sale;
 import ateam.Models.SalesItem;
+
 import ateam.Service.InventoryService;
+
+import ateam.Service.EmailService;
+
 import ateam.Service.ProductService;
+import ateam.ServiceImpl.EmailServiceImpl;
 import ateam.ServiceImpl.ProductServiceImpl;
 import ateam.Services.impl.InventoryServiceImpl;
 import org.mindrot.jbcrypt.BCrypt;
@@ -43,6 +48,7 @@ public class ProductServlet extends HttpServlet {
     private final ProductService productService = new ProductServiceImpl();
     private SaleDAO saleDAO = new SaleDAOIMPL();
     private SalesItemDAO salesItemDAO = new SalesItemDAOIMPL();
+    private EmailService emailService = new EmailServiceImpl();
     private Connect dbConnect = new Connect();
     private InventoryService inventoryService = new InventoryServiceImpl();
 
@@ -69,26 +75,41 @@ public class ProductServlet extends HttpServlet {
                 case "Add-Item":
                 case "auto-submit":
                     List<Product> foundProducts = productService.getProductBySKU(sku);
+                    if (foundProducts.isEmpty()) {
+                        // Handle the case where no products are found
+                        request.setAttribute("errorMessage", "Product with SKU '" + sku + "' not found.");
+                        request.getRequestDispatcher("tellerDashboard.jsp").forward(request, response);
+                        return; // Return to avoid further processing
+                    }
                     session.setAttribute("foundProducts", foundProducts);
-                    if (!foundProducts.isEmpty()) {
+
+                    // Assuming SKU format includes size and color
+                    String[] skuParts = sku.split("-");
+                    String productSKU = skuParts[0];
+                    String size = skuParts.length > 1 ? skuParts[1] : "";
+                    String color = skuParts.length > 2 ? skuParts[2] : "";
+
+                    boolean foundInScannedItems = false;
+
+                    for (Product scannedItem : scannedItems) {
+                        // Check if the product and variant (size/color) match
+                        if (scannedItem.getProduct_SKU().equals(productSKU)
+                                && scannedItem.getSize().equals(size)
+                                && scannedItem.getColor().equals(color)) {
+                            // Increase the quantity if the item is already scanned
+                            scannedItem.setScanCount(scannedItem.getScanCount() + 1);
+                            foundInScannedItems = true;
+                            break;
+                        }
+                    }
+
+                    // If not found, add it to the list with count set to 1
+                    if (!foundInScannedItems) {
                         Product productToAdd = foundProducts.get(0);
-                        boolean foundInScannedItems = false;
-
-                        // Check if the product is already in the scannedItems list
-                        for (Product scannedItem : scannedItems) {
-                            if (scannedItem.equals(productToAdd)) {
-                                // Increase the quantity if the item is already scanned
-                                scannedItem.setScanCount(scannedItem.getScanCount() + 1);
-                                foundInScannedItems = true;
-                                break;
-                            }
-                        }
-
-                        // If not found, add it to the list with count set to 1
-                        if (!foundInScannedItems) {
-                            productToAdd.setScanCount(1);
-                            scannedItems.add(productToAdd);
-                        }
+                        productToAdd.setSize(size);
+                        productToAdd.setColor(color);
+                        productToAdd.setScanCount(1);
+                        scannedItems.add(productToAdd);
                     }
                     break;
 
@@ -106,6 +127,7 @@ public class ProductServlet extends HttpServlet {
                     String skuToRemove = (String) session.getAttribute("itemToRemoveSKU");
                     if (skuToRemove != null && verifyManagerPassword(loggedInUser.getStore_ID(), managerPassword)) {
                         // Find the item with the specified SKU and update its scan count or remove it
+                        boolean itemRemoved = false;
                         for (Product item : scannedItems) {
                             if (item.getProduct_SKU().equals(skuToRemove)) {
                                 if (item.getScanCount() > 1) {
@@ -115,33 +137,37 @@ public class ProductServlet extends HttpServlet {
                                     // Remove item if scan count is 1
                                     scannedItems.remove(item);
                                 }
+                                itemRemoved = true;
                                 break;
                             }
+                        }
+                        if (!itemRemoved) {
+                            request.setAttribute("errorMessage", "Item with SKU '" + skuToRemove + "' not found in scanned items.");
                         }
                         session.removeAttribute("itemToRemoveSKU"); // Clean up session attribute
                     } else {
                         // Handle password verification failure or missing SKU
-                        Logger.getLogger(ProductServlet.class.getName()).log(Level.SEVERE, "Invalid manager password or unauthorized access");
+                        request.setAttribute("errorMessage", "Invalid manager password or unauthorized access.");
                     }
                     break;
 
-                case "Complete-Sale":
+            case "Complete-Sale":
                     BigDecimal totalAmount = BigDecimal.valueOf(calculateTotalPrice(scannedItems));
 
-                    if (totalAmount.compareTo(BigDecimal.ZERO) <= 0) { // Check if total is zero or negative
-                        Logger.getLogger(ProductServlet.class.getName()).log(Level.WARNING, "Invalid total amount: " + totalAmount);
+                    if (totalAmount.compareTo(BigDecimal.ZERO) <= 0) {
                         request.setAttribute("errorMessage", "Total amount cannot be zero or negative.");
-                        break; // Don't proceed with saving the sale
+                        break;
                     }
+
                     Sale newSale = new Sale();
                     newSale.setSales_date(new Timestamp(System.currentTimeMillis()));
-                    newSale.setTotal_amount(BigDecimal.valueOf(calculateTotalPrice(scannedItems)));
+                    newSale.setTotal_amount(totalAmount);
                     newSale.setPayment_method(request.getParameter("payment_method"));
                     if (loggedInUser != null) {
                         newSale.setEmployee_ID(loggedInUser.getEmployee_ID());
                         newSale.setStore_ID(loggedInUser.getStore_ID());
                     } else {
-                        Logger.getLogger(ProductServlet.class.getName()).log(Level.SEVERE, "Employee not logged in");
+                        request.setAttribute("errorMessage", "Employee not logged in.");
                     }
 
                     int newSalesID = saleDAO.saveSale(newSale);
@@ -156,13 +182,23 @@ public class ProductServlet extends HttpServlet {
                             salesItemDAO.saveSalesItem(salesItem);
                         }
 
+
                         
                         
                         // Call processSale method to update inventory and product quantities
                         inventoryService.processSale(newSalesID);
+
+                      
+                        String salespersonName = loggedInUser.getFirstName() + " " + loggedInUser.getLastName();
+                        String saleTime = newSale.getSales_date().toString();
+                        String customerEmail = request.getParameter("customer_email");
+
+                        emailService.sendSaleReceipt(customerEmail, salespersonName, saleTime, scannedItems, totalAmount, newSale.getPayment_method());
+
+
                         scannedItems.clear();
                     } else {
-                        Logger.getLogger(ProductServlet.class.getName()).log(Level.SEVERE, "Failed to save sale");
+                        request.setAttribute("errorMessage", "Failed to save sale.");
                     }
                     break;
 
@@ -170,10 +206,7 @@ public class ProductServlet extends HttpServlet {
                     request.getRequestDispatcher("replenishStock.jsp").forward(request, response);
                     break;
 
-                // ... (other cases)
             }
-
-            // Calculate total price per item and overall total price
             List<BigDecimal> totalPricePerItem = scannedItems.stream()
                     .map(item -> BigDecimal.valueOf(item.getProduct_price()).multiply(BigDecimal.valueOf(item.getScanCount())))
                     .collect(Collectors.toList());
@@ -183,9 +216,12 @@ public class ProductServlet extends HttpServlet {
             request.setAttribute("totalPrice", totalPrice);
             request.setAttribute("totalPricePerItem", totalPricePerItem);
 
+            // Forward to the same page to display updated information and any error messages
             request.getRequestDispatcher("tellerDashboard.jsp").forward(request, response);
         } catch (Exception e) {
             Logger.getLogger(ProductServlet.class.getName()).log(Level.SEVERE, "Error in ProductServlet", e);
+            request.setAttribute("errorMessage", "An unexpected error occurred.");
+            request.getRequestDispatcher("tellerDashboard.jsp").forward(request, response);
         }
     }
 
