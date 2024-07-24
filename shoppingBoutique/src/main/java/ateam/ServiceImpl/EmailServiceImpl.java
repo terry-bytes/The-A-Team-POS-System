@@ -1,21 +1,21 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package ateam.ServiceImpl;
 
-/**
- *
- * @author Train 09
- */
 import ateam.Models.Email;
 import ateam.Models.Product;
 import ateam.Service.EmailService;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 import javax.mail.*;
 import javax.mail.internet.*;
 import java.util.Properties;
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.mail.util.ByteArrayDataSource;
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.*;
+import com.itextpdf.text.pdf.draw.LineSeparator;
+import java.io.ByteArrayOutputStream;
 
 public class EmailServiceImpl implements EmailService {
 
@@ -124,57 +124,115 @@ public class EmailServiceImpl implements EmailService {
         });
 
         try {
+            // Create the PDF content
+            ByteArrayOutputStream pdfStream = new ByteArrayOutputStream();
+            Document document = new Document(PageSize.A4);
+            PdfWriter.getInstance(document, pdfStream);
+            document.open();
+
+            // Add stylish content to PDF
+            Font titleFont = new Font(Font.FontFamily.HELVETICA, 24, Font.BOLD, BaseColor.RED);
+            Font headerFont = new Font(Font.FontFamily.HELVETICA, 14, Font.BOLD, BaseColor.DARK_GRAY);
+            Font normalFont = new Font(Font.FontFamily.HELVETICA, 12, Font.NORMAL, BaseColor.BLACK);
+
+            // Add Title
+            Paragraph title = new Paragraph("Sale Receipt", titleFont);
+            title.setAlignment(Element.ALIGN_CENTER);
+            document.add(title);
+            document.add(new Paragraph(" "));
+
+            // Add a separator line
+            LineSeparator separator = new LineSeparator();
+            separator.setLineWidth(2f);
+            separator.setLineColor(BaseColor.RED);
+            document.add(separator);
+            document.add(new Paragraph(" "));
+
+            // Add sale details
+            document.add(new Paragraph("Dear Customer,", normalFont));
+            document.add(new Paragraph("Thank you for your purchase!", normalFont));
+            document.add(new Paragraph(" "));
+
+            Paragraph saleDetails = new Paragraph("Sale Details:", headerFont);
+            saleDetails.setSpacingBefore(10);
+            document.add(saleDetails);
+            document.add(new Paragraph("Salesperson: " + salespersonName, normalFont));
+            document.add(new Paragraph("Sale Time: " + saleTime, normalFont));
+            document.add(new Paragraph(" "));
+
+            // Create and style table
+            PdfPTable table = new PdfPTable(6);
+            table.setWidthPercentage(100);
+            table.setSpacingBefore(10f);
+            table.setSpacingAfter(10f);
+
+            // Table headers
+            PdfPCell cell = new PdfPCell(new Phrase("Product Name", headerFont));
+            cell.setBackgroundColor(BaseColor.LIGHT_GRAY);
+            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            table.addCell(cell);
+            table.addCell(new PdfPCell(new Phrase("SKU", headerFont)));
+            table.addCell(new PdfPCell(new Phrase("Size", headerFont)));
+            table.addCell(new PdfPCell(new Phrase("Color", headerFont)));
+            table.addCell(new PdfPCell(new Phrase("Quantity", headerFont)));
+            table.addCell(new PdfPCell(new Phrase("Price", headerFont)));
+
+            // Table data
+            for (Product item : items) {
+                table.addCell(new PdfPCell(new Phrase(item.getProduct_name(), normalFont)));
+                table.addCell(new PdfPCell(new Phrase(item.getProduct_SKU(), normalFont)));
+                table.addCell(new PdfPCell(new Phrase(item.getSize(), normalFont)));
+                table.addCell(new PdfPCell(new Phrase(item.getColor(), normalFont)));
+                table.addCell(new PdfPCell(new Phrase(String.valueOf(item.getScanCount()), normalFont)));
+                table.addCell(new PdfPCell(new Phrase(String.format("R%.2f", item.getProduct_price()), normalFont)));
+            }
+
+            document.add(table);
+            document.add(new Paragraph(" "));
+            Paragraph totalAmountParagraph = new Paragraph("Total Amount: " + String.format("R%.2f", totalAmount), headerFont);
+            totalAmountParagraph.setSpacingBefore(10);
+            document.add(totalAmountParagraph);
+            document.add(new Paragraph("Payment Method: " + paymentMethod, normalFont));
+            document.add(new Paragraph(" "));
+
+            // Footer
+            Paragraph footer = new Paragraph("Thank you for shopping with us!", normalFont);
+            footer.setSpacingBefore(20);
+            document.add(footer);
+            document.add(new Paragraph("Best regards,", normalFont));
+            document.add(new Paragraph("Your Company Name", normalFont));
+
+            document.close();
+            pdfStream.flush();
+            byte[] pdfBytes = pdfStream.toByteArray();
+            pdfStream.close();
+
+            // Send the email with PDF attachment
             MimeMessage message = new MimeMessage(session);
             message.setFrom(new InternetAddress(from));
             message.addRecipient(Message.RecipientType.TO, new InternetAddress(toEmail));
             message.setSubject("Sale Receipt");
 
-            // Use HTML content for the email with inline CSS
-            StringBuilder content = new StringBuilder();
-            content.append("<html><body style='font-family: Arial, sans-serif; color: #333;'>")
-                    .append("<div style='text-align: center; padding: 20px;'>")
-                    .append("<img src='https://th.bing.com/th/id/OIP.QhSR_Wwm-xeoz9Fh3w0orAAAAA?rs=1&pid=ImgDetMain' alt='Company Logo' style='max-width: 150px;'>")
-                    .append("</div>")
-                    .append("<h2 style='color: #0056b3;'>Dear Customer,</h2>")
-                    .append("<p>Thank you for your purchase!</p>")
-                    .append("<h3 style='color: #0056b3;'>Sale Details:</h3>")
-                    .append("<p><strong>Salesperson:</strong> ").append(salespersonName).append("</p>")
-                    .append("<p><strong>Sale Time:</strong> ").append(saleTime).append("</p>")
-                    .append("<h3 style='color: #0056b3;'>Items Bought:</h3>")
-                    .append("<table border='1' cellpadding='10' cellspacing='0' style='width: 100%; border-collapse: collapse;'>")
-                    .append("<tr style='background-color: #f4f4f4; color: #333;'>")
-                    .append("<th style='border: 1px solid #ddd;'>Product Name</th>")
-                    .append("<th style='border: 1px solid #ddd;'>SKU</th>")
-                    .append("<th style='border: 1px solid #ddd;'>Size</th>")
-                    .append("<th style='border: 1px solid #ddd;'>Color</th>")
-                    .append("<th style='border: 1px solid #ddd;'>Quantity</th>")
-                    .append("<th style='border: 1px solid #ddd;'>Price</th>")
-                    .append("</tr>");
+            Multipart multipart = new MimeMultipart();
 
-            for (Product item : items) {
-                content.append("<tr>")
-                        .append("<td style='border: 1px solid #ddd;'>").append(item.getProduct_name()).append("</td>")
-                        .append("<td style='border: 1px solid #ddd;'>").append(item.getProduct_SKU()).append("</td>")
-                        .append("<td style='border: 1px solid #ddd;'>").append(item.getSize()).append("</td>")
-                        .append("<td style='border: 1px solid #ddd;'>").append(item.getColor()).append("</td>")
-                        .append("<td style='border: 1px solid #ddd;'>").append(item.getScanCount()).append("</td>")
-                        .append("<td style='border: 1px solid #ddd;'>").append(item.getProduct_price()).append("</td>")
-                        .append("</tr>");
-            }
+            // Text part of the email
+            BodyPart messageBodyPart = new MimeBodyPart();
+            messageBodyPart.setText("Please find your sale receipt attached.");
+            multipart.addBodyPart(messageBodyPart);
 
-            content.append("</table>")
-                    .append("<p style='font-weight: bold; color: #0056b3;'>Total Amount: ").append(totalAmount).append("</p>")
-                    .append("<p><strong>Payment Method:</strong> ").append(paymentMethod).append("</p>")
-                    .append("<p>Thank you for shopping with us!</p>")
-                    .append("<p>Best regards,<br>Your Company Name</p>")
-                    .append("</body></html>");
+            // PDF attachment
+            messageBodyPart = new MimeBodyPart();
+            DataSource source = new ByteArrayDataSource(pdfBytes, "application/pdf");
+            messageBodyPart.setDataHandler(new DataHandler(source));
+            messageBodyPart.setFileName("SaleReceipt.pdf");
+            multipart.addBodyPart(messageBodyPart);
 
-            message.setContent(content.toString(), "text/html");
+            message.setContent(multipart);
 
             Transport.send(message);
             System.out.println("Sale receipt sent successfully to " + toEmail);
 
-        } catch (MessagingException e) {
+        } catch (DocumentException | IOException | MessagingException e) {
             e.printStackTrace();
         }
     }
