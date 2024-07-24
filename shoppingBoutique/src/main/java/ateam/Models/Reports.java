@@ -6,12 +6,15 @@ package ateam.Models;
 
 import ateam.Service.EmployeeService;
 import ateam.Service.ProductService;
+import ateam.Service.SaleItemsService;
 import ateam.Service.SaleService2;
 import ateam.Service.StoreService;
 import ateam.ServiceImpl.EmployeeServiceImpl;
 import ateam.ServiceImpl.ProductServiceImpl;
+import ateam.ServiceImpl.SaleItemServiceImpl;
 import ateam.ServiceImpl.SaleServiceImpl;
 import ateam.ServiceImpl.StoreServiceImpl;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -31,6 +34,7 @@ public class Reports {
     private final int targetSalesPerEmployee;
     private final StoreService storeService;
     private final ProductService productService;
+    
 
     public Reports(EmployeeService employeeService, SaleService2 saleService, int target, StoreService storeService, ProductService productService) {
         this.employeeService = employeeService;
@@ -150,7 +154,7 @@ public class Reports {
     /**
      * Generate a report for chosen product, how much was sold and the top sells person for that product across the stores nationwide
      * from these list get List<Sale> and List<SalesItem> 
-     * 
+     * calculate the total sales for that product interms of items e.g total is 210; 
      * 
      * 
      * @param productId
@@ -158,6 +162,32 @@ public class Reports {
      */
     
     public Map<String, Integer> topSellingEmployeeForProduct(int productId){
-        List<SalesItem> saleItems = new SalesItemServiceImpl()
+        SaleItemsService saleItems = new SaleItemServiceImpl();
+        
+        List<SalesItem> salesItems = saleItems.getSalesItemsByProductId(2);
+        List<Sale> sales = saleService.getAllSales();
+        
+//        List<Sale> salesWithProductId = sales.stream()
+//                .filter(sale -> salesItems.stream()
+//                        .anyMatch(item -> item.getSales_ID() == sale.getSales_ID()))
+//                .collect(Collectors.toList());
+//        
+//        //grouping by sales id e.g key=2, value will be the list of items sold on that sales
+//        Map<Integer, List<SalesItem>> salesItemsBySalesId = salesItems.stream()
+//                .collect(Collectors.groupingBy(SalesItem::getSales_ID));
+//        
+//        BigDecimal totalQuantitySold = salesItems.stream()
+//                .map(item -> BigDecimal.valueOf(item.getQuantity()))
+//                .reduce(BigDecimal.ZERO, BigDecimal::add);
+//        
+//        //get total quantity sold by each employee
+//        Map<Integer, BigDecimal> salesByEmployee = sales.stream()
+//                .filter(sale -> salesItemsBySalesId.containsKey(sale.getSales_ID()))
+//                .flatMap(sale -> salesItemsBySalesId.get(sale.getSales_ID()).stream())
+//                .collect(Collectors.groupingBy(
+//                        salesWithProductId.stream().anyMatch(sale -> sale.getEmployee_ID()==),
+//                        Collectors.mapping(SalesItem::getQuantity, 
+//                                Collectors.reducing(BigDecimal.ZERO, BigDecimal::add))));
+    return null;
     }
 }

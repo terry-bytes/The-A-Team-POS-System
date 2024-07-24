@@ -7,5 +7,6 @@ import java.util.List;
 public interface SalesItemDAO {
 
  void saveSalesItem(SalesItem salesItem);
+ List<SalesItem> getAllSalesItemByProductId(int productId);
 }
 
