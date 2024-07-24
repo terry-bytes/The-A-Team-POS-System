@@ -119,9 +119,9 @@ public class LayawayServlet extends HttpServlet {
         System.out.println("layaway_switch parameter value: " + layawaySwitch);
        switch(layawaySwitch) {
            case "Add Layaway":
-               //handleAddingLayaway(request, response);
-               //sendFirstEmail(request, response);
                handleNewLayawayAdding(request, response);
+               sendFirstEmail(request, response);
+ 
                break;
            case "View Layaway":
                handleSearchingLayawayByID(request, response);
@@ -164,12 +164,12 @@ public class LayawayServlet extends HttpServlet {
     
         // Set other parameters in Layaway object
         layaway.setCustomerEmail(request.getParameter("customer_email"));
-        layaway.setCustomerNumber(request.getParameter("customer_number"));
+        //layaway.setCustomerNumber(request.getParameter("customer_number"));
         layaway.setEmployee_ID(employee.getEmployee_ID());
         layaway.setLayaway_status("PENDING");
         layaway.setStart_date(buttonClickTime);
         layaway.setExpiry_date(expiryTime);
-        layaway.setProductID(Integer.parseInt(request.getParameter("product_ID")));
+        //layaway.setProductID(Integer.parseInt(request.getParameter("product_ID")));
         layaway.setProductQuantity(Integer.parseInt(request.getParameter("product_quantity")));
         layaway.setCustomerName(request.getParameter("customer_name"));
         globalEmailAddress = request.getParameter("customer_email");
@@ -190,15 +190,54 @@ public class LayawayServlet extends HttpServlet {
     private void handleNewLayawayAdding(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession(false);
         Employee employee = (Employee) session.getAttribute("Employee");
-        List<Layaway> scannedItems = (List<Layaway>) session.getAttribute("ScannedItemsList");
+        List<Layaway> scannedItems = (List<Layaway>) session.getAttribute("scannedItemsList");
+        Layaway layaway = new Layaway();
+        StringBuilder productIds = new StringBuilder();
+        StringBuilder productName = new StringBuilder();
+        
+          // Parse buttonClickTime and expiryTime from request parameters
+        String buttonClickTimeString = request.getParameter("buttonClickTime");
+        String expiryTimeString = request.getParameter("expiryTime");
+        
+         // Parse Timestamps with correct format
+        Timestamp buttonClickTime = Timestamp.valueOf(buttonClickTimeString.replace("T", " ").substring(0, 19));
+        Timestamp expiryTime = Timestamp.valueOf(expiryTimeString.replace("T", " ").substring(0, 19));
+        
+        layaway.setCustomerEmail("ramovhatp@gmail.com");
+        //layaway.setCustomerNumber(request.getParameter("customer_number"));
+        layaway.setEmployee_ID(employee.getEmployee_ID());
+        layaway.setLayaway_status("PENDING");
+        layaway.setStart_date(buttonClickTime);
+        layaway.setExpiry_date(expiryTime);
+        layaway.setCustomerName("Matthias");
+        globalEmailAddress = "ramovhatp@gmail.com";
+        globalCustomerName = "Matthias";
+        
+        
         
         if (scannedItems != null) {
             for (Layaway item : scannedItems) {
-                // Output item details to console
-                System.out.println("Product SKU: " + item.getProductSKU());
-                System.out.println("Product Name: " + item.getProductName());
-                System.out.println("Product Price: " + item.getProductPrice());
-                System.out.println("------------------------------------");
+//                //Output item details to console
+//                System.out.println("Product SKU: " + item.getProductSKU());
+//                System.out.println("Product Name: " + item.getProductName());
+//                System.out.println("Product Price: " + item.getProductPrice());
+//                System.out.println("------------------------------------");
+                  //layaway.setProductID(item.getProductID());
+                  layaway.setProductSKU(item.getProductSKU());
+                  //layaway.setProductName(item.getProductName());
+                  layaway.setProductPrice(item.getProductPrice());
+                  
+                  productName.append(item.getProductName()).append("+");
+                  
+                  // Append product ID to the StringBuilder with '-' separator
+                  productIds.append(item.getProductID()).append("-");
+                  String productIdsString = productIds.toString();
+                  layaway.setProductID(productIds.toString());
+                  System.out.println("APPENDED ID " + productIds);
+                  System.out.println("APPENDED NAME " + productName);
+                  String productNameString = productName.toString();
+                  layaway.setProductName(productNameString);
+                  System.out.println("TEST APPEND " + productNameString);
             }
         } else {
             // Output message if scannedItems is null or empty
@@ -208,7 +247,15 @@ public class LayawayServlet extends HttpServlet {
         // Set attribute to indicate showing popup
         request.setAttribute("showPopup", true);
         
-        // Forward the request to the JSP
+        boolean success = layawayService.addNewLayaway(layaway);
+        if (success) {
+         request.setAttribute("message", "Layaway saved successfully");
+ 
+            // Schedule the test method to run after 5 seconds
+            schedulerr.schedule(() -> sendSecondEmail(), 5, TimeUnit.SECONDS);
+        } else {
+            request.setAttribute("message", "Failed to save Layaway");
+    }
         request.getRequestDispatcher("tellerDashboard.jsp").forward(request, response);
     }
     
@@ -227,7 +274,7 @@ public class LayawayServlet extends HttpServlet {
     private void handleUpdatingLayaways(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Layaway layaway = new Layaway();
         layaway.setLayaway_ID(Integer.parseInt(request.getParameter("new_layaway_ID")));
-        layaway.setProductID(Integer.parseInt(request.getParameter("new_product_ID")));
+        //layaway.setProductID(Integer.parseInt(request.getParameter("new_product_ID")));
         layaway.setProductQuantity(Integer.parseInt(request.getParameter("new_product_quantity")));
         layaway.setLayaway_status(request.getParameter("new_layaway_status"));
         boolean success = layawayService.updateLayaway(layaway);
@@ -256,13 +303,13 @@ public class LayawayServlet extends HttpServlet {
     
     private void sendFirstEmail(HttpServletRequest request, HttpServletResponse response) {
         //System.out.println("Hello World");
-        String customerName = request.getParameter("customer_name");
-        String customerEmail = request.getParameter("customer_email");
+        String customerName = "Matthias";
+        String customerEmail = "ramovhatp@gmail.com";
         Layaway emailLayaway = layawayService.emailData(customerEmail);
         
         
         String msg = "Dear " + customerName + " "  + ",\nCongratulations! Your Layaway ID is " + emailLayaway.getLayaway_ID()
-                        + ". We're excited to have your new Layaway. Please collect it before the " + emailLayaway.getExpiry_date() + "Your layaway product is: " + emailLayaway.getProductID() +"\n\n\n\nBest regards,\n";
+                        + ". We're excited to have your new Layaway. Please collect it before the " + emailLayaway.getExpiry_date() +" " +"Your layaway product is: " + emailLayaway.getProductName() +"\n\n\n\nBest regards,\n";
 //                        + manager.getFirstName() + " " + manager.getLastName() + "\n"
 //                        + manager.getRole() + "(" + stores.getStore_name() + ")\n"
 //                        + "Carols Boutique\n"
@@ -277,11 +324,11 @@ public class LayawayServlet extends HttpServlet {
     }
     
     private void sendSecondEmail() {
-        String customerEmail = globalEmailAddress;
-        String customerName = globalCustomerName;
+        String customerEmail = "ramovhatp@gmail.com";
+        String customerName = "Matthias";
         Layaway emailLayaway = layawayService.emailData(customerEmail);
         String msg = "Dear " + customerName + " "  + ",\nImportant! Your Layaway ID: " + emailLayaway.getLayaway_ID()
-                        + ". This is a gentle reminder to collect your layaway. You have 12 hours left. Please collect it before the " + emailLayaway.getExpiry_date() + "Your layaway product is: " + emailLayaway.getProductID() +"\n\n\n\nBest regards,\n";
+                        + ". This is a gentle reminder to collect your layaway. You have 12 hours left. Please collect it before the " + emailLayaway.getExpiry_date() + " " + "Your layaway product is: " + emailLayaway.getProductName() +"\n\n\n\nBest regards,\n";
 //                        + manager.getFirstName() + " " + manager.getLastName() + "\n"
 //                        + manager.getRole() + "(" + stores.getStore_name() + ")\n"
 //                        + "Carols Boutique\n"

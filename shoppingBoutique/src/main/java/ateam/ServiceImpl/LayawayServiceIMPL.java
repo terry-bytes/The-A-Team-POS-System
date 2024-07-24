@@ -51,4 +51,9 @@ public class LayawayServiceIMPL implements LayawayService {
     public Layaway emailData(String customerEmail) {
         return layawayDAO.emailData(customerEmail);
     }
+
+    @Override
+    public boolean addNewLayaway(Layaway layaway) {
+        return layawayDAO.addNewLayaway(layaway);
+    }
 }

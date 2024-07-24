@@ -12,6 +12,7 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 public class BarcodeGenerator {
@@ -50,20 +51,20 @@ public class BarcodeGenerator {
     }
 
     public static void main(String[] args) {
-        // Example usage
-        List<String> texts = List.of(
-            "0123456789012-S-Red",
-            "0123456789012-M-Red",
-            "0123456789012-L-Red"
-            // Add more texts as needed
-        );
-        String outputDir = "output"; // Directory to save the barcode images
-        int width = 300; // Width of the barcode image
-        int height = 300; // Height of the barcode image
+       // Example usage
+    List<String> texts = Arrays.asList(
+        "0123456789012-S-Red",
+        "0123456789012-M-Red",
+        "0123456789012-L-Red"
+        // Add more texts as needed
+    );
+    String outputDir = "output"; // Directory to save the barcode images
+    int width = 300; // Width of the barcode image
+    int height = 300; // Height of the barcode image
 
-        // Ensure the output directory exists
-        new File(outputDir).mkdirs();
+    // Ensure the output directory exists
+    new File(outputDir).mkdirs();
 
-        generateBarcodes(texts, outputDir, width, height);
+    generateBarcodes(texts, outputDir, width, height);
     }
 }

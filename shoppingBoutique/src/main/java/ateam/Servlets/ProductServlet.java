@@ -8,6 +8,7 @@ import ateam.DAOIMPL.ProductDAOIMPL;
 import ateam.DAOIMPL.SaleDAOIMPL;
 import ateam.DAOIMPL.SalesItemDAOIMPL;
 import ateam.Models.Employee;
+import ateam.Models.Layaway;
 import ateam.Models.Product;
 import ateam.Models.Sale;
 import ateam.Models.SalesItem;
@@ -50,6 +51,10 @@ public class ProductServlet extends HttpServlet {
         HttpSession session = request.getSession();
         Employee loggedInUser = (Employee) session.getAttribute("Employee");
         List<Product> scannedItems = (List<Product>) session.getAttribute("scannedItems");
+        List<Layaway> scannedItemsList = new ArrayList<>();
+
+        
+        
 
         if (scannedItems == null) {
             scannedItems = new ArrayList<>();
@@ -66,6 +71,7 @@ public class ProductServlet extends HttpServlet {
                 case "Add-Item":
                 case "auto-submit":
                     List<Product> foundProducts = productService.getProductBySKU(sku);
+                    session.setAttribute("scannedItemsList", foundProducts);
                     session.setAttribute("foundProducts", foundProducts);
                     if (!foundProducts.isEmpty()) {
                         Product productToAdd = foundProducts.get(0);
@@ -88,6 +94,34 @@ public class ProductServlet extends HttpServlet {
                             request.setAttribute("ScannedItemsList", scannedItems);
                         }
                     }
+                    
+                    
+                            // Loop through each Product in the ArrayList and get the Product_SKU
+        for (Product product : scannedItems) {
+            String productSKU = product.getProduct_SKU();
+            double productPrice = product.getProduct_price();
+            String productName = product.getProduct_name();
+            int productID = product.getProduct_ID();
+            System.out.println("Product SKU: " + productSKU);
+            Layaway layaway = new Layaway();
+            layaway.setProductSKU(productSKU);
+            layaway.setProductPrice(productPrice);
+            layaway.setProductName(productName);
+            layaway.setProductID(String.valueOf(productID));
+            scannedItemsList.add(layaway);
+            
+        }
+        
+        session.setAttribute("scannedItemsList", scannedItemsList);
+                    
+                     // Print all items in scannedItems list
+    System.out.println("Items in scannedItems list:");
+    for (Product scannedItem : scannedItems) {
+        System.out.println("Product SKU: " + scannedItem.getProduct_SKU());
+        //System.out.println("Product Name: " + scannedItem.getProduct_Name());
+        System.out.println("Scan Count: " + scannedItem.getScanCount());
+        System.out.println("---------------------------");
+    }
                     break;
 
                 case "Remove-Item":

@@ -38,13 +38,37 @@ public class LayawayDaoImpl implements LayawayDAO{
                 preparedStatement.setTimestamp(3, layaway.getExpiry_date());
                 preparedStatement.setString(4, layaway.getLayaway_status());
                 preparedStatement.setString(5, layaway.getCustomerEmail());
-                preparedStatement.setString(6, layaway.getCustomerNumber());
-                preparedStatement.setInt(7, layaway.getProductID());
+                preparedStatement.setInt(6, layaway.getCustomerNumber());
+                preparedStatement.setString(7, layaway.getProductID());
                 preparedStatement.setInt(8, layaway.getProductQuantity());
                 preparedStatement.setString(9, layaway.getCustomerName());
                 
                 if(preparedStatement.executeUpdate() > 0) return true;
             } catch (SQLException ex) {
+                Logger.getLogger(LayawayDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return false;
+    }
+    
+    @Override
+    public boolean addNewLayaway(Layaway layaway) {
+        if(connection != null) {
+            String sql = "INSERT INTO new_layaway(producT_SKU, product_name, product_price, start_date, expiry_date, product_ID, employee_ID, customer_email, customer_name, customer_number, layaway_status) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                preparedStatement.setString(1, layaway.getProductSKU());
+                preparedStatement.setString(2, layaway.getProductName());
+                preparedStatement.setDouble(3, layaway.getProductPrice());
+                preparedStatement.setTimestamp(4, layaway.getStart_date());
+                preparedStatement.setTimestamp(5, layaway.getExpiry_date());
+                preparedStatement.setString(6, layaway.getProductID());
+                preparedStatement.setInt(7, layaway.getEmployee_ID());
+                preparedStatement.setString(8, layaway.getCustomerEmail());
+                preparedStatement.setString(9, layaway.getCustomerName());
+                preparedStatement.setInt(10, layaway.getCustomerNumber());
+                preparedStatement.setString(11, layaway.getLayaway_status());
+                if(preparedStatement.executeUpdate() > 0) return true;
+            } catch (SQLException ex){
                 Logger.getLogger(LayawayDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
@@ -68,7 +92,7 @@ public class LayawayDaoImpl implements LayawayDAO{
                         layaway.setStart_date(resultSet.getTimestamp("start_date"));
                         layaway.setExpiry_date(resultSet.getTimestamp("expiry_date"));
                         layaway.setLayaway_status(resultSet.getString("layaway_status"));
-                        layaway.setProductID(resultSet.getInt("product_ID"));
+                        layaway.setProductID(resultSet.getString("product_ID"));
                         layaway.setProductQuantity(resultSet.getInt("product_quantity"));
                     }
                 }
@@ -96,9 +120,9 @@ public class LayawayDaoImpl implements LayawayDAO{
                         layaway.setStart_date(resultSet.getTimestamp("start_date"));
                         layaway.setExpiry_date(resultSet.getTimestamp("expiry_date"));
                         layaway.setLayaway_status(resultSet.getString("layaway_status"));
-                        layaway.setProductID(resultSet.getInt("product_ID"));
+                        layaway.setProductID(resultSet.getString("product_ID"));
                         layaway.setProductQuantity(resultSet.getInt("product_quantity"));
-                        layaway.setCustomerNumber(resultSet.getString("contact"));
+                        layaway.setCustomerNumber(resultSet.getInt("contact"));
                         layaways.add(layaway);
                     }
                 }
@@ -147,7 +171,7 @@ public class LayawayDaoImpl implements LayawayDAO{
     public Layaway emailData(String customerEmail) {
         Layaway emailLayaway = new Layaway();
         if(connection != null) {
-            String sql = "SELECT layaway_ID, start_date, expiry_date, product_ID, product_quantity FROM layaways WHERE customer_email = ?";
+            String sql = "SELECT layaway_ID, start_date, expiry_date, product_ID, product_name FROM new_layaway WHERE customer_email = ?";
             try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
                 preparedStatement.setString(1, customerEmail);
                 try(ResultSet resultSet  = preparedStatement.executeQuery()) {
@@ -155,8 +179,8 @@ public class LayawayDaoImpl implements LayawayDAO{
                         emailLayaway.setLayaway_ID(resultSet.getInt("layaway_ID"));
                         emailLayaway.setStart_date(resultSet.getTimestamp("start_date"));
                         emailLayaway.setExpiry_date(resultSet.getTimestamp("expiry_date"));
-                        emailLayaway.setProductID(resultSet.getInt("product_ID"));
-                        emailLayaway.setProductQuantity(resultSet.getInt("product_quantity"));
+                        emailLayaway.setProductName(resultSet.getString("product_name"));
+                        //emailLayaway.setProductQuantity(resultSet.getInt("product_quantity"));
                     }
                 }
                 

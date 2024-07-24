@@ -17,4 +17,6 @@ public interface LayawayDAO {
     boolean deleteLayaway(int layaway_ID); 
     
     Layaway emailData(String customerEmail);
+    
+    boolean addNewLayaway(Layaway layaway);
 }

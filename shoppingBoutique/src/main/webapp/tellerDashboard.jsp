@@ -254,14 +254,14 @@
                  <span class="popup-close" onclick="closePopup()">&times;</span> <!-- Close button (X) -->
                  <h1>Process Layaway</h1>
                 <h2>Enter Customer Details</h2>
-                <form id="customerForm">
+                <form id="customerForm" action="LayawayServlet" method="post">
                     <label for="customerName">Name:</label>
                     <input type="text" id="customerName" name="customerName" required><br><br>
                     <label for="customerSurname">Surname:</label>
                     <input type="text" id="customerSurname" name="customerSurname" required><br><br>
                     <label for="customerEmail">Email:</label>
                     <input type="email" id="customerEmail" name="customerEmail" required><br><br>
-                    <input type="button" value="Submit" onclick="submitForm()">
+                    <button type="submit">Submit</button>
                 </form>
             </div>
         </div>
@@ -370,8 +370,8 @@
                         <input type="hidden" id="scanned-items-count" name="scannedItemsCount" value="<c:out value='${fn:length(scannedItems)}'/>">
                         <button type="submit" name="submit" value="Complete-Sale">Complete Sale</button>
                     </form>
-                        <form action="LayawayServlet" method="post">
-                             <button type="submit" name="layaway_switch" value="Add Layaway">Complete-Layaway</button>
+                        <form id="addLayawayForm" action="LayawayServlet" method="post">
+                             <input type="submit" name="layaway_switch" value="Add Layaway">
                         </form>
                     <div class="keyboard">
                         <div class="key" onclick="appendToInput('1')">1</div>
@@ -571,6 +571,46 @@ function startScanner() {
     });
 }
             startScanner();
+            
+            
+            $(document).ready(function() {
+        $("#addLayawayForm").submit(function(event) {
+            event.preventDefault(); // Prevent the form from submitting normally
+            
+            // Capture current time in JavaScript
+            var buttonClickTime = new Date().toISOString();
+            
+            // Calculate time 10 seconds later
+            var tenSecondsLater = new Date();
+            tenSecondsLater.setSeconds(tenSecondsLater.getSeconds() + 10);
+            var expiryTime = tenSecondsLater.toISOString();
+            
+            // Send AJAX request to store timestamps in database via LayawayServlet
+            $.ajax({
+                url: "LayawayServlet",
+                type: "POST",
+                data: {
+                    action: "addLayaway",
+                    product_ID: $("#product_ID").val(),
+                    product_quantity: $("#product_quantity").val(),
+                    customer_email: $("#customer_email").val(),
+                    buttonClickTime: buttonClickTime,
+                    expiryTime: expiryTime,
+                    customer_number: $("#customer_number").val(),
+                    customer_name: $("#customer_name").val(),
+                    layaway_switch: $("input[name='layaway_switch']").val()  
+                },
+                success: function(response) {
+                    console.log("Layaway added successfully");
+                    // Optionally handle success response
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error adding layaway: " + error);
+                    // Optionally handle error
+                }
+            });
+        });
+    });
         </script>
     </body>
 </html>
