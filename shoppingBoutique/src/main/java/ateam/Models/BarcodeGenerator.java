@@ -50,12 +50,15 @@ public class BarcodeGenerator {
     }
 
     public static void main(String[] args) {
-        // Example usage
+ 
         List<String> texts = List.of(
-            "0123456789012-S-Red",
-            "0123456789012-M-Red",
-            "0123456789012-L-Red"
-            // Add more texts as needed
+                "0123456789012-S-Red",
+                "0123456789012-M-Red",
+                "0123456789012-L-Red",
+                "0787099257798-32-Black",
+                "0787099257798-34-Black",
+                "0787099257798-32-Gray"
+        // Add more texts as needed
         );
         String outputDir = "output"; // Directory to save the barcode images
         int width = 300; // Width of the barcode image
