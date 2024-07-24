@@ -17,6 +17,12 @@
     </properties>
     
     <dependencies>
+        <dependency>
+            <groupId>com.itextpdf</groupId>
+            <artifactId>itextpdf</artifactId>
+            <version>5.5.13.3</version> <!-- Or the latest version -->
+        </dependency>
+
         <!-- JUnit for unit testing -->
         <dependency>
             <groupId>junit</groupId>
@@ -28,13 +34,19 @@
         <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
         <!-- Mockito for mocking dependencies -->
 
-
+        <dependency>
+            <groupId>com.itextpdf</groupId>
+            <artifactId>itextpdf</artifactId>
+            <version>5.5.13.3</version>
+            
+        </dependency>
         
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.11.0</version>
-        </dependency><dependency>
+        </dependency>
+        <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <version>3.12.4</version> <!-- or later version -->
@@ -70,19 +82,20 @@
             <artifactId>javase</artifactId>
             <version>3.5.2</version>
             <type>jar</type>
-        </dependency><dependency>
+        </dependency>
+        <dependency>
             <groupId>com.github.sarxos</groupId>
             <artifactId>webcam-capture</artifactId>
             <version>0.3.12</version>
             <type>jar</type>
         </dependency>
-       <dependency>
-           <groupId>javax</groupId>
-           <artifactId>javaee-api</artifactId>
-           <version>8.0</version>
-           <scope>provided</scope>
-       </dependency>
- <!-- https://mvnrepository.com/artifact/at.favre.lib/bcrypt -->
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <version>8.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/at.favre.lib/bcrypt -->
         <dependency>
             <groupId>at.favre.lib</groupId>
             <artifactId>bcrypt</artifactId>
