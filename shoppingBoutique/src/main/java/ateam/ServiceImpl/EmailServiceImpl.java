@@ -129,30 +129,47 @@ public class EmailServiceImpl implements EmailService {
             message.addRecipient(Message.RecipientType.TO, new InternetAddress(toEmail));
             message.setSubject("Sale Receipt");
 
+            // Use HTML content for the email with inline CSS
             StringBuilder content = new StringBuilder();
-            content.append("Dear Customer,\n\n")
-                    .append("Thank you for your purchase!\n\n")
-                    .append("Sale Details:\n")
-                    .append("Salesperson: ").append(salespersonName).append("\n")
-                    .append("Sale Time: ").append(saleTime).append("\n")
-                    .append("Items Bought:\n");
+            content.append("<html><body style='font-family: Arial, sans-serif; color: #333;'>")
+                    .append("<div style='text-align: center; padding: 20px;'>")
+                    .append("<img src='https://th.bing.com/th/id/OIP.QhSR_Wwm-xeoz9Fh3w0orAAAAA?rs=1&pid=ImgDetMain' alt='Company Logo' style='max-width: 150px;'>")
+                    .append("</div>")
+                    .append("<h2 style='color: #0056b3;'>Dear Customer,</h2>")
+                    .append("<p>Thank you for your purchase!</p>")
+                    .append("<h3 style='color: #0056b3;'>Sale Details:</h3>")
+                    .append("<p><strong>Salesperson:</strong> ").append(salespersonName).append("</p>")
+                    .append("<p><strong>Sale Time:</strong> ").append(saleTime).append("</p>")
+                    .append("<h3 style='color: #0056b3;'>Items Bought:</h3>")
+                    .append("<table border='1' cellpadding='10' cellspacing='0' style='width: 100%; border-collapse: collapse;'>")
+                    .append("<tr style='background-color: #f4f4f4; color: #333;'>")
+                    .append("<th style='border: 1px solid #ddd;'>Product Name</th>")
+                    .append("<th style='border: 1px solid #ddd;'>SKU</th>")
+                    .append("<th style='border: 1px solid #ddd;'>Size</th>")
+                    .append("<th style='border: 1px solid #ddd;'>Color</th>")
+                    .append("<th style='border: 1px solid #ddd;'>Quantity</th>")
+                    .append("<th style='border: 1px solid #ddd;'>Price</th>")
+                    .append("</tr>");
 
             for (Product item : items) {
-                content.append("- ").append(item.getProduct_name())
-                        .append(" (SKU: ").append(item.getProduct_SKU())
-                        .append(", Size: ").append(item.getSize())
-                        .append(", Color: ").append(item.getColor())
-                        .append("): ").append(item.getScanCount())
-                        .append(" x ").append(item.getProduct_price()).append("\n");
+                content.append("<tr>")
+                        .append("<td style='border: 1px solid #ddd;'>").append(item.getProduct_name()).append("</td>")
+                        .append("<td style='border: 1px solid #ddd;'>").append(item.getProduct_SKU()).append("</td>")
+                        .append("<td style='border: 1px solid #ddd;'>").append(item.getSize()).append("</td>")
+                        .append("<td style='border: 1px solid #ddd;'>").append(item.getColor()).append("</td>")
+                        .append("<td style='border: 1px solid #ddd;'>").append(item.getScanCount()).append("</td>")
+                        .append("<td style='border: 1px solid #ddd;'>").append(item.getProduct_price()).append("</td>")
+                        .append("</tr>");
             }
 
-            content.append("\nTotal Amount: ").append(totalAmount).append("\n")
-                    .append("Payment Method: ").append(paymentMethod).append("\n\n")
-                    .append("Thank you for shopping with us!\n")
-                    .append("Best regards,\n")
-                    .append("Your Company Name");
+            content.append("</table>")
+                    .append("<p style='font-weight: bold; color: #0056b3;'>Total Amount: ").append(totalAmount).append("</p>")
+                    .append("<p><strong>Payment Method:</strong> ").append(paymentMethod).append("</p>")
+                    .append("<p>Thank you for shopping with us!</p>")
+                    .append("<p>Best regards,<br>Your Company Name</p>")
+                    .append("</body></html>");
 
-            message.setText(content.toString());
+            message.setContent(content.toString(), "text/html");
 
             Transport.send(message);
             System.out.println("Sale receipt sent successfully to " + toEmail);
