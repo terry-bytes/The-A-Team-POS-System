@@ -14,7 +14,7 @@
                     <h4>Carols Boutique</h4>
                     <h3>Login</h3>
                 </div>
-                <form action="employees" method="post">
+                <form action="/shoppingBoutique/employees" method="post">
                     <div class="input-box">
                         <input type="text"
                                placeholder='Employee Id'
