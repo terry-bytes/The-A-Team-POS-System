@@ -187,7 +187,7 @@
                     </div>
                 </div>
 
-              <div class="scanned-items">
+                <div class="scanned-items">
                     <h2>Scanned Items</h2>
                     <c:choose>
                         <c:when test="${empty scannedItems}">
@@ -235,7 +235,7 @@
                         <div class="manual-entry">
                             <input type="text" id="manual-sku" name="input-field" placeholder="Enter SKU manually">
                             <button type="submit" name="submit" value="Add-Item" class="green-arrow-button">Enter</button>
-                            <button type="submit" name="submit" value="auto-submit" id="auto-submit" style="display: none"></button>
+                            <button type="submit" name="submit" value="auto-submit" id="auto-submit" style="display: none;"></button>
                         </div>
                         <div>
                             <label for="payment_method">Payment Method:</label>
@@ -324,7 +324,7 @@
                         <button type="submit">Return Item</button>
                     </form>
                     <form action="LayawayDashboard.jsp" method="post">
-                      <button onclick="redirectToAnotherPage()">Lay Away</button>
+                        <button onclick="redirectToAnotherPage()">Lay Away</button>
                     </form>
                     <form action="VoidSaleServlet" method="post">
                         <button type="submit">Void Sale</button>
@@ -433,15 +433,13 @@
                 }
             }
 
-            document.addEventListener("DOMContentLoaded", function (event) {
-                var scannedValue = document.getElementById("scannedValue").value;
-                if (scannedValue) {
-                    document.getElementById("manual-sku").value = scannedValue;
-                    document.getElementById("auto-submit").click();
-                }
+            let scanningPaused = false;
+
+            document.addEventListener('DOMContentLoaded', (event) => {
+                initQuagga();
             });
 
-            function startScanner() {
+            function initQuagga() {
                 Quagga.init({
                     inputStream: {
                         name: "Live",
@@ -449,24 +447,28 @@
                         target: document.querySelector('#barcode-scanner')
                     },
                     decoder: {
-                        readers: ["code_128_reader"]
+                        readers: ["code_128_reader", "ean_reader", "ean_8_reader"]
                     }
                 }, function (err) {
                     if (err) {
-                        console.error(err);
+                        console.log(err);
                         return;
                     }
+                    console.log("Barcode scanner initialized");
                     Quagga.start();
                 });
 
-                Quagga.onDetected(function (result) {
-                    var code = result.codeResult.code;
-                    document.getElementById("manual-sku").value = code;
-                    document.getElementById("auto-submit").click();
+                Quagga.onDetected(function (data) {
+                    console.log("Detected code:", data.codeResult.code);
+                    var sku = data.codeResult.code;
+                    document.getElementById('manual-sku').value = sku;
+                    document.getElementById('auto-submit').click();
                     Quagga.stop();
+                    Quagga.start();
                 });
             }
-            startScanner();
+
+
         </script>
     </body>
 </html>
