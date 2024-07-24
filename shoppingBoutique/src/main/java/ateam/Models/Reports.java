@@ -149,12 +149,15 @@ public class Reports {
     
     /**
      * Generate a report for chosen product, how much was sold and the top sells person for that product across the stores nationwide
-     * I think I have to create a DTO for this because it only want top sells person not people
-     * first calculate the total sales per person for that products
+     * from these list get List<Sale> and List<SalesItem> 
      * 
      * 
      * 
      * @param productId
      * @return TopEmployeeforProduct
      */
+    
+    public Map<String, Integer> topSellingEmployeeForProduct(int productId){
+        List<SalesItem> saleItems = new SalesItemServiceImpl()
+    }
 }
