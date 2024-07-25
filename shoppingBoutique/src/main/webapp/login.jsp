@@ -14,11 +14,9 @@
                     <h4>Carols Boutique</h4>
                     <h3>Login</h3>
                 </div>
-<<<<<<< HEAD
+
                 <form action="EmployeeServlet" method="post">
-=======
-                <form action="/shoppingBoutique/employees" method="post">
->>>>>>> a879130c417a8042dd036ba1f9aceb53ab1d1575
+
                     <div class="input-box">
                         <input type="text"
                                placeholder='Employee Id'
