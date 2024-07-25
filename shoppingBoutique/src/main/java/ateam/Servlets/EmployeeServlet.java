@@ -31,7 +31,7 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpSession;
 import org.mindrot.jbcrypt.BCrypt;
 
-@WebServlet(name = "EmployeeServlet", urlPatterns = "/employees")
+@WebServlet(name = "EmployeeServlet", urlPatterns = "/EmployeeServlet")
 public class EmployeeServlet extends HttpServlet {
 
     private final EmployeeService employeeService;

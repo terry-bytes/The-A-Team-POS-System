@@ -72,10 +72,12 @@
         <h1>Add Stock</h1>
         
             <form action="InventoryServlet" method="post">
+                <label for="barcode">Barcode (SKU-Size-Color):</label>
+                <input type="text" id="barcode" name="barcode" required>
                 <label for="employeeId">Employee ID:</label>
                 <input type="number" id ="employeeId" name="employeeId" value="<%=employee.getEmployee_ID()%>" readonly><br><br>
-                <label for="productId">Product ID:</label>
-                <input type="number" id="productId" name="productId" required><br><br>
+               
+             
                 <label for="additionalStock">Additional Stock:</label>
                 <input type="number" id="additionalStock" name="additionalStock" required><br><br>
                 <label for="storeId">Store ID:</label>
@@ -92,6 +94,7 @@
                 <th>Inventory ID</th>
                 <th>Product ID</th>
                 <th>Store ID</th>
+                <th>Previous Quantity</th>
                 <th>Quantity</th>
                 <th>Reorder Point</th>
                 <th>Last Updated</th>
@@ -104,6 +107,7 @@
                     <td>${inventory.inventory_ID}</td>
                     <td>${inventory.product_ID}</td>
                     <td>${inventory.store_ID}</td>
+                    <td>${inventory.previous_quantity }</td>
                     <td>${inventory.inventory_quantity}</td>
                     <td>${inventory.reorder_point}</td>
                     <td>${inventory.last_updated}</td>

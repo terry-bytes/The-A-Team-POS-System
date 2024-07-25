@@ -29,7 +29,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     public EmailServiceImpl() {
-        this.email = new Email("ramovhatp@gmail.com", "xaed clmt qpis ctvf");
+        this.email = new Email("Carols_Boutique@outlook.com", "Password@4");
     }
 
     @Override
@@ -48,9 +48,9 @@ public class EmailServiceImpl implements EmailService {
         Properties props = new Properties();
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.smtp.host", "smtp.gmail.com");
+        props.put("mail.smtp.host", "smtp.outlook.com");
         props.put("mail.smtp.port", "587");
-        props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
+        props.put("mail.smtp.ssl.trust", "smtp.outlook.com");
 
         Session session = Session.getInstance(props, new javax.mail.Authenticator() {
             protected PasswordAuthentication getPasswordAuthentication() {
@@ -78,8 +78,8 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void sendPasswordResetMail(String email, String otp) {
-        final String from = "ramovhatp@gmail.com";
-        final String password = "xaed clmt qpis ctvf";
+        final String from = "Carols_Boutique@outlook.com";
+        final String password = "Password@4";
 
         Properties props = new Properties();
         props.put("mail.smtp.host", "smtp.gmail.com");
@@ -111,13 +111,13 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void sendSaleReceipt(String toEmail, String salespersonName, String saleTime, List<Product> items, BigDecimal totalAmount, String paymentMethod) {
-        final String from = "ramovhatp@gmail.com";
-        final String password = "xaed clmt qpis ctvf";
+        final String from = "Carols_Boutique@outlook.com";
+        final String password = "Password@4";
 
         Properties props = new Properties();
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.smtp.host", "smtp.gmail.com");
+        props.put("mail.smtp.host", "smtp.outlook.com");
         props.put("mail.smtp.port", "587");
 
         Session session = Session.getInstance(props, new javax.mail.Authenticator() {
