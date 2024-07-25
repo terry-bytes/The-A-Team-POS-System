@@ -17,7 +17,6 @@ import ateam.ServiceImpl.LayawayServiceIMPL;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -113,15 +112,13 @@ public class LayawayServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String action = request.getParameter("action");
+       
         
-        String layawaySwitch = request.getParameter("layaway_switch");
-        System.out.println("layaway_switch parameter value: " + layawaySwitch);
+       String layawaySwitch = request.getParameter("layaway_switch");
        switch(layawaySwitch) {
            case "Add Layaway":
                handleNewLayawayAdding(request, response);
                sendFirstEmail(request, response);
- 
                break;
            case "View Layaway":
                handleSearchingLayawayByID(request, response);
@@ -203,15 +200,15 @@ public class LayawayServlet extends HttpServlet {
         Timestamp buttonClickTime = Timestamp.valueOf(buttonClickTimeString.replace("T", " ").substring(0, 19));
         Timestamp expiryTime = Timestamp.valueOf(expiryTimeString.replace("T", " ").substring(0, 19));
         
-        layaway.setCustomerEmail("ramovhatp@gmail.com");
+        layaway.setCustomerEmail(request.getParameter("customerEmail"));
         //layaway.setCustomerNumber(request.getParameter("customer_number"));
         layaway.setEmployee_ID(employee.getEmployee_ID());
         layaway.setLayaway_status("PENDING");
         layaway.setStart_date(buttonClickTime);
         layaway.setExpiry_date(expiryTime);
         layaway.setCustomerName("Matthias");
-        globalEmailAddress = "ramovhatp@gmail.com";
-        globalCustomerName = "Matthias";
+        globalEmailAddress = request.getParameter("customerEmail");
+        globalCustomerName = request.getParameter("customerName");
         
         
         
@@ -245,7 +242,7 @@ public class LayawayServlet extends HttpServlet {
         }
 
         // Set attribute to indicate showing popup
-        request.setAttribute("showPopup", true);
+        //request.setAttribute("showPopup", true);
         
         boolean success = layawayService.addNewLayaway(layaway);
         if (success) {
@@ -303,8 +300,8 @@ public class LayawayServlet extends HttpServlet {
     
     private void sendFirstEmail(HttpServletRequest request, HttpServletResponse response) {
         //System.out.println("Hello World");
-        String customerName = "Matthias";
-        String customerEmail = "ramovhatp@gmail.com";
+        String customerName = globalCustomerName;
+        String customerEmail = globalEmailAddress;
         Layaway emailLayaway = layawayService.emailData(customerEmail);
         
         
@@ -324,8 +321,8 @@ public class LayawayServlet extends HttpServlet {
     }
     
     private void sendSecondEmail() {
-        String customerEmail = "ramovhatp@gmail.com";
-        String customerName = "Matthias";
+        String customerEmail = globalEmailAddress;
+        String customerName = globalCustomerName;
         Layaway emailLayaway = layawayService.emailData(customerEmail);
         String msg = "Dear " + customerName + " "  + ",\nImportant! Your Layaway ID: " + emailLayaway.getLayaway_ID()
                         + ". This is a gentle reminder to collect your layaway. You have 12 hours left. Please collect it before the " + emailLayaway.getExpiry_date() + " " + "Your layaway product is: " + emailLayaway.getProductName() +"\n\n\n\nBest regards,\n";

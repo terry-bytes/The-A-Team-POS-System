@@ -15,7 +15,10 @@ import javax.mail.util.ByteArrayDataSource;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
 import com.itextpdf.text.pdf.draw.LineSeparator;
+//import static com.sun.org.apache.xalan.internal.xsltc.compiler.util.Type.Element;
+//import java.awt.Font;
 import java.io.ByteArrayOutputStream;
+//import javax.swing.text.Document;
 
 public class EmailServiceImpl implements EmailService {
 

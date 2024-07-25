@@ -110,7 +110,7 @@ public class ProductServlet extends HttpServlet {
                     if (!foundInScannedItems) {
                         Product productToAdd = foundProducts.get(0);
 
-                        boolean foundInScannedItems = false;
+                        //sboolean foundInScannedItems = false;
 
                         // Check if the product is already in the scannedItems list
                         for (Product scannedItem : scannedItems) {
@@ -139,7 +139,7 @@ public class ProductServlet extends HttpServlet {
                     
                             // Loop through each Product in the ArrayList and get the Product_SKU
         for (Product product : scannedItems) {
-            String productSKU = product.getProduct_SKU();
+            String productSKUU = product.getProduct_SKU();
             double productPrice = product.getProduct_price();
             String productName = product.getProduct_name();
             int productID = product.getProduct_ID();

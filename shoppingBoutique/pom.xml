@@ -34,8 +34,6 @@
         <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
         <!-- Mockito for mocking dependencies -->
 
-
-        
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
