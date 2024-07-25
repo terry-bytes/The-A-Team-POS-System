@@ -205,8 +205,28 @@
                             </div>
                         </div>
                        
-                        
-                        
+                        <!--- Report on the least performing stores for certain period -->
+                        <div class="two">
+                            <h4>Report on least performing store for certain period</h4>
+                            <form id="intervalForm">
+                                <div>
+                                    <label>Interval</label>
+                                    <select name="interval" id="intervalSelect">
+                                        <option value="3">3 Months</option>
+                                        <option value="6">6 Months</option>
+                                    </select>
+                                </div>
+                                <button type="submit">Submit</button>
+                            </form>
+                        </div>
+                        <div class="graphBox">
+                            <div class="box">
+                                <canvas id="leastPerfomingStoreBar"></canvas>
+                            </div>
+                            <div class="box">
+                                <canvas id="leastPerformingStorePieChart"></canvas>
+                            </div>
+                        </div>
                 </div>
             </div>
         </div>

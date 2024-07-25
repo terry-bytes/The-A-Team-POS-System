@@ -25,6 +25,7 @@ import ateam.ServiceImpl.StoreServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -126,6 +127,10 @@ public class SalesDemo extends HttpServlet {
                 break;
             case "getCurrentSaleBasedOnStore":
                 handleCurrentSalesBasedOnStore(request, response);
+                break;
+            case "getLeastPerformingStore":
+                handleGetLeastPerformingStore(request, response);
+                break;
         }
     }
 
@@ -211,5 +216,22 @@ public class SalesDemo extends HttpServlet {
         
         response.setContentType("text/html");
         response.getWriter().write(result);
+    }
+    private void handleGetLeastPerformingStore(HttpServletRequest request, HttpServletResponse response) throws IOException{
+        LocalDate today = LocalDate.now();
+        int interval = Integer.parseInt(request.getParameter("interval"));
+        
+        LocalDate endDate = today.minusMonths(interval);
+        
+        Map<String, BigDecimal> leastPerformingStores = reports.getLeastPerformingStores(endDate);
+        
+        List<String> labels = leastPerformingStores.keySet().stream().collect(Collectors.toList());
+        List<BigDecimal> data = leastPerformingStores.values().stream().collect(Collectors.toList());
+        
+        Map<String, Object> jsonResponse = new TreeMap<>();
+        jsonResponse.put("labels", labels);
+        jsonResponse.put("data", data);
+        response.setContentType("application/json");
+        response.getWriter().write(new ObjectMapper().writeValueAsString(jsonResponse));
     }
 }

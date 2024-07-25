@@ -238,4 +238,32 @@ public class Reports {
         return total;
     }
     
+    public Map<String, BigDecimal> getLeastPerformingStores(LocalDate endDate){
+        List<Sale> sales = saleService.getLeastPerformingStore(endDate);
+        BigDecimal avarageTotal = new BigDecimal("1000");
+        Map<Integer, BigDecimal> totalSalesPerStore = new HashMap<>(); // I want to hold the storeid and the total sales in price in that store
+        
+        
+        for(Sale sale : sales){
+           //totalSalesPerStore.compute(sale.getStore_ID(), (k,v) -> v == null ? sale.getTotal_amount() : v.add(sale.getTotal_amount()));
+           if(totalSalesPerStore.containsKey(sale.getStore_ID())){
+               totalSalesPerStore.put(sale.getStore_ID(), totalSalesPerStore.get(sale.getStore_ID()).add(sale.getTotal_amount()));
+           }else{
+               totalSalesPerStore.put(sale.getStore_ID(), sale.getTotal_amount());
+           }
+        }
+        totalSalesPerStore.forEach((k, v) -> System.out.println(k +"  :  "+v));
+        
+        
+        Map<String, BigDecimal> totalSales = new HashMap<>(); //I want to convert storeid into store name
+        for(int storeId : totalSalesPerStore.keySet()){
+           if(totalSalesPerStore.get(storeId).compareTo(avarageTotal) == -1){
+               totalSales.put(storeService.getStoreById(storeId).getStore_name(), totalSalesPerStore.get(storeId));
+           } 
+        }
+        
+        System.out.println("Filtered sales");
+        totalSales.forEach((k, v) -> System.out.println(k +"  :  "+v));
+        return totalSales;
+    }
 }
