@@ -206,7 +206,7 @@ public class LayawayServlet extends HttpServlet {
         layaway.setLayaway_status("PENDING");
         layaway.setStart_date(buttonClickTime);
         layaway.setExpiry_date(expiryTime);
-        layaway.setCustomerName("Matthias");
+        layaway.setCustomerName(request.getParameter("customerName"));
         globalEmailAddress = request.getParameter("customerEmail");
         globalCustomerName = request.getParameter("customerName");
         
