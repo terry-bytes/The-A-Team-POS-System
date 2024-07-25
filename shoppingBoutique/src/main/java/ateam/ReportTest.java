@@ -31,38 +31,54 @@ public class ReportTest {
         
         List<SalesItem> salesItems = saleItems.getSalesItemsByProductId(1);
         List<Sale> sales = saleService.getAllSales();
-        List<Employee> employees = employeeService.getAllEmployees();
+        List<Employee> employees = employeeService.getAllEmployees(); // get employee by id
         Map<Integer, Integer> salesQuantity = new HashMap<>();
         
         
         for(SalesItem slItm : salesItems){
-            System.out.println(slItm.getSales_item_ID()+"   "
-                    +slItm.getSales_ID()+" "
-                    +slItm.getQuantity()+"     "+
-                    slItm.getProduct_ID());
+//            System.out.println(slItm.getSales_item_ID()+"   "
+//                    +slItm.getSales_ID()+" "
+//                    +slItm.getQuantity()+"     "+
+//                    slItm.getProduct_ID());
             salesQuantity.put(slItm.getSales_ID(), slItm.getQuantity());
         }
         
         
         String name;
         Map<Integer, Integer> employeeSalesByID = new HashMap<>();
-        for(Sale sale : sales){
-            if(salesQuantity.containsKey(sale.getSales_ID())){
-                employeeSalesByID.put(sale.getEmployee_ID(), salesQuantity.get(sale.getSales_ID()));
-            }
-        }
         
-        Map<String, Integer> employeeSales = new TreeMap<>();
-        for(Employee employee : employees){
-            int employeeId = employee.getEmployee_ID();
-            if(employeeSalesByID.containsKey(employeeId)){
-                employeeSales.put(employee.getFirstName(), employeeSalesByID.get(employeeId));
-            }
+        for(int saleId:salesQuantity.keySet()){
+           Sale sale=sales.stream().filter(s->s.getSales_ID()==saleId).findFirst().get();  // sales by sales id
+           
+           
+           // pick yours
+          if(employeeSalesByID.containsKey(sale.getEmployee_ID())){
+              employeeSalesByID.put(sale.getEmployee_ID(), employeeSalesByID.get(sale.getEmployee_ID())+salesQuantity.get(saleId) );
+          }else{
+              employeeSalesByID.put(sale.getEmployee_ID(), salesQuantity.get(saleId));
+          }
+          employeeSalesByID.compute(sale.getEmployee_ID(), (k,v)->v==null?salesQuantity.get(saleId):v+salesQuantity.get(saleId));
+          
         }
-        
-        System.out.println("Employee name and quantity");
-        for(Map.Entry<String, Integer> entry : employeeSales.entrySet()){
-            System.out.println(entry.getKey()+"     "+entry.getValue());
-        }
+        employeeSalesByID.forEach((k,v)->System.out.println(k+" : "+v));
     }
+//        for(Sale sale : sales){
+//            if(salesQuantity.containsKey(sale.getSales_ID())){
+//                employeeSalesByID.put(sale.getEmployee_ID(), salesQuantity.get(sale.getSales_ID()));
+//            }
+//        }
+//        
+//        Map<String, Integer> employeeSales = new TreeMap<>();
+//        for(Employee employee : employees){
+//            int employeeId = employee.getEmployee_ID();
+//            if(employeeSalesByID.containsKey(employeeId)){
+//                employeeSales.put(employee.getFirstName(), employeeSalesByID.get(employeeId));
+//            }
+//        }
+//        
+//        System.out.println("Employee name and quantity");
+//        for(Map.Entry<String, Integer> entry : employeeSales.entrySet()){
+//            System.out.println(entry.getKey()+"     "+entry.getValue());
+//        }
+//    }
 }

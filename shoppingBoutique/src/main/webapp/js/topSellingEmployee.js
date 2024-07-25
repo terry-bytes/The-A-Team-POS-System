@@ -5,7 +5,7 @@
 
 document.addEventListener('DOMContentLoaded', function() {
     var button = document.getElementById('getTopEmployeeButton');
-    
+    var currentSalesbutton = document.getElementById('getStoreCurrentSales');
     if (button) {
         button.addEventListener('click', function() {
             var productId = document.getElementById('topEmployeeBasedOnProduct').value;
@@ -23,7 +23,23 @@ document.addEventListener('DOMContentLoaded', function() {
             
             xhr.send();
         });
-    } else {
-        console.error('Button not found.');
+    } 
+    
+    if(currentSalesbutton){
+        currentSalesbutton.addEventListener('click', function() {
+            var storeId = document.getElementById('currentSalesStoreId').value;
+            var currentSales = new XMLHttpRequest();
+            
+            currentSales.open('POST', 'SalesDemo?submit=getCurrentSaleBasedOnStore&storeId='+storeId,true);
+            
+            currentSales.onload = function() {
+                if(currentSales.status === 200) {
+                    document.getElementById('storeDailyResult').innerHTML = currentSales.responseText;
+                }else {
+                    console.log('Request failed. status'+currentSales.status);
+                }
+            };
+            currentSales.send();
+        });
     }
 });

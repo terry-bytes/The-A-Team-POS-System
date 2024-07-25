@@ -130,5 +130,11 @@ public class SaleServiceImpl implements SaleService2{
     public List<Sale> getAllSalesByStoreId(int storeId) {
         return saleDao.getSalesbyStoreId(storeId);
     }
+
+    @Override
+    public List<Sale> getDailyStoreByStoreId(int storeId) {
+        return saleDao.getDailySalesForStore(storeId);
+    }
+    
     
 }

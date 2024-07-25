@@ -22,6 +22,6 @@ public interface SaleDAO {
     int saveSale(Sale sale);
 
     List<Sale> getSalesbyStoreId(int storeId);
-  void updateStockQuantities(List<SalesItem> salesItems);
-
+    void updateStockQuantities(List<SalesItem> salesItems);
+    List<Sale> getDailySalesForStore(int storeId);
 }

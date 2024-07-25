@@ -45,7 +45,7 @@
                 
                 <li class="nav-link">
                     
-                    <a href="employees?submit=getAddEmployee">
+                    <a href="EmployeeServlet?submit=getAddEmployee">
                         <i class='bx bx-group icon'></i>
                         <span class="text nav-text">My Employees</span>
                     </a>
@@ -69,22 +69,10 @@
                 
                <div class="bottom-content">
                     <li class="">
-                        <a href="#">
+                        <a href="EmployeeServlet?submit=logout">
                             <i class='bx bx-log-out icon' ></i>
                             <span class="text nav-text">Logout</span>
                         </a>
-                    </li>
-
-                    <li class="mode">
-                        <div class="sun-moon">
-                            <i class='bx bx-moon icon moon'></i>
-                            <i class='bx bx-sun icon sun'></i>
-                        </div>
-                        <span class="mode-text text">Dark mode</span>
-
-                        <div class="toggle-switch">
-                            <span class="switch"></span>
-                        </div>
                     </li>
 
                 </div>

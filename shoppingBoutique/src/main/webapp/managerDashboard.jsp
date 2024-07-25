@@ -187,6 +187,26 @@
                             </div>
                      </div>
                          <%}%>
+                         
+                        <!-- Current daily sales -->
+                        <div class="two">
+                            <h4>View Any store current progress in sale</h4>
+                            <p>Select the store you want</p>
+                            <div>
+                                <select id="currentSalesStoreId" name="currentSalesStoreId" class="select-box">
+                                    <option>choose store here</option>
+                                    <% for(Store store : stores){%>
+                                    <option value="<%=store.getStore_ID()%>"><%=store.getStore_name()%></option>
+                                    <%}%>
+                                </select>
+                                <button id="getStoreCurrentSales">Current Sales</button>
+                                
+                                <div id="storeDailyResult"></div>
+                            </div>
+                        </div>
+                       
+                        
+                        
                 </div>
             </div>
         </div>

@@ -20,13 +20,16 @@
             String storeName;
         %>
         <% if(employee != null && employee.getRole() == Role.Manager) { %>
-        <jsp:include page="navbar.jsp"/>
-        <div class="container">
+        
+        <div class="manager-container">
+            <div >
+                <jsp:include page="sidebar.jsp"/>
+            </div>
             <div class="login-box">
                 <div class="login-header">
                     <h3>Add Employee</h3>
                 </div>
-                <form action="employees" method="post">
+                <form action="EmployeeServlet" method="post">
                     <div class="two-forms">
                         <div class="input-box">
                             <input type="text"

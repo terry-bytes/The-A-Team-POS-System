@@ -22,4 +22,5 @@ public interface SaleService2 {
     Map<String, Integer> generateTopSellingEmployee(List<Employee> employees);
     Map<String, Integer> generateTopSellingEmployee(int storeId, List<Employee> employee);
     List<Sale> getAllSalesByStoreId(int storeId);
+    List<Sale> getDailyStoreByStoreId(int storeId);
 }

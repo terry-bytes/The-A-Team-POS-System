@@ -198,4 +198,44 @@ public class Reports {
         topSellingEmployee.setTotalSalesForProduct(totalQuantitySold);
     return topSellingEmployee;
     }
+    
+    public String generateDailySaleReport(int storeId) {
+        // Assuming saleService is injected or instantiated elsewhere
+        List<Sale> currentSales = saleService.getDailyStoreByStoreId(storeId);
+        int target =10000;
+        // Calculate total sales amount
+        BigDecimal totalSalesAmount = calculateTotalSalesAmount(currentSales);
+        
+        // Calculate percentage of daily sales achieved
+        BigDecimal percentageAchieved = calculatePercentage(totalSalesAmount, target);
+        
+        // Determine how many percentages away from reaching target
+        BigDecimal percentageToTarget = BigDecimal.valueOf(100).subtract(percentageAchieved);
+        
+        // Format and return the report
+        String report = String.format("Daily Sales Report for Store %d:\n", storeId);
+        report += String.format("Total Sales Amount: R%.2f\n", totalSalesAmount);
+        report += String.format("Percentage of Daily Target Achieved: %.2f%%\n", percentageAchieved);
+        report += String.format("Percentage Away from Daily Target: %.2f%%\n", percentageToTarget);
+        
+        return report;
+    }
+    
+    private BigDecimal calculatePercentage(BigDecimal totalSales, int target) {
+        if (target <= 0) {
+            throw new IllegalArgumentException("Target must be greater than zero");
+        }
+        BigDecimal percentage = totalSales.divide(BigDecimal.valueOf(target), 4, BigDecimal.ROUND_HALF_UP)
+                                         .multiply(BigDecimal.valueOf(100));
+        return percentage;
+    }
+    
+    private BigDecimal calculateTotalSalesAmount(List<Sale> sales) {
+        BigDecimal total = BigDecimal.ZERO;
+        for (Sale sale : sales) {
+            total = total.add(sale.getTotal_amount());
+        }
+        return total;
+    }
+    
 }

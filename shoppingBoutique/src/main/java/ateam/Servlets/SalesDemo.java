@@ -123,6 +123,9 @@ public class SalesDemo extends HttpServlet {
                 break;
             case "getTopSellingEmployeeBasedOnProduct":
                 handleTopSellingEmployeeBasedOnProduct(request, response);
+                break;
+            case "getCurrentSaleBasedOnStore":
+                handleCurrentSalesBasedOnStore(request, response);
         }
     }
 
@@ -196,6 +199,15 @@ public class SalesDemo extends HttpServlet {
         String result = "<p>Top Selling employee is " + topEmp.getEmployeeName() + "</p>"
                       + "<p>Total sales: " + topEmp.getTotalSales() + "</p>"
                       + "<p>Total sales for this product: " + topEmp.getTotalSalesForProduct() + "</p>";
+        
+        response.setContentType("text/html");
+        response.getWriter().write(result);
+    }
+    
+    private void handleCurrentSalesBasedOnStore(HttpServletRequest request, HttpServletResponse response) throws IOException{
+        String rs = reports.generateDailySaleReport(Integer.parseInt(request.getParameter("storeId")));
+        
+        String result =rs;
         
         response.setContentType("text/html");
         response.getWriter().write(result);
