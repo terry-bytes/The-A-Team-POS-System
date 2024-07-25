@@ -11,8 +11,12 @@ import ateam.Models.Employee;
 import ateam.Models.Product;
 import ateam.Models.Sale;
 import ateam.Models.SalesItem;
-import ateam.Service.EmailService;
+
+
 import ateam.Service.InventoryService;
+
+import ateam.Service.EmailService;
+
 
 import ateam.Service.ProductService;
 import ateam.ServiceImpl.EmailServiceImpl;
@@ -179,6 +183,14 @@ public class ProductServlet extends HttpServlet {
 
                             salesItemDAO.saveSalesItem(salesItem);
                         }
+
+
+
+                        
+                        
+                        // Call processSale method to update inventory and product quantities
+                        inventoryService.processSale(newSalesID);
+
                       
                         String salespersonName = loggedInUser.getFirstName() + " " + loggedInUser.getLastName();
                         String saleTime = newSale.getSales_date().toString();
