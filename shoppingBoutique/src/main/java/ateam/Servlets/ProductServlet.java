@@ -8,6 +8,7 @@ import ateam.DAOIMPL.ProductDAOIMPL;
 import ateam.DAOIMPL.SaleDAOIMPL;
 import ateam.DAOIMPL.SalesItemDAOIMPL;
 import ateam.Models.Employee;
+import ateam.Models.Layaway;
 import ateam.Models.Product;
 import ateam.Models.Sale;
 import ateam.Models.SalesItem;
@@ -59,6 +60,10 @@ public class ProductServlet extends HttpServlet {
         HttpSession session = request.getSession();
         Employee loggedInUser = (Employee) session.getAttribute("Employee");
         List<Product> scannedItems = (List<Product>) session.getAttribute("scannedItems");
+        List<Layaway> scannedItemsList = new ArrayList<>();
+
+        
+        
 
         if (scannedItems == null) {
             scannedItems = new ArrayList<>();
@@ -75,12 +80,16 @@ public class ProductServlet extends HttpServlet {
                 case "Add-Item":
                 case "auto-submit":
                     List<Product> foundProducts = productService.getProductBySKU(sku);
+
+                    session.setAttribute("scannedItemsList", foundProducts);
+
                     if (foundProducts.isEmpty()) {
                         // Handle the case where no products are found
                         request.setAttribute("errorMessage", "Product with SKU '" + sku + "' not found.");
                         request.getRequestDispatcher("tellerDashboard.jsp").forward(request, response);
                         return; // Return to avoid further processing
                     }
+
                     session.setAttribute("foundProducts", foundProducts);
 
                     // Assuming SKU format includes size and color
@@ -106,11 +115,60 @@ public class ProductServlet extends HttpServlet {
                     // If not found, add it to the list with count set to 1
                     if (!foundInScannedItems) {
                         Product productToAdd = foundProducts.get(0);
+
+                        //sboolean foundInScannedItems = false;
+
+                        // Check if the product is already in the scannedItems list
+                        for (Product scannedItem : scannedItems) {
+                            if (scannedItem.equals(productToAdd)) {
+                                // Increase the quantity if the item is already scanned
+                                scannedItem.setScanCount(scannedItem.getScanCount() + 1);
+                                foundInScannedItems = true;
+                                break;
+                            }
+                        }
+
+                        // If not found, add it to the list with count set to 1
+                        if (!foundInScannedItems) {
+                            productToAdd.setScanCount(1);
+                            scannedItems.add(productToAdd);
+                            request.setAttribute("ScannedItemsList", scannedItems);
+                        }
+
                         productToAdd.setSize(size);
                         productToAdd.setColor(color);
                         productToAdd.setScanCount(1);
                         scannedItems.add(productToAdd);
+
                     }
+                    
+                    
+                            // Loop through each Product in the ArrayList and get the Product_SKU
+        for (Product product : scannedItems) {
+            String productSKUU = product.getProduct_SKU();
+            double productPrice = product.getProduct_price();
+            String productName = product.getProduct_name();
+            int productID = product.getProduct_ID();
+            System.out.println("Product SKU: " + productSKU);
+            Layaway layaway = new Layaway();
+            layaway.setProductSKU(productSKU);
+            layaway.setProductPrice(productPrice);
+            layaway.setProductName(productName);
+            layaway.setProductID(String.valueOf(productID));
+            scannedItemsList.add(layaway);
+            
+        }
+        
+        session.setAttribute("scannedItemsList", scannedItemsList);
+                    
+                     // Print all items in scannedItems list
+    System.out.println("Items in scannedItems list:");
+    for (Product scannedItem : scannedItems) {
+        System.out.println("Product SKU: " + scannedItem.getProduct_SKU());
+        //System.out.println("Product Name: " + scannedItem.getProduct_Name());
+        System.out.println("Scan Count: " + scannedItem.getScanCount());
+        System.out.println("---------------------------");
+    }
                     break;
 
                 case "Remove-Item":

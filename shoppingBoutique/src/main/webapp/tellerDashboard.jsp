@@ -1,3 +1,6 @@
+
+<%@page import="ateam.Models.Layaway"%>
+<%@page import="java.util.ArrayList"%>
 <%@page import="ateam.Models.Product"%>
 <%@page import="ateam.Models.Employee"%>
 <%@page import="java.util.List"%>
@@ -8,7 +11,10 @@
 <html>
     <head>
         <title>Barcode Scanner</title>
+        <!-- Include jQuery library -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+
         <style>
             .green-arrow-button {
                 background-color: #28a745; /* Green background */
@@ -141,7 +147,7 @@
                 background: #2980b9;
             }
             #barcode-scanner {
-                display: none; /* Hide the camera element */
+
             }
             .right-section {
                 flex: 1;
@@ -167,10 +173,91 @@
                 border-radius: 50%;
                 margin-right: 10px;
             }
+
+            /* Popup Overlay */
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .popup-content {
+            position: relative;
+            background-color: #fff;
+            border: 1px solid #333;
+            width: 50%; /* Adjust width as needed */
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .popup-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            font-size: 20px;
+            color: #aaa;
+        }
+
+        .popup-close:hover {
+            color: #333;
+        }
+
+        .popup-content h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .popup-content form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .popup-content label {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .popup-content input[type="text"],
+        .popup-content input[type="email"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1em;
+            box-sizing: border-box;
+        }
+
+        .popup-content button[type="submit"] {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin-top: 15px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 1em;
+        }
+
+        .popup-content button[type="submit"]:hover {
+            background-color: #2980b9;
+        }
         </style>
     </head>
 
     <body>
+
+       
+
         <div class="container">
             <div class="left-section">
                 <div class="user-info">
@@ -198,8 +285,6 @@
                                 <tr>
                                     <th>Product SKU</th>
                                     <th>Name</th>
-                                    <th>Size</th>
-                                    <th>Color</th>
                                     <th>Quantity</th>
                                     <th>Price</th>
                                     <th>Action</th>
@@ -208,11 +293,9 @@
                                     <tr>
                                         <td>${item.product_SKU}</td>
                                         <td>${item.product_name}</td>
-                                        <td>${item.size}</td>
-                                        <td>${item.color}</td>
                                         <td>${item.scanCount}</td>
                                         <td>${item.product_price}</td>
-                                        <td>
+                                        <td>  
                                             <form action="ProductServlet" method="post" style="display:inline;">
                                                 <input type="hidden" name="sku" value="${item.product_SKU}">
                                                 <button type="submit" name="submit" value="Remove-Item">Remove</button>
@@ -235,7 +318,7 @@
                         <div class="manual-entry">
                             <input type="text" id="manual-sku" name="input-field" placeholder="Enter SKU manually">
                             <button type="submit" name="submit" value="Add-Item" class="green-arrow-button">Enter</button>
-                            <button type="submit" name="submit" value="auto-submit" id="auto-submit" style="display: none;"></button>
+                            <button type="submit" name="submit" value="auto-submit" id="auto-submit" style="display: none"></button>
                         </div>
                         <div>
                             <label for="payment_method">Payment Method:</label>
@@ -269,13 +352,11 @@
                                 <input type="text" id="card_amount" name="card_amount">
                             </div>
                         </div>
-                         <div>
-                        <label for="customer_email">Customer Email:</label>
-                        <input type="email" id="customer_email" name="customer_email" placeholder="Enter customer email" >
-                    </div>
                         <input type="hidden" id="scanned-items-count" name="scannedItemsCount" value="<c:out value='${fn:length(scannedItems)}'/>">
                         <button type="submit" name="submit" value="Complete-Sale">Complete Sale</button>
+                        <input type="submit" value="Process Layaway" onclick="openPopup()">
                     </form>
+                        
                     <div class="keyboard">
                         <div class="key" onclick="appendToInput('1')">1</div>
                         <div class="key" onclick="appendToInput('2')">2</div>
@@ -350,6 +431,7 @@
         </div>
 
         <video id="barcode-scanner" autoplay></video>
+        <audio id="beep-sound" src="beep.mp3" preload="auto"></audio>
 
         <script>
             function redirectToAnotherPage() {
@@ -472,7 +554,110 @@
                 });
             }
 
+            $(document).ready(function () {
+                $("#addLayawayForm").submit(function (event) {
+                    event.preventDefault(); // Prevent the form from submitting normally
 
+                    // Capture current time in JavaScript
+                    var buttonClickTime = new Date().toISOString();
+
+                    // Calculate time 10 seconds later
+                    var tenSecondsLater = new Date();
+                    tenSecondsLater.setSeconds(tenSecondsLater.getSeconds() + 10);
+                    var expiryTime = tenSecondsLater.toISOString();
+
+                    // Send AJAX request to store timestamps in database via LayawayServlet
+                    $.ajax({
+                        url: "LayawayServlet",
+                        type: "POST",
+                        data: {
+                            action: "addLayaway",
+                            product_ID: $("#product_ID").val(),
+                            product_quantity: $("#product_quantity").val(),
+                            customer_email: $("#customer_email").val(),
+                            buttonClickTime: buttonClickTime,
+                            expiryTime: expiryTime,
+                            customer_number: $("#customer_number").val(),
+                            customer_name: $("#customer_name").val(),
+                            layaway_switch: $("input[name='layaway_switch']").val()
+                        },
+                        success: function (response) {
+                            console.log("Layaway added successfully");
+                            // Optionally handle success response
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("Error adding layaway: " + error);
+                            // Optionally handle error
+                        }
+                    });
+                });
+            });
         </script>
+        
+        <script>
+            function openPopup() {
+    document.getElementById('layawayPopup').style.display = 'block';
+     event.preventDefault(); // Prevent form submission
+}
+
+    function closePopup() {
+    document.getElementById('layawayPopup').style.display = 'none';
+}
+
+    function submitLayaway(event) {
+    event.preventDefault(); // Prevent form from submitting normally
+
+    // Get form data
+    var customerName = document.getElementById('customerName').value;
+    var customerEmail = document.getElementById('customerEmail').value;
+    
+    // Capture current time in JavaScript
+    var buttonClickTime = new Date().toISOString();
+
+    // Calculate time 10 seconds later
+    var tenSecondsLater = new Date();
+    tenSecondsLater.setSeconds(tenSecondsLater.getSeconds() + 10);
+    var expiryTime = tenSecondsLater.toISOString();
+
+
+    // You can perform validation here if needed
+
+    // Example AJAX request to submit data
+    $.ajax({
+        url: 'LayawayServlet', // Replace with your servlet URL
+        type: 'POST',
+        data: {
+            layaway_switch: 'Add Layaway',
+            customerName: customerName,
+            buttonClickTime: buttonClickTime,
+            expiryTime: expiryTime,
+            customerEmail: customerEmail
+        },
+        success: function(response) {
+            console.log('Layaway submitted successfully');
+            closePopup();
+            // Optionally handle success response
+        },
+        error: function(xhr, status, error) {
+            console.error('Error submitting layaway:', error);
+            // Optionally handle error
+        }
+    });
+}
+        </script>
+        
+        <div class="popup-overlay" id="layawayPopup">
+        <div class="popup-content">
+        <span class="popup-close" onclick="closePopup()">&times;</span>
+        <h2>Process Layaway</h2>
+        <form id="layawayForm" onsubmit="submitLayaway(event)" action="LayawayServlet" method="post">
+            <label for="customerName">Customer Name:</label>
+            <input type="text" id="customerName" name="customerName" required>
+            <label for="customerEmail">Customer Email:</label>
+            <input type="email" id="customerEmail" name="customerEmail" required>
+            <button type="submit" name="layaway_switch" value="Add Layaway">Submit</button>
+        </form>
+    </div>
+</div>
     </body>
 </html>
