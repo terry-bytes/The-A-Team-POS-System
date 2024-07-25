@@ -15,6 +15,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 
 @WebServlet("/InventoryServlet")
@@ -32,22 +33,28 @@ public class InventoryServlet extends HttpServlet {
         try {
             
             
-            
-            int productId = Integer.parseInt(request.getParameter("productId"));
+            int reorder = 5;
+            String productSku = request.getParameter("barcode");
+            //String [] sku = productSku.split("-");
+            int productId = 0;
             int additionalStock = Integer.parseInt(request.getParameter("additionalStock"));
             int storeId = ((Employee) request.getSession(false).getAttribute("Employee")).getStore_ID();
             int employeeId = ((Employee) request.getSession(false).getAttribute("Employee")).getEmployee_ID();
             
             try {
-                inventoryService.replenishStock(productId, additionalStock, storeId, employeeId);
-                response.getWriter().write("Stock replenished successfully.");
+                inventoryService.replenishStock(productSku, productId, additionalStock, employeeId,storeId);
+                response.sendRedirect("success.jsp");
             } catch (IOException | SQLException e) {
                 response.getWriter().write("Error replenishing stock: " + e.getMessage());
+                request.getRequestDispatcher("error.jsp").forward(request, response);
             }
             // Retrieve updated inventory data and forward to JSP
             List<Inventory> inventoryList = inventoryService.getAll();
             request.setAttribute("inventoryList", inventoryList);
             request.getRequestDispatcher("replenishStock.jsp").forward(request, response);
+            
+
+        
         } catch (Exception ex) {
             Logger.getLogger(InventoryServlet.class.getName()).log(Level.SEVERE, null, ex);
         }

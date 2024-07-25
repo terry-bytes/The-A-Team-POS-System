@@ -23,8 +23,15 @@ public class CategoryServiceIMPL  implements CategoryService{
     
     public CategoryServiceIMPL(CategoryDAO categoryDao) {
         this.categoryDao = categoryDao;
-        categoryDao = new CategoryDaoImpl(connection);
+        
     }
+
+    public CategoryServiceIMPL() {
+        
+       this.categoryDao =  new CategoryDaoImpl(connection);
+        
+    }
+    
     
     
     

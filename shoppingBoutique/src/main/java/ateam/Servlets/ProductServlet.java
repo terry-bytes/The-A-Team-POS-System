@@ -11,10 +11,15 @@ import ateam.Models.Employee;
 import ateam.Models.Product;
 import ateam.Models.Sale;
 import ateam.Models.SalesItem;
+
+import ateam.Service.InventoryService;
+
 import ateam.Service.EmailService;
+
 import ateam.Service.ProductService;
 import ateam.ServiceImpl.EmailServiceImpl;
 import ateam.ServiceImpl.ProductServiceImpl;
+import ateam.Services.impl.InventoryServiceImpl;
 import org.mindrot.jbcrypt.BCrypt;
 
 import javax.servlet.ServletException;
@@ -40,11 +45,12 @@ import java.util.stream.Collectors;
 public class ProductServlet extends HttpServlet {
 
     private ProductDAO productDAO = new ProductDAOIMPL();
-    private final ProductService productService = new ProductServiceImpl(productDAO);
+    private final ProductService productService = new ProductServiceImpl();
     private SaleDAO saleDAO = new SaleDAOIMPL();
     private SalesItemDAO salesItemDAO = new SalesItemDAOIMPL();
     private EmailService emailService = new EmailServiceImpl();
     private Connect dbConnect = new Connect();
+    private InventoryService inventoryService = new InventoryServiceImpl();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -176,12 +182,19 @@ public class ProductServlet extends HttpServlet {
                             salesItemDAO.saveSalesItem(salesItem);
                         }
 
+
+                        
+                        
+                        // Call processSale method to update inventory and product quantities
+                        inventoryService.processSale(newSalesID);
+
                       
                         String salespersonName = loggedInUser.getFirstName() + " " + loggedInUser.getLastName();
                         String saleTime = newSale.getSales_date().toString();
                         String customerEmail = request.getParameter("customer_email");
 
                         emailService.sendSaleReceipt(customerEmail, salespersonName, saleTime, scannedItems, totalAmount, newSale.getPayment_method());
+
 
                         scannedItems.clear();
                     } else {
