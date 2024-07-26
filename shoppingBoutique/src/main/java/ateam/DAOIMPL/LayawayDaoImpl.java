@@ -54,7 +54,7 @@ public class LayawayDaoImpl implements LayawayDAO{
     @Override
     public boolean addNewLayaway(Layaway layaway) {
         if(connection != null) {
-            String sql = "INSERT INTO new_layaway(producT_SKU, product_name, product_price, start_date, expiry_date, product_ID, employee_ID, customer_email, customer_name, customer_number, layaway_status) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO new_layaway(producT_SKU, product_name, product_price, start_date, expiry_date, product_ID, employee_ID, customer_email, customer_name, customer_number, layaway_status, product_quantity) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
                 preparedStatement.setString(1, layaway.getProductSKU());
                 preparedStatement.setString(2, layaway.getProductName());
@@ -67,6 +67,7 @@ public class LayawayDaoImpl implements LayawayDAO{
                 preparedStatement.setString(9, layaway.getCustomerName());
                 preparedStatement.setInt(10, layaway.getCustomerNumber());
                 preparedStatement.setString(11, layaway.getLayaway_status());
+                preparedStatement.setInt(12, layaway.getProductQuantity());
                 if(preparedStatement.executeUpdate() > 0) return true;
             } catch (SQLException ex){
                 Logger.getLogger(LayawayDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
@@ -79,8 +80,8 @@ public class LayawayDaoImpl implements LayawayDAO{
     public Layaway getLayawayById(int layaway_ID) {
         Layaway layaway = new Layaway();
         if(connection != null){
-            String sql = "SELECT employee_ID, start_date, expiry_date, layaway_status, customer_email, contact, product_ID, product_quantity"
-                    + " FROM layaways"
+            String sql = "SELECT employee_ID, start_date, expiry_date, layaway_status, customer_email, product_ID, product_quantity"
+                    + " FROM new_layaway"
                     + " WHERE layaway_ID = ?";
             try(PreparedStatement preparedStatement = connection.prepareStatement(sql)){
                 preparedStatement.setInt(1, layaway_ID);
@@ -108,8 +109,8 @@ public class LayawayDaoImpl implements LayawayDAO{
     public List<Layaway> getAllLayaways() {
         List<Layaway> layaways = new ArrayList();
         if(connection != null){
-            String sql = "SELECT layaway_ID, employee_ID, start_date, expiry_date, layaway_status, customer_email, contact, product_ID, product_quantity"
-                    + " FROM layaways";
+            String sql = "SELECT layaway_ID, employee_ID, start_date, expiry_date, layaway_status, customer_email, product_ID, product_quantity"
+                    + " FROM new_layaway";
             try(PreparedStatement preparedStatement = connection.prepareStatement(sql)){
                 try(ResultSet resultSet = preparedStatement.executeQuery()){
                     while(resultSet.next()){
@@ -122,7 +123,7 @@ public class LayawayDaoImpl implements LayawayDAO{
                         layaway.setLayaway_status(resultSet.getString("layaway_status"));
                         layaway.setProductID(resultSet.getString("product_ID"));
                         layaway.setProductQuantity(resultSet.getInt("product_quantity"));
-                        layaway.setCustomerNumber(resultSet.getInt("contact"));
+                        //layaway.setCustomerNumber(resultSet.getInt("contact"));
                         layaways.add(layaway);
                     }
                 }

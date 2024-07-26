@@ -78,8 +78,8 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void sendPasswordResetMail(String email, String otp) {
-        final String from = "Carols_Boutique@outlook.com";
-        final String password = "Password@4";
+        final String from = "ramovhatp@gmail.com";
+        final String password = "xaed clmt qpis ctvf";
 
         Properties props = new Properties();
         props.put("mail.smtp.host", "smtp.gmail.com");

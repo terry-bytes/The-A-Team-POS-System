@@ -143,11 +143,12 @@ public class ProductServlet extends HttpServlet {
                     }
                     
                     
-                            // Loop through each Product in the ArrayList and get the Product_SKU
+         // Loop through each Product in the ArrayList and get the Product_SKU
         for (Product product : scannedItems) {
             String productSKUU = product.getProduct_SKU();
             double productPrice = product.getProduct_price();
             String productName = product.getProduct_name();
+            int productQuantity = product.getQuantity_in_stock();
             int productID = product.getProduct_ID();
             System.out.println("Product SKU: " + productSKU);
             Layaway layaway = new Layaway();
@@ -155,6 +156,7 @@ public class ProductServlet extends HttpServlet {
             layaway.setProductPrice(productPrice);
             layaway.setProductName(productName);
             layaway.setProductID(String.valueOf(productID));
+            layaway.setProductQuantity(productQuantity);
             scannedItemsList.add(layaway);
             
         }

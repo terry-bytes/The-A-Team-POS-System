@@ -79,6 +79,11 @@
             }
         });
     }
+    
+    // Check if there are pending IBT notifications on page load
+            if (${sessionScope.ibtNotifications}) {
+                addNotificationSymbol(true);
+            }
 });
     </script>
 
