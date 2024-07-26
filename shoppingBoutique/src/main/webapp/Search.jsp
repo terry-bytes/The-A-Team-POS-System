@@ -1,3 +1,4 @@
+
 <%@page import="ateam.Models.InventorySummary"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
@@ -105,16 +106,16 @@
     <!-- Filter Form -->
     <div class="filter-form">
         <form action="storeInventorySummary" method="get">
-            <label for="color">Color:</label>
+            <label for="color">Filter By Color:</label>
             <input type="text" id="color" name="color">
             
-            <label for="size">Size:</label>
+            <label for="size">Filter By Size:</label>
             <input type="text" id="size" name="size">
             
-            <label for="store">Store ID:</label>
+            <label for="store">Filter By Store ID:</label>
             <input type="text" id="store" name="store">
             
-            <label for="sku">Product SKU:</label>
+            <label for="sku">Filter By Product SKU:</label>
             <input type="text" id="sku" name="sku">
             
             <input type="submit" value="Filter">
@@ -152,5 +153,6 @@
             }
         %>
     </table>
+   
 </body>
 </html>
