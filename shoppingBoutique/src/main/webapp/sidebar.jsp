@@ -43,6 +43,9 @@
                     <i class="fa fa-sign-out" aria-hidden="true"></i>
                     <a href="#" class="nav-item">Logout</a>
                 </li>
+                <li "class="logo">
+                     <a href="IBTMainDashboard.jsp" class="nav-item">IBT</a>
+                </li>
             </ul>
         </nav>
     </body>
