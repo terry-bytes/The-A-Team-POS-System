@@ -83,10 +83,17 @@
         .time {
             font-size: 1rem;
             position: absolute;
-            top:  10px;
-            right: 10px;
+            top:  20px;
+            right: 20px;
             color: black;
             
+        }
+        p{
+          font-size: 1rem;
+            position: absolute;
+            top:  10px;
+            right: 10px;
+            color: black;  
         }
         /* Modal styles */
         .modal {
@@ -167,6 +174,9 @@
             background-color: white;
             color:black;
         }
+        .h2{
+            font:100% bold;
+        }
 
     </style>
 </head>
@@ -191,17 +201,18 @@
     
     <!-- Sidebar -->
 <div id="mySidenav" class="sidebar">
-    <h2>Inventory Options </h2>
+    <h2>Inventory Management </h2>
+    <br><br>
     <a href="tellerDashboard.jsp" >
         <img src="Icons/back.png" alt="Icon 1"> Back
     </a><br><br>
-    <a href="allInventories.jsp" >
+    <a href="InventoryServlet?submit=viewAll" >
         <img src="Icons/viewList.png" alt="Icon 2"> View Inventory
     </a><br><br>
     <a href="Search.jsp" >
-        <img src="Icons/search.png" alt="Icon 3"> Search in Stores
+        <img src="Icons/searcher.png" alt="Icon 3"> Search in Stores
     </a><br><br>
-    <a href="login.jsp" >
+    <a href="InventoryServlet?submit=logout" >
         <img src="Icons/logout.png" alt="Icon 4"> LogOut
     </a>
 </div>
@@ -217,11 +228,13 @@
         <input type="number" id="additionalStock" name="additionalStock" required>
         <label for="storeId">Store ID:</label>
         <input type="number" id="storeId" name="storeId" value="<%=employee.getStore_ID()%>" required readonly>
-        <input type="submit" class="button" value="Replenish Stock">
+        <input type="submit" name = "submit" class="button" value="Replenish Stock">
     </form>
 </div>
 
 <div class="time" id="current-time"></div>
+
+
 
 <!-- The Modal -->
 <div id="myModal" class="modal">
@@ -259,11 +272,11 @@ function openNav() {
         const minutes = String(now.getMinutes()).padStart(2, '0');
         const seconds = String(now.getSeconds()).padStart(2, '0');
         const currentTime = `${hours}:${minutes}:${seconds}`;
-        document.getElementById('current-time').textContent = currentTime;
+        document.getElementById('current-time').innerText = currentTime;
     }
 
     setInterval(updateTime, 1000);
-    updateTime();
+    window.onlaod =updateTime;
 </script>
 </body>
 </html>

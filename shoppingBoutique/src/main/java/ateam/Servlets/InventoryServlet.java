@@ -1,7 +1,7 @@
 package ateam.Servlets;
 
-import ateam.Models.Inventory;
 import ateam.Models.Employee;
+import ateam.Models.Inventory;
 import ateam.Models.Product;
 import ateam.Service.InventoryService;
 import ateam.Service.ProductService;
@@ -15,10 +15,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 
 @WebServlet("/InventoryServlet")
@@ -66,21 +67,47 @@ public class InventoryServlet extends HttpServlet {
                 Logger.getLogger(InventoryServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
         
+     
+        
     }
      
     
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        try {
-            // Retrieve updated inventory data and forward to JSP
-            List<Inventory> inventoryList = inventoryService.getAll();
-            request.setAttribute("inventoryList", inventoryList);
-            request.getRequestDispatcher("allInventory.jsp").forward(request, response);
-        } catch (Exception ex) {
-            request.setAttribute("message","couldnt load the jsp");
-            Logger.getLogger(InventoryServlet.class.getName()).log(Level.SEVERE, null, ex);
+        
+        String actions = request.getParameter("submit");
+        
+        switch(actions){
+            
+            case "viewAll":
+                try {
+                    // Retrieve updated inventory data and forward to JSP
+                    List<Inventory> inventoryList = inventoryService.getAll();
+                    request.setAttribute("inventoryList", inventoryList);
+                    request.getRequestDispatcher("allInventories.jsp").forward(request, response);
+                } catch (Exception ex) {
+                    request.setAttribute("message", "couldnt load the jsp");
+                    Logger.getLogger(InventoryServlet.class.getName()).log(Level.SEVERE, null, ex);
+                }
+        break;
+        
+        
+            case "logout":
+                
+                request.getSession(false).invalidate();
+                request.getRequestDispatcher("login.jsp").forward(request, response);
+                
+                
+                break;
         }
+        
+        
+        
+        
+        
+        
+        
     }
     
 }

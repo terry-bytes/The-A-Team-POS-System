@@ -127,23 +127,7 @@ public class InventoryDAOIMPL implements InventoryDAO {
 }
 
 
-//    @Override
-//    public void logInventoryTransaction(Inventory inventory) throws Exception {
-//        String sql = "INSERT INTO inventory (product_ID, store_ID, inventory_quantity, previous_quantity, reorder_point, last_updated, updated_by_employee_ID) VALUES (?, ?, ?, ?, ?, ?, ?)";
-//        try (Connection conn = new Connect().connectToDB();
-//             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-//            pstmt.setInt(1, inventory.getProduct_ID());
-//            pstmt.setInt(2, inventory.getStore_ID());
-//            pstmt.setInt(3, inventory.getInventory_quantity());
-//            pstmt.setInt(4, inventory.getPrevious_quantity());
-//            pstmt.setInt(5, inventory.getReorder_point());
-//            pstmt.setTimestamp(6, inventory.getLast_updated());
-//            pstmt.setInt(7, inventory.getUpdated_by_employee_ID());
-//            pstmt.executeUpdate();
-//        } catch (SQLException ex) {
-//            throw new Exception("Error logging inventory transaction: " + ex.getMessage(), ex);
-//        }
-//    }
+
 
     @Override
     public int getPreviousQuantity(int productId) throws Exception {

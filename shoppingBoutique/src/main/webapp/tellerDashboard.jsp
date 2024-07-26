@@ -556,6 +556,8 @@
                     console.log("Detected code:", data.codeResult.code);
                     var sku = data.codeResult.code;
                     document.getElementById('manual-sku').value = sku;
+                    // Play beep sound
+                    document.getElementById('beep-sound').play();
                     document.getElementById('auto-submit').click();
                     Quagga.stop();
                     Quagga.start();

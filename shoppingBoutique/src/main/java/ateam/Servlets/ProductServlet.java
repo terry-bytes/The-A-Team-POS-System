@@ -206,6 +206,9 @@ public class ProductServlet extends HttpServlet {
                             salesItemDAO.saveSalesItem(salesItem);
                         }
 
+                         // Call processSale method to update inventory and product quantities
+                            inventoryService.processSale(newSalesID);
+                        
                         String salespersonName = loggedInUser.getFirstName() + " " + loggedInUser.getLastName();
                         String saleTime = newSale.getSales_date().toString();
                         String customerEmail = request.getParameter("customer_email");
