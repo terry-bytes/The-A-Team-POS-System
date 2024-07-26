@@ -62,9 +62,6 @@ public class ProductServlet extends HttpServlet {
         List<Product> scannedItems = (List<Product>) session.getAttribute("scannedItems");
         List<Layaway> scannedItemsList = new ArrayList<>();
 
-        
-        
-
         if (scannedItems == null) {
             scannedItems = new ArrayList<>();
             session.setAttribute("scannedItems", scannedItems);
@@ -78,6 +75,7 @@ public class ProductServlet extends HttpServlet {
         try {
             switch (submit) {
                 case "Add-Item":
+
                 case "auto-submit":
                     List<Product> foundProducts = productService.getProductBySKU(sku);
 
@@ -115,62 +113,28 @@ public class ProductServlet extends HttpServlet {
                     // If not found, add it to the list with count set to 1
                     if (!foundInScannedItems) {
                         Product productToAdd = foundProducts.get(0);
-
-                        //sboolean foundInScannedItems = false;
-
-                        // Check if the product is already in the scannedItems list
-                        for (Product scannedItem : scannedItems) {
-                            if (scannedItem.equals(productToAdd)) {
-                                // Increase the quantity if the item is already scanned
-                                scannedItem.setScanCount(scannedItem.getScanCount() + 1);
-                                foundInScannedItems = true;
-                                break;
-                            }
-                        }
-
-                        // If not found, add it to the list with count set to 1
-                        if (!foundInScannedItems) {
-                            productToAdd.setScanCount(1);
-                            scannedItems.add(productToAdd);
-                            request.setAttribute("ScannedItemsList", scannedItems);
-                        }
-
                         productToAdd.setSize(size);
                         productToAdd.setColor(color);
                         productToAdd.setScanCount(1);
                         scannedItems.add(productToAdd);
+                        request.setAttribute("ScannedItemsList", scannedItems);
+                    }
+                    for (Product product : scannedItems) {
+                        String productSKUU = product.getProduct_SKU();
+                        double productPrice = product.getProduct_price();
+                        String productName = product.getProduct_name();
+                        int productID = product.getProduct_ID();
+                        System.out.println("Product SKU: " + productSKU);
+                        Layaway layaway = new Layaway();
+                        layaway.setProductSKU(productSKU);
+                        layaway.setProductPrice(productPrice);
+                        layaway.setProductName(productName);
+                        layaway.setProductID(String.valueOf(productID));
+                        scannedItemsList.add(layaway);
 
                     }
-                    
-                    
-         // Loop through each Product in the ArrayList and get the Product_SKU
-        for (Product product : scannedItems) {
-            String productSKUU = product.getProduct_SKU();
-            double productPrice = product.getProduct_price();
-            String productName = product.getProduct_name();
-            int productQuantity = product.getQuantity_in_stock();
-            int productID = product.getProduct_ID();
-            System.out.println("Product SKU: " + productSKU);
-            Layaway layaway = new Layaway();
-            layaway.setProductSKU(productSKU);
-            layaway.setProductPrice(productPrice);
-            layaway.setProductName(productName);
-            layaway.setProductID(String.valueOf(productID));
-            layaway.setProductQuantity(productQuantity);
-            scannedItemsList.add(layaway);
-            
-        }
-        
-        session.setAttribute("scannedItemsList", scannedItemsList);
-                    
-                     // Print all items in scannedItems list
-    System.out.println("Items in scannedItems list:");
-    for (Product scannedItem : scannedItems) {
-        System.out.println("Product SKU: " + scannedItem.getProduct_SKU());
-        //System.out.println("Product Name: " + scannedItem.getProduct_Name());
-        System.out.println("Scan Count: " + scannedItem.getScanCount());
-        System.out.println("---------------------------");
-    }
+
+                    session.setAttribute("scannedItemsList", scannedItemsList);
                     break;
 
                 case "Remove-Item":
@@ -211,7 +175,7 @@ public class ProductServlet extends HttpServlet {
                     }
                     break;
 
-            case "Complete-Sale":
+                case "Complete-Sale":
                     BigDecimal totalAmount = BigDecimal.valueOf(calculateTotalPrice(scannedItems));
 
                     if (totalAmount.compareTo(BigDecimal.ZERO) <= 0) {
@@ -242,19 +206,11 @@ public class ProductServlet extends HttpServlet {
                             salesItemDAO.saveSalesItem(salesItem);
                         }
 
-
-                        
-                        
-                        // Call processSale method to update inventory and product quantities
-                        inventoryService.processSale(newSalesID);
-
-                      
                         String salespersonName = loggedInUser.getFirstName() + " " + loggedInUser.getLastName();
                         String saleTime = newSale.getSales_date().toString();
                         String customerEmail = request.getParameter("customer_email");
 
                         emailService.sendSaleReceipt(customerEmail, salespersonName, saleTime, scannedItems, totalAmount, newSale.getPayment_method());
-
 
                         scannedItems.clear();
                     } else {
