@@ -18,4 +18,5 @@ public interface IBTService {
      List<IBT> receiveIBTRequest(int store_ID);
      boolean deleteRequestedIBT(int store_ID);
      boolean checkForIBTNotification(int store_ID);
+     int retrieveCustomerNumber(int layawayID);
 }

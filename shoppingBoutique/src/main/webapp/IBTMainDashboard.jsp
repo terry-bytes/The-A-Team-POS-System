@@ -169,11 +169,11 @@
     <div id="popup-form">
         <div class="form-content">
             <span id="close-btn">&times;</span>
-            <form>
+            <form action="IBTServlet" method="post">
                 <label for="ibt-id">IBT ID:</label>
                 <input type="text" id="layaway-id" name="ibt-id" required>
                 <br><br>
-                <input type="submit" value="Submit">
+                <input type="submit" value="Send SMS" name="IBT_switch">
             </form>
         </div>
     </div>

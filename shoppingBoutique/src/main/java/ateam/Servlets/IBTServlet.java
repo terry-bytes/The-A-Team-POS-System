@@ -116,6 +116,10 @@ public class IBTServlet extends HttpServlet {
                     // Forward to the management page
                     request.getRequestDispatcher("IBTMainDashboard.jsp").forward(request, response);
                     break;
+                   
+                case "Send SMS":
+                    handleRetrievingCustomerNumber(request, response);
+                    break;
             }
         }
     }
@@ -211,5 +215,10 @@ public class IBTServlet extends HttpServlet {
         List<IBT> Stores = ibtService.receiveIBTRequest(store_id);
         request.setAttribute("Stores", Stores);
         request.getRequestDispatcher("IBTReceiveDashboard.jsp").forward(request, response);
+    }
+    
+    private void handleRetrievingCustomerNumber(HttpServletRequest request, HttpServletResponse response) {
+        int IBTRequestID = Integer.parseInt(request.getParameter("ibt-id"));
+        int customerNumber = ibtService.retrieveCustomerNumber(IBTRequestID); //USE THIS VARIABLE FOR SENDING IBT SMS
     }
 }

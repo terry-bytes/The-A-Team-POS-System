@@ -46,4 +46,9 @@ public class IBTServiceIMPL implements IBTService{
     public boolean checkForIBTNotification(int store_ID) {
         return ibtDAO.checkForIBTNotification(store_ID);
     }
+
+    @Override
+    public int retrieveCustomerNumber(int layawayID) {
+       return ibtDAO.retrieveCustomerNumber(layawayID);
+    }
 }

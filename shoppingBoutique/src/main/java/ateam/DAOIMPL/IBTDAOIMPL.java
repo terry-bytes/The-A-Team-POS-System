@@ -77,6 +77,7 @@ public class IBTDAOIMPL implements  IBTDAO{
         }  finally {
             close(resultSet, preparedStatement);
         }
+        
         return success;
     }
     
@@ -140,6 +141,22 @@ public class IBTDAOIMPL implements  IBTDAO{
     } 
     return success;
 }
+    
+    @Override
+    public int retrieveCustomerNumber(int layawayID) {
+        int customerNumber = 0;
+        try {
+            preparedStatement = connection.prepareStatement("SELECT customer_number FROM ibtrequest WHERE request_ID = ?");
+            preparedStatement.setInt(1, layawayID);
+            resultSet = preparedStatement.executeQuery();
+            if(resultSet.next()) {
+                customerNumber = resultSet.getInt("customer_number");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(IBTDAOIMPL.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return customerNumber;
+    }
     
     private void close(AutoCloseable... closeables) {
         if (closeables != null) {
