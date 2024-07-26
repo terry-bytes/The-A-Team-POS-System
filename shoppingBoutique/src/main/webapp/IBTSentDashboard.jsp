@@ -38,6 +38,12 @@
             <p>Product Quantity: <%= i.getQuantity() %></p>
             <label>Please enter the quantity needed  :</label><br><br>
             <input type="text" name="e_product_qautity"  min="1" max="<%= i.getQuantity() %>"  oninput="validateQuantity(this)"><br><br>
+            <label>Please enter Customer name</label><br><br>
+            <input type="text" name="e_customer_name"><br><br>
+            <label>Please enter Customer cell phone number</label><br><br>
+            <input type="text" name="e_customer_number"><br><br>
+            <label>Please enter Customer email</label><br><br>
+            <input type="text" name="e_customer_email"><br><br>
             <input type="submit" value="Request IBT" name="IBT_switch">
             <input type="hidden" value="<%= i.getProductID() %>" name="product_id">
             <input type="hidden" value="<%= i.getStoreID() %>" name="store_id"> 

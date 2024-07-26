@@ -56,15 +56,18 @@ public class IBTDAOIMPL implements  IBTDAO{
 
      
     @Override
-    public boolean sendIBTRequest(int product_ID, int store_ID, String store_name, int product_quantity) {
+    public boolean sendIBTRequest(int product_ID, int store_ID, String store_name, int product_quantity, String customerName, String customerNumber, String customerEmail) {
         boolean success = false;
         try {
-            preparedStatement = connection.prepareStatement("INSERT INTO IBTRequest (store_ID, product_ID, requestFlag, requested_store, quantity) VALUES (?,?,?,?,?)");
+            preparedStatement = connection.prepareStatement("INSERT INTO IBTRequest (store_ID, product_ID, requestFlag, requested_store, quantity, customer_name, customer_number, customer_email) VALUES (?,?,?,?,?,?,?,?)");
             preparedStatement.setInt(1, store_ID);
             preparedStatement.setInt(2, product_ID);
             preparedStatement.setInt(3, 1);
             preparedStatement.setString(4, store_name);
             preparedStatement.setInt(5, product_quantity);
+            preparedStatement.setString(6, customerName);
+            preparedStatement.setString(7, customerNumber);
+            preparedStatement.setString(8, customerEmail);
             int rowsAffected = preparedStatement.executeUpdate();
         if (rowsAffected > 0) {
             success = true;
@@ -82,7 +85,7 @@ public class IBTDAOIMPL implements  IBTDAO{
     public List<IBT> receiveIBTRequest(int store_ID) {
         List<IBT> Stores = new ArrayList();
         try {
-            preparedStatement = connection.prepareStatement("SELECT store_ID, product_id, requested_store, quantity FROM IBTRequest WHERE store_ID = ?");
+            preparedStatement = connection.prepareStatement("SELECT request_ID, store_ID, product_id, requested_store, quantity FROM IBTRequest WHERE store_ID = ?");
             preparedStatement.setInt(1, store_ID);
             resultSet = preparedStatement.executeQuery();
             while(resultSet.next()) {
@@ -91,6 +94,7 @@ public class IBTDAOIMPL implements  IBTDAO{
                 ibt.setStoreID(resultSet.getInt("store_ID"));
                 ibt.setRequestedtore(resultSet.getString("requested_store"));
                 ibt.setQuantity(resultSet.getInt("quantity"));
+                ibt.setRequestID(resultSet.getInt("request_ID"));
                 Stores.add(ibt);
             }
         } catch (SQLException ex) {
