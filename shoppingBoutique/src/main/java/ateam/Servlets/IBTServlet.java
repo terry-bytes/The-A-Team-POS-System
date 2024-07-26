@@ -217,8 +217,10 @@ public class IBTServlet extends HttpServlet {
         request.getRequestDispatcher("IBTReceiveDashboard.jsp").forward(request, response);
     }
     
-    private void handleRetrievingCustomerNumber(HttpServletRequest request, HttpServletResponse response) {
+    private void handleRetrievingCustomerNumber(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int IBTRequestID = Integer.parseInt(request.getParameter("ibt-id"));
         int customerNumber = ibtService.retrieveCustomerNumber(IBTRequestID); //USE THIS VARIABLE FOR SENDING IBT SMS
+        request.getRequestDispatcher("IBTMainDashboard.jsp").forward(request, response);
+        System.out.println("CUSTOMER NUMBER " + customerNumber);
     }
 }
