@@ -27,6 +27,7 @@
     %>
     <form action="IBTServlet" method="post">
         <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
+            <p> IBT ID: <%= i.getRequestID()%> </p>
             <p>Requested Store: <%= i.getRequestedtore() %></p>
             <p>Requested Product ID: <%= i.getProductID() %></p>
             <p>Quantity requested: <%= i.getQuantity() %></p>

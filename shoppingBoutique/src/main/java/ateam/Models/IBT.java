@@ -10,11 +10,15 @@ package ateam.Models;
  * @author carme
  */
 public class IBT {
+    private int requestID;
     private String storeName;
     private int productID;
     private int storeID;
     private int quantity;
     private String requestedtore;
+    private String customerName;
+    private String customerNumber;
+    private String customerEmail;
 
     public int getProductID() {
         return productID;
@@ -54,5 +58,37 @@ public class IBT {
 
     public void setStoreName(String storeName) {
         this.storeName = storeName;
+    }
+
+    public int getRequestID() {
+        return requestID;
+    }
+
+    public void setRequestID(int requestID) {
+        this.requestID = requestID;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
+
+    public String getCustomerNumber() {
+        return customerNumber;
+    }
+
+    public void setCustomerNumber(String customerNumber) {
+        this.customerNumber = customerNumber;
+    }
+
+    public String getCustomerEmail() {
+        return customerEmail;
+    }
+
+    public void setCustomerEmail(String customerEmail) {
+        this.customerEmail = customerEmail;
     }
 }
