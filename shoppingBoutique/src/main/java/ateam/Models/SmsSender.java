@@ -10,9 +10,9 @@ import com.twilio.type.PhoneNumber;
 
 public class SmsSender {
 
-    public static final String ACCOUNT_SID = "ACe8fdada7646497ac53040670783f2f5d";
-    public static final String AUTH_TOKEN = "4eb5d4746fd78e8d5dc54f6fb8187f49";
-    public static final String TWILIO_PHONE_NUMBER = "+12295446517";
+    public static final String ACCOUNT_SID = "Acc SID";
+    public static final String AUTH_TOKEN = "TOKEN";
+    public static final String TWILIO_PHONE_NUMBER = "NUMBER";
 
     static {
         Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
