@@ -14,6 +14,8 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class InventoryDAOIMPL implements InventoryDAO {
     
@@ -99,7 +101,11 @@ public class InventoryDAOIMPL implements InventoryDAO {
         psInventory.setInt(1, productID);
         psInventory.setInt(2, storeID);
         psInventory.setInt(3, quantity);
-        psInventory.setInt(4,inventory.getPrevious_quantity());
+        try {
+            psInventory.setInt(4,getPreviousQuantity(productID));
+        } catch (Exception ex) {
+            Logger.getLogger(InventoryDAOIMPL.class.getName()).log(Level.SEVERE, null, ex);
+        }
         psInventory.setInt(5,inventory.getReorder_point());
         psInventory.setTimestamp(6,inventory.getLast_updated());
         psInventory.setInt(7,employeeID);
@@ -121,23 +127,7 @@ public class InventoryDAOIMPL implements InventoryDAO {
 }
 
 
-//    @Override
-//    public void logInventoryTransaction(Inventory inventory) throws Exception {
-//        String sql = "INSERT INTO inventory (product_ID, store_ID, inventory_quantity, previous_quantity, reorder_point, last_updated, updated_by_employee_ID) VALUES (?, ?, ?, ?, ?, ?, ?)";
-//        try (Connection conn = new Connect().connectToDB();
-//             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-//            pstmt.setInt(1, inventory.getProduct_ID());
-//            pstmt.setInt(2, inventory.getStore_ID());
-//            pstmt.setInt(3, inventory.getInventory_quantity());
-//            pstmt.setInt(4, inventory.getPrevious_quantity());
-//            pstmt.setInt(5, inventory.getReorder_point());
-//            pstmt.setTimestamp(6, inventory.getLast_updated());
-//            pstmt.setInt(7, inventory.getUpdated_by_employee_ID());
-//            pstmt.executeUpdate();
-//        } catch (SQLException ex) {
-//            throw new Exception("Error logging inventory transaction: " + ex.getMessage(), ex);
-//        }
-//    }
+
 
     @Override
     public int getPreviousQuantity(int productId) throws Exception {
@@ -149,6 +139,8 @@ public class InventoryDAOIMPL implements InventoryDAO {
                 if (rs.next()) {
                     return rs.getInt("quantity_in_stock");
                 } else {
+                    
+                    
                     throw new Exception("Product not found.");
                 }
             }
