@@ -18,6 +18,11 @@
     
     <dependencies>
         <dependency>
+            <groupId>com.twilio.sdk</groupId>
+            <artifactId>twilio</artifactId>
+            <version>8.32.0</version> <!-- Check for the latest version -->
+        </dependency>
+        <dependency>
             <groupId>com.itextpdf</groupId>
             <artifactId>itextpdf</artifactId>
             <version>5.5.13.3</version> <!-- Or the latest version -->
