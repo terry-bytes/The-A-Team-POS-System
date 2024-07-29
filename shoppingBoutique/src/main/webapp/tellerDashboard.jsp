@@ -496,6 +496,9 @@
 
         <script>
             function selectPaymentMethod(method) {
+                document.getElementById('payment-method').value = method;
+            }
+            function selectPaymentMethod(method) {
                 document.getElementById("card-details").style.display = "none";
                 document.getElementById("cash-card-amount").style.display = "none";
                 document.getElementById("cash-amount").style.display = "none";

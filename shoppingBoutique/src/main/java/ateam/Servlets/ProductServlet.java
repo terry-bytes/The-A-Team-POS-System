@@ -181,27 +181,26 @@ public class ProductServlet extends HttpServlet {
                 case "Complete-Sale":
                     BigDecimal totalAmount = BigDecimal.valueOf(calculateTotalPrice(scannedItems));
                     BigDecimal vatAmount = totalAmount.multiply(BigDecimal.valueOf(VAT_RATE));
-                    BigDecimal totalAmountWithVAT = totalAmount.add(vatAmount);
-
-                    if (totalAmountWithVAT.compareTo(BigDecimal.ZERO) <= 0) {
-                        request.setAttribute("errorMessage", "Total amount cannot be zero or negative.");
-                        break;
-                    }
+                    // The total amount with VAT is not needed in the final price; instead, show VAT separately
+                    BigDecimal totalAmountWithoutVAT = totalAmount;
+                    BigDecimal change = BigDecimal.ZERO;
 
                     try {
                         cashPaidStr = cashPaidStr.trim().replace(",", "");
                         BigDecimal cashPaid = new BigDecimal(cashPaidStr);
-                        BigDecimal change = cashPaid.subtract(totalAmountWithVAT);
 
+                        // Calculate change to be returned
+                        change = cashPaid.subtract(totalAmountWithoutVAT);
                         if (change.compareTo(BigDecimal.ZERO) < 0) {
-                            request.setAttribute("errorMessage", "Cash paid is less than the total amount with VAT.");
+                            request.setAttribute("errorMessage", "Cash paid is less than the total amount.");
                             break;
                         }
 
                         Sale newSale = new Sale();
                         newSale.setSales_date(new Timestamp(System.currentTimeMillis()));
-                        newSale.setTotal_amount(totalAmountWithVAT);
+                        newSale.setTotal_amount(totalAmountWithoutVAT);
                         newSale.setPayment_method(request.getParameter("payment_method"));
+
                         if (loggedInUser != null) {
                             newSale.setEmployee_ID(loggedInUser.getEmployee_ID());
                             newSale.setStore_ID(loggedInUser.getStore_ID());
@@ -227,16 +226,16 @@ public class ProductServlet extends HttpServlet {
                             String saleTime = newSale.getSales_date().toString();
                             String customerEmail = request.getParameter("customer_email");
 
-                            emailService.sendSaleReceipt(customerEmail, salespersonName, saleTime, scannedItems, totalAmountWithVAT, vatAmount, change, newSale.getPayment_method());
+                            emailService.sendSaleReceipt(customerEmail, salespersonName, saleTime, scannedItems, totalAmountWithoutVAT, vatAmount, change, newSale.getPayment_method());
                             SmsSender.sendSms("+27631821265", saleTime);
 
                             scannedItems.clear();
 
-                            request.setAttribute("totalAmount", totalAmountWithVAT);
+                            request.setAttribute("totalAmount", totalAmountWithoutVAT);
                             request.setAttribute("vatAmount", vatAmount);
                             request.setAttribute("change", change);
                             request.getRequestDispatcher("saleReceipt.jsp").forward(request, response);
-                            return; // Avoid further processing after completing the sale
+                            return; 
                         } else {
                             request.setAttribute("errorMessage", "Failed to save sale.");
                         }
