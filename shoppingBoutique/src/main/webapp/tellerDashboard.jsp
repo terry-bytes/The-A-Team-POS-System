@@ -413,8 +413,8 @@
                 </div>
 
                 <div class="transaction-buttons">
-                    <form action="ReturnItemServlet" method="post">
-                        <button type="submit">Return Item</button>
+                    <form action="ProductServlet" method="post">
+                        <button type="submit" name ="submit" value ="return">Return Item</button>
                     </form>
                     <form action="LayawayDashboard.jsp" method="post">
                         <button onclick="redirectToAnotherPage()">Lay Away</button>
