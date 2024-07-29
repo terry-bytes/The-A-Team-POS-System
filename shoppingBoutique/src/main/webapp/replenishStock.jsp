@@ -135,7 +135,7 @@
             width: 50px;
             height: 50px;
             display: block;
-            margin: 0 auto 10px;
+            margin: 10px auto 10px;
         }
         #okButton {
             display: inline-block;
