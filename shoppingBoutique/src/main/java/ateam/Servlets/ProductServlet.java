@@ -8,9 +8,11 @@ import ateam.DAOIMPL.ProductDAOIMPL;
 import ateam.DAOIMPL.SaleDAOIMPL;
 import ateam.DAOIMPL.SalesItemDAOIMPL;
 import ateam.Models.Employee;
+import ateam.Models.Layaway;
 import ateam.Models.Product;
 import ateam.Models.Sale;
 import ateam.Models.SalesItem;
+import ateam.Models.SmsSender;
 
 
 import ateam.Service.InventoryService;
@@ -61,6 +63,7 @@ public class ProductServlet extends HttpServlet {
         HttpSession session = request.getSession();
         Employee loggedInUser = (Employee) session.getAttribute("Employee");
         List<Product> scannedItems = (List<Product>) session.getAttribute("scannedItems");
+        List<Layaway> scannedItemsList = new ArrayList<>();
 
         if (scannedItems == null) {
             scannedItems = new ArrayList<>();
@@ -75,14 +78,19 @@ public class ProductServlet extends HttpServlet {
         try {
             switch (submit) {
                 case "Add-Item":
+
                 case "auto-submit":
                     List<Product> foundProducts = productService.getProductBySKU(sku);
+
+                    session.setAttribute("scannedItemsList", foundProducts);
+
                     if (foundProducts.isEmpty()) {
                         // Handle the case where no products are found
                         request.setAttribute("errorMessage", "Product with SKU '" + sku + "' not found.");
                         request.getRequestDispatcher("tellerDashboard.jsp").forward(request, response);
                         return; // Return to avoid further processing
                     }
+
                     session.setAttribute("foundProducts", foundProducts);
 
                     // Assuming SKU format includes size and color
@@ -112,7 +120,24 @@ public class ProductServlet extends HttpServlet {
                         productToAdd.setColor(color);
                         productToAdd.setScanCount(1);
                         scannedItems.add(productToAdd);
+                        request.setAttribute("ScannedItemsList", scannedItems);
                     }
+                    for (Product product : scannedItems) {
+                        String productSKUU = product.getProduct_SKU();
+                        double productPrice = product.getProduct_price();
+                        String productName = product.getProduct_name();
+                        int productID = product.getProduct_ID();
+                        System.out.println("Product SKU: " + productSKU);
+                        Layaway layaway = new Layaway();
+                        layaway.setProductSKU(productSKU);
+                        layaway.setProductPrice(productPrice);
+                        layaway.setProductName(productName);
+                        layaway.setProductID(String.valueOf(productID));
+                        scannedItemsList.add(layaway);
+
+                    }
+
+                    session.setAttribute("scannedItemsList", scannedItemsList);
                     break;
 
                 case "Remove-Item":
@@ -153,7 +178,7 @@ public class ProductServlet extends HttpServlet {
                     }
                     break;
 
-            case "Complete-Sale":
+                case "Complete-Sale":
                     BigDecimal totalAmount = BigDecimal.valueOf(calculateTotalPrice(scannedItems));
 
                     if (totalAmount.compareTo(BigDecimal.ZERO) <= 0) {
@@ -184,20 +209,15 @@ public class ProductServlet extends HttpServlet {
                             salesItemDAO.saveSalesItem(salesItem);
                         }
 
-
-
+                         // Call processSale method to update inventory and product quantities
+                            inventoryService.processSale(newSalesID);
                         
-                        
-                        // Call processSale method to update inventory and product quantities
-                        inventoryService.processSale(newSalesID);
-
-                      
                         String salespersonName = loggedInUser.getFirstName() + " " + loggedInUser.getLastName();
                         String saleTime = newSale.getSales_date().toString();
                         String customerEmail = request.getParameter("customer_email");
 
                         emailService.sendSaleReceipt(customerEmail, salespersonName, saleTime, scannedItems, totalAmount, newSale.getPayment_method());
-
+                         SmsSender.sendSms("+27631821265", saleTime);
 
                         scannedItems.clear();
                     } else {

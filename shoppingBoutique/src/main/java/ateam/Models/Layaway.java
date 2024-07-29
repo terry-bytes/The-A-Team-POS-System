@@ -17,8 +17,11 @@ public class Layaway {
     private Timestamp expiry_date; 
     private String layaway_status; 
     private String customerEmail;
-    private int productID;
+    private String productID;
     private int productQuantity;
-    private String customerNumber;
+    private int customerNumber;
     private String customerName;
+    private String productName;
+    private String productSKU;
+    private double productPrice;
 }

@@ -1,5 +1,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="ateam.Models.ProductVariants" %>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>

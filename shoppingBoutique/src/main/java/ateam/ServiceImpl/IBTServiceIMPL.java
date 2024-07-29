@@ -28,8 +28,8 @@ public class IBTServiceIMPL implements IBTService{
     }
 
     @Override
-    public boolean sendIBTRequest(int product_ID, int store_ID ,String store_name, int product_quantity) {
-        return ibtDAO.sendIBTRequest(product_ID, store_ID, store_name, product_quantity);
+    public boolean sendIBTRequest(int product_ID, int store_ID ,String store_name, int product_quantity, String customerName, String customerNumber, String customerEmail) {
+        return ibtDAO.sendIBTRequest(product_ID, store_ID, store_name, product_quantity, customerName, customerNumber, customerEmail);
     }
 
     @Override
@@ -45,5 +45,10 @@ public class IBTServiceIMPL implements IBTService{
     @Override
     public boolean checkForIBTNotification(int store_ID) {
         return ibtDAO.checkForIBTNotification(store_ID);
+    }
+
+    @Override
+    public int retrieveCustomerNumber(int layawayID) {
+       return ibtDAO.retrieveCustomerNumber(layawayID);
     }
 }

@@ -71,6 +71,10 @@
                         <span class="text nav-text">Notifications</span>
                     </a>
                 </li>
+                <li "class="logo">
+                     <a href="IBTMainDashboard.jsp" class="nav-item">IBT</a>
+                     <%request.getSession().setAttribute("ibtNotifications", true);%>
+                </li>
             </ul>
         </div>
                 

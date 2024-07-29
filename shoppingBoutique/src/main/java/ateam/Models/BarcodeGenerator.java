@@ -51,26 +51,23 @@ public class BarcodeGenerator {
 
     public static void main(String[] args) {
 
- 
-        List<String> texts = Arrays.asList(
-
-
-                "0123456789012-S-Red",
-                "0123456789012-M-Red",
-                "0123456789012-L-Red",
-                "0787099257798-32-Black",
-                "0787099257798-34-Black",
-                "0787099257798-32-Gray"
+       // Example usage
+    List<String> texts = Arrays.asList(
+        "0123456789012-S-Red",
+        "0123456789012-M-Red",
+        "0123456789012-L-Red"
         // Add more texts as needed
+    );
+    String outputDir = "output"; // Directory to save the barcode images
+    int width = 300; // Width of the barcode image
+    int height = 300; // Height of the barcode image
 
-        );
-        String outputDir = "output"; // Directory to save the barcode images
-        int width = 300; // Width of the barcode image
-        int height = 100; // Height of the barcode image
 
-        // Ensure the output directory exists
-        new File(outputDir).mkdirs();
+       
 
-        generateBarcodes(texts, outputDir, width, height);
+    // Ensure the output directory exists
+    new File(outputDir).mkdirs();
+
+    generateBarcodes(texts, outputDir, width, height);
     }
 }
