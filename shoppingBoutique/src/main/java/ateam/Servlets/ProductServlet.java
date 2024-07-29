@@ -53,6 +53,7 @@ public class ProductServlet extends HttpServlet {
     private EmailService emailService = new EmailServiceImpl();
     private Connect dbConnect = new Connect();
     private InventoryService inventoryService = new InventoryServiceImpl();
+    private static final double VAT_RATE = 0.15;
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -72,6 +73,7 @@ public class ProductServlet extends HttpServlet {
         String sku = request.getParameter("input-field");
         String sku2 = request.getParameter("sku");
         String managerPassword = request.getParameter("manager_password");
+        String cashPaidStr = request.getParameter("cash_amount");
 
         try {
             switch (submit) {
@@ -178,15 +180,24 @@ public class ProductServlet extends HttpServlet {
 
                 case "Complete-Sale":
                     BigDecimal totalAmount = BigDecimal.valueOf(calculateTotalPrice(scannedItems));
+                    BigDecimal vatAmount = totalAmount.multiply(BigDecimal.valueOf(VAT_RATE));
+                    BigDecimal totalAmountWithVAT = totalAmount.add(vatAmount);
 
-                    if (totalAmount.compareTo(BigDecimal.ZERO) <= 0) {
+                    if (totalAmountWithVAT.compareTo(BigDecimal.ZERO) <= 0) {
                         request.setAttribute("errorMessage", "Total amount cannot be zero or negative.");
+                        break;
+                    }
+                    BigDecimal cashPaid = new BigDecimal(cashPaidStr);
+                    BigDecimal change = cashPaid.subtract(totalAmountWithVAT);
+
+                    if (change.compareTo(BigDecimal.ZERO) < 0) {
+                        request.setAttribute("errorMessage", "Cash paid is less than the total amount with VAT.");
                         break;
                     }
 
                     Sale newSale = new Sale();
                     newSale.setSales_date(new Timestamp(System.currentTimeMillis()));
-                    newSale.setTotal_amount(totalAmount);
+                    newSale.setTotal_amount(totalAmountWithVAT);
                     newSale.setPayment_method(request.getParameter("payment_method"));
                     if (loggedInUser != null) {
                         newSale.setEmployee_ID(loggedInUser.getEmployee_ID());
@@ -207,17 +218,22 @@ public class ProductServlet extends HttpServlet {
                             salesItemDAO.saveSalesItem(salesItem);
                         }
 
-                         // Call processSale method to update inventory and product quantities
-                            inventoryService.processSale(newSalesID);
-                        
+                        inventoryService.processSale(newSalesID);
+
                         String salespersonName = loggedInUser.getFirstName() + " " + loggedInUser.getLastName();
                         String saleTime = newSale.getSales_date().toString();
                         String customerEmail = request.getParameter("customer_email");
 
-                        emailService.sendSaleReceipt(customerEmail, salespersonName, saleTime, scannedItems, totalAmount, newSale.getPayment_method());
-                         SmsSender.sendSms("+27631821265", saleTime);
+                        emailService.sendSaleReceipt(customerEmail, salespersonName, saleTime, scannedItems, totalAmountWithVAT, newSale.getPayment_method());
+                        SmsSender.sendSms("+27631821265", saleTime);
 
                         scannedItems.clear();
+
+                        request.setAttribute("totalAmount", totalAmountWithVAT);
+                        request.setAttribute("vatAmount", vatAmount);
+                        request.setAttribute("change", change);
+                        request.getRequestDispatcher("saleReceipt.jsp").forward(request, response);
+                        return; // Avoid further processing after completing the sale
                     } else {
                         request.setAttribute("errorMessage", "Failed to save sale.");
                     }

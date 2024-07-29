@@ -34,7 +34,7 @@
                 padding: 10px 20px; /* Adjust padding */
                 font-size: 1em; /* Font size */
                 cursor: pointer; /* Pointer cursor */
-                border-radius: 5px; /* Rounded corners */
+                border-radius: 7px; /* Rounded corners */
                 position: relative; /* For positioning the arrow */
                 display: inline-block; /* Make sure it behaves like a button */
             }
@@ -44,8 +44,8 @@
                 position: absolute; /* Position the arrow */
                 top: 50%; /* Center vertically */
                 right: 10px; /* Position from the right */
-                width: 0; /* Zero width */
-                height: 0; /* Zero height */
+                width: 10; /* Zero width */
+                height: 10; /* Zero height */
                 border-top: 10px solid transparent; /* Top part of the arrow */
                 border-bottom: 10px solid transparent; /* Bottom part of the arrow */
                 border-left: 10px solid #fff; /* Arrow color */
@@ -356,7 +356,7 @@
                     <form id="product-form" action="ProductServlet" method="post">
                         <div class="manual-entry">
                             <input type="text" id="manual-sku" name="input-field" placeholder="Enter SKU manually">
-                            <button type="submit" name="submit" value="Add-Item" class="green-arrow-button">Enter</button>
+                            <button type="submit" name="submit" value="Add-Item" class="green-arrow-button">OK</button>
                             <button type="submit" name="submit" value="auto-submit" id="auto-submit" style="display: none"></button>
                         </div>
                         <div class="payment-icons">
@@ -381,7 +381,12 @@
                                 <input type="text" id="cvv" name="cvv">
                             </div>
                         </div>
-                          
+                        <div id="cash-amount" style="display:none;">
+                            <div>
+                                <label for="cash_amount">Cash Amount:</label>
+                                <input type="text" id="cash_amount" name="cash_amount">
+                            </div>
+                        </div>
                         <div id="cash-card-amount" style="display:none;">
                             <div>
                                 <label for="cash_amount">Cash Amount:</label>
@@ -402,7 +407,7 @@
                         <button type="submit" name="submit" value="Complete-Sale">Complete Sale</button>
                         <input type="submit" value="Process Layaway" onclick="openPopup()">
                     </form>
-                     <p>   </p>
+                    <p>   </p>
                     <div class="keyboard">
                         <div class="key" onclick="appendToInput('1')">1</div>
                         <div class="key" onclick="appendToInput('2')">2</div>
@@ -493,12 +498,17 @@
             function selectPaymentMethod(method) {
                 document.getElementById("card-details").style.display = "none";
                 document.getElementById("cash-card-amount").style.display = "none";
+                document.getElementById("cash-amount").style.display = "none";
+
                 if (method === 'card') {
                     document.getElementById("card-details").style.display = "block";
                 } else if (method === 'cardAndcash') {
                     document.getElementById("cash-card-amount").style.display = "block";
+                } else if (method === 'cash') {
+                    document.getElementById("cash-amount").style.display = "block";
                 }
             }
+
             function redirectToAnotherPage() {
                 // Redirect to another JSP page
                 window.location.href = 'LayawayDashboard.jsp'; // Replace 'AnotherPage.jsp' with your actual JSP page path
