@@ -20,6 +20,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import ateam.Models.SmsSender;
+import static ateam.Models.SmsSender.sendSms;
 
 /**
  *
@@ -219,8 +221,10 @@ public class IBTServlet extends HttpServlet {
     
     private void handleRetrievingCustomerNumber(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int IBTRequestID = Integer.parseInt(request.getParameter("ibt-id"));
-        int customerNumber = ibtService.retrieveCustomerNumber(IBTRequestID); //USE THIS VARIABLE FOR SENDING IBT SMS
+        String customerNumber = ibtService.retrieveCustomerNumber(IBTRequestID); //USE THIS VARIABLE FOR SENDING IBT SMS
         request.getRequestDispatcher("IBTMainDashboard.jsp").forward(request, response);
+        String message = "Your product is ready for Collection. Your IBT ID number is: ";
+        SmsSender.sendSms(customerNumber, message);
         System.out.println("CUSTOMER NUMBER " + customerNumber);
     }
 }

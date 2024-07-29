@@ -48,7 +48,7 @@ public class IBTServiceIMPL implements IBTService{
     }
 
     @Override
-    public int retrieveCustomerNumber(int layawayID) {
+    public String retrieveCustomerNumber(int layawayID) {
        return ibtDAO.retrieveCustomerNumber(layawayID);
     }
 }
