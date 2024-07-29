@@ -16,8 +16,19 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
 
         <style>
+            .payment-section {
+                flex: 1;
+            }
+            .payment-icons img {
+                width: 50px;
+                cursor: pointer;
+                margin: 5px;
+            }
+            .payment-icons img:hover {
+                transform: scale(1.1);
+            }
             .green-arrow-button {
-                background-color: #28a745; /* Green background */
+                background-color: #19a1e0; /* Green background */
                 color: white; /* White text color */
                 border: none; /* Remove border */
                 padding: 10px 20px; /* Adjust padding */
@@ -49,6 +60,7 @@
             body {
                 font-family: 'Open Sans', sans-serif;
                 color: #333;
+                background-color: #d9e2da;
             }
             .container {
                 display: flex;
@@ -117,7 +129,7 @@
                 gap: 5px;
             }
             .key {
-                background: #eee;
+                background: #82caeb;
                 padding: 15px;
                 border: none;
                 cursor: pointer;
@@ -134,18 +146,41 @@
                 align-items: center;
                 margin-bottom: 10px;
             }
+
+            .transaction-buttons {
+                display: flex;
+                flex-wrap: wrap; /* Allows buttons to wrap to a new line if space is insufficient */
+                gap: 22px; /* Increased spacing between buttons */
+                justify-content: center; /* Center buttons horizontally */
+                padding: 10px; /* Add padding around the container */
+            }
+
             .transaction-buttons button {
-                background: #3498db;
-                color: white;
-                padding: 10px 15px;
-                border: none;
-                margin-top: 5px;
-                cursor: pointer;
-                border-radius: 4px;
+                background: none; /* Remove default background */
+                border: none; /* Remove default border */
+                cursor: pointer; /* Change cursor on hover */
+                padding: 10px; /* Add padding around the icon */
+                display: flex; /* Flexbox for centering content */
+                justify-content: center; /* Center content horizontally */
+                align-items: center; /* Center content vertically */
+                width: 60px; /* Fixed width for buttons */
+                height: 60px; /* Fixed height for buttons */
+                border-radius: 8px; /* Optional: rounded corners */
+                transition: background-color 0.3s, opacity 0.3s; /* Smooth transition for background and opacity */
             }
+
             .transaction-buttons button:hover {
-                background: #2980b9;
+                opacity: 0.8; /* Slightly fade icon on hover */
+                background-color: #444; /* Optional: background color on hover */
             }
+
+            .transaction-buttons .icon {
+                width: 70px; /* Fixed size for icons */
+                height: 70px; /* Fixed size for icons */
+                object-fit: contain; /* Ensure the icon fits within the dimensions */
+            }
+
+
             #barcode-scanner {
 
             }
@@ -324,14 +359,14 @@
                             <button type="submit" name="submit" value="Add-Item" class="green-arrow-button">Enter</button>
                             <button type="submit" name="submit" value="auto-submit" id="auto-submit" style="display: none"></button>
                         </div>
-                        <div>
-                            <label for="payment_method">Payment Method:</label>
-                            <select id="payment_method" name="payment_method" onchange="checkPaymentMethod()">
-                                <option value="cash">Cash</option>
-                                <option value="card">Card</option>
-                                <option value="cardAndcash">Card & Cash</option>
-                            </select>
+                        <div class="payment-icons">
+                            <img src="https://th.bing.com/th/id/R.f50425b14e844bcb90abb0f96c63035f?rik=GB2zRtYycKegvQ&riu=http%3a%2f%2fclipart-library.com%2fimg%2f1867131.png&ehk=JHCBEE17zWHHjFLG3qhbaIoG2vKydXdPRPRWPVL9AME%3d&risl=&pid=ImgRaw&r=0" alt="Cash" onclick="selectPaymentMethod('cash')">
+                            <img src="https://th.bing.com/th/id/OIP.zx9HaAZ6G-qacPDvkz7IhQHaHh?rs=1&pid=ImgDetMain" alt="Card" onclick="selectPaymentMethod('card')">
+                            <img src="https://th.bing.com/th/id/OIP.WbM79d11TS0NkV_votIkhAHaHa?rs=1&pid=ImgDetMain" alt="Card & Cash" onclick="selectPaymentMethod('cardAndcash')">
                         </div>
+                        <p>   </p>
+
+
                         <div id="card-details" style="display:none;">
                             <div>
                                 <label for="card_number">Card Number:</label>
@@ -346,6 +381,7 @@
                                 <input type="text" id="cvv" name="cvv">
                             </div>
                         </div>
+                          
                         <div id="cash-card-amount" style="display:none;">
                             <div>
                                 <label for="cash_amount">Cash Amount:</label>
@@ -356,15 +392,17 @@
                                 <input type="text" id="card_amount" name="card_amount">
                             </div>
                         </div>
+                        <p>   </p>
                         <div>
                             <label for="customer_email">Customer Email:</label>
                             <input type="email" id="customer_email" name="customer_email" placeholder="Enter customer email" >
                         </div>
+                        <p>   </p>
                         <input type="hidden" id="scanned-items-count" name="scannedItemsCount" value="<c:out value='${fn:length(scannedItems)}'/>">
                         <button type="submit" name="submit" value="Complete-Sale">Complete Sale</button>
                         <input type="submit" value="Process Layaway" onclick="openPopup()">
                     </form>
-
+                     <p>   </p>
                     <div class="keyboard">
                         <div class="key" onclick="appendToInput('1')">1</div>
                         <div class="key" onclick="appendToInput('2')">2</div>
@@ -410,31 +448,41 @@
 
 
                     </div>
+                    <div class="transaction-buttons">
+                        <form action="ReturnItemServlet" method="post">
+                            <button type="submit" title="Return Item">
+                                <img src="https://th.bing.com/th/id/OIP.-YCUILzwkqhEWv0dTnBCxgHaHa?w=800&h=800&rs=1&pid=ImgDetMain" alt="Return Item" class="icon"> <!-- Custom icon -->
+                            </button>
+                        </form>
+                        <form action="LayawayDashboard.jsp" method="post">
+                            <button type="submit" onclick="redirectToAnotherPage()" title="Lay Away">
+                                <img src="https://th.bing.com/th/id/R.0f694a16ad88cb05e475b40be9d6ce90?rik=Cpc%2ftKvFXCuHEQ&riu=http%3a%2f%2feastonfranklinbooks.com%2fimages%2flayaway_box-lg.png&ehk=huFrJkO9u1eSmYEOHBxVPQcPfqgfjq85uY4WSXUzz4M%3d&risl=&pid=ImgRaw&r=0" alt="Lay Away" class="icon"> <!-- Custom icon -->
+                            </button>
+                        </form>
+                        <form action="VoidSaleServlet" method="post">
+                            <button type="submit" title="Void Sale">
+                                <img src="https://th.bing.com/th/id/OIP.EpcMhvdK5Fj7MltlPwNzUgAAAA?rs=1&pid=ImgDetMain" alt="Void Sale" class="icon"> <!-- Custom icon -->
+                            </button>
+                        </form>
+                        <form action="Search.jsp" method="post">
+                            <button type="submit" title="Search Item">
+                                <img src="https://th.bing.com/th/id/OIP.MLu0Ae5k7MD3gTU1TQ5svQHaHa?rs=1&pid=ImgDetMain" alt="Search Item" class="icon"> <!-- Custom icon -->
+                            </button>
+                        </form>
+                        <form action="ViewReportsServlet" method="post">
+                            <button type="submit" title="View Reports">
+                                <img src="https://th.bing.com/th/id/OIP.9EG55S-fBqneTnNdtmXPHAHaHa?rs=1&pid=ImgDetMain" alt="View Reports" class="icon"> <!-- Custom icon -->
+                            </button>
+                        </form>
+                        <form action="ProductServlet" method="post">
+                            <button type="submit" name="submit" value="Inventory" title="Inventory Management">
+                                <img src="https://th.bing.com/th/id/R.73e53d4939d9d0277b14bd80d2a3ca91?rik=RlFgLZ6PqgjZew&riu=http%3a%2f%2fwww.newdesignfile.com%2fpostpic%2f2014%2f04%2fwarehouse-inventory-management_359862.jpg&ehk=YsRn9EnHehUI%2fzbSDqnBvh6%2bl%2f8jxebTg3Pik91f5Bg%3d&risl=&pid=ImgRaw&r=0" alt="Inventory Management" class="icon"> <!-- Custom icon -->
+                            </button>
+                        </form>
+                    </div>
+
                 </div>
 
-                <div class="transaction-buttons">
-                    <form action="ReturnItemServlet" method="post">
-                        <button type="submit">Return Item</button>
-                    </form>
-                    <form action="LayawayDashboard.jsp" method="post">
-                        <button onclick="redirectToAnotherPage()">Lay Away</button>
-                    </form>
-                    <form action="VoidSaleServlet" method="post">
-                        <button type="submit">Void Sale</button>
-                    </form>
-                    <form action="RemoveItemServlet" method="post">
-                        <button type="submit">Remove Item</button>
-                    </form>
-                    <form action="listProductVariants.jsp" method="post">
-                        <button type="submit">Search Item</button>
-                    </form>
-                    <form action="ViewReportsServlet" method="post">
-                        <button type="submit">View Reports</button>
-                    </form>
-                    <form action="ProductServlet" method="post">
-                        <button type="submit" name ="submit" value ="Inventory">Inventory Management</button>
-                    </form>
-                </div>
             </div>
         </div>
 
@@ -442,6 +490,15 @@
         <audio id="beep-sound" src="beep.mp3" preload="auto"></audio>
 
         <script>
+            function selectPaymentMethod(method) {
+                document.getElementById("card-details").style.display = "none";
+                document.getElementById("cash-card-amount").style.display = "none";
+                if (method === 'card') {
+                    document.getElementById("card-details").style.display = "block";
+                } else if (method === 'cardAndcash') {
+                    document.getElementById("cash-card-amount").style.display = "block";
+                }
+            }
             function redirectToAnotherPage() {
                 // Redirect to another JSP page
                 window.location.href = 'LayawayDashboard.jsp'; // Replace 'AnotherPage.jsp' with your actual JSP page path
