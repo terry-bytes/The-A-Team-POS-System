@@ -14,14 +14,24 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <script>
-      $(document).ready(function() {
+        $(document).ready(function() {
+        // Function to handle clicking on "Delivered IBT" button
+        $("input[value='Delivered IBT']").click(function(e) {
+            e.preventDefault(); // Prevent the default form submission
+            $("#popup-form").show(); // Show the popup form
+        });
+
+        // Function to handle clicking on the close button
+        $("#close-btn").click(function() {
+            $("#popup-form").hide(); // Hide the popup form
+        });
+        
+     
+    
     // Initial check for IBT notifications when the page loads
     checkIBTNotifications();
 
-    // Check if there are pending IBT notifications on page load
-    if (${sessionScope.ibtNotifications}) {
-        addNotificationSymbol(true);
-    }
+    
 
     // Function to handle clicking on "IBT Requests" button
     $("input[value='IBT Requests']").click(function(e) {
@@ -79,12 +89,17 @@
             }
         });
     }
+    
+    // Check if there are pending IBT notifications on page load
+            if (${sessionScope.ibtNotifications}) {
+                addNotificationSymbol(true);
+            }
 });
     </script>
 
     <style>
- /* CSS style for red dot */
-.notification-red::after {
+    /* CSS style for red dot */
+    .notification-red::after {
     content: '';
     display: inline-block;
     width: 8px;
@@ -93,10 +108,10 @@
     border-radius: 50%;
     margin-left: 5px;
     vertical-align: middle;
-}
+    }
 
-/* CSS style for blue dot */
-.notification-blue::after {
+    /* CSS style for blue dot */
+    .notification-blue::after {
     content: '';
     display: inline-block;
     width: 8px;
@@ -105,7 +120,38 @@
     border-radius: 50%;
     margin-left: 5px;
     vertical-align: middle;
-}
+    }
+
+ /* CSS for popup form */
+      #popup-form {
+          display: none; /* Hidden by default */
+          position: fixed;
+          left: 0;
+          top: 0;
+          width: 100%;
+          height: 100%;
+          background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+          z-index: 1000;
+          justify-content: center;
+          align-items: center;
+         
+      }
+
+      #popup-form .form-content {
+          background: white;
+          padding: 20px;
+          border-radius: 5px;
+          width: 300px;
+          position: relative;
+      }
+
+      #popup-form .form-content #close-btn {
+         position: absolute;
+          top: 10px;
+          right: 10px;
+          cursor: pointer;
+          font-size: 20px; /* Size for the close button */
+      }
     </style>
     </head>
     <body>
@@ -114,5 +160,22 @@
         <input type="submit" value="Send IBT" name="IBT_switch">
         <input type="submit" value="IBT_Requests" name="IBT_switch">
         </form>
+        
+        <form>
+           <input type="button" value="Delivered IBT">
+        </form>
+        
+         <!-- Popup Form -->
+    <div id="popup-form">
+        <div class="form-content">
+            <span id="close-btn">&times;</span>
+            <form action="IBTServlet" method="post">
+                <label for="ibt-id">IBT ID:</label>
+                <input type="text" id="layaway-id" name="ibt-id" required>
+                <br><br>
+                <input type="submit" value="Send SMS" name="IBT_switch">
+            </form>
+        </div>
+    </div>
     </body>
 </html>
