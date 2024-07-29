@@ -77,7 +77,7 @@ public class Reports {
         return topSellingEmployees(saleService.getAllSalesByStoreId(storeId));
     }
     
-    public Map<String, Integer> generateMonthReportForStore(int storeId, LocalDate date){
+    private Map<String, Integer> generateMonthReportForStore(int storeId, LocalDate date){
         LocalDate startOfMonth = date.withDayOfMonth(1);
         LocalDate endOfMonth = date.withDayOfMonth(date.lengthOfMonth());
         
@@ -95,6 +95,21 @@ public class Reports {
             ));
         
         return salesForMonth;
+    }
+    
+    public Map<String, BigDecimal> getMonthSalesReport(int storeId, LocalDate date){
+        LocalDate startDate = date.withDayOfMonth(1);
+        LocalDate endOfMonth = date.withDayOfMonth(date.lengthOfMonth());
+        
+        Map<LocalDate, BigDecimal> sales = reportDao.getSalesByStoreAndDateRange(storeId, startDate, endOfMonth);
+        
+        return sales.entrySet().stream()
+                .collect(Collectors.toMap(
+                    entry -> entry.getKey().format(DateTimeFormatter.ISO_LOCAL_DATE),
+                    Map.Entry::getValue,
+                    (e1, e2) -> e1, 
+                    TreeMap::new    
+                ));
     }
     
     /**

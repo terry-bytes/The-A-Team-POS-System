@@ -59,7 +59,7 @@
                 </li>
                 
                 <li class="nav-link">
-                    <a href="#">
+                    <a href="StoreServlet?submit=getStoreDashboard">
                         <i class='bx bx-store icon' ></i>
                         <span class="text nav-text">My Store</span>
                     </a>

@@ -4,6 +4,7 @@
     Author     : Train 01
 --%>
 
+<%@page import="java.math.BigDecimal"%>
 <%@page import="ateam.DTO.StorePerfomanceInSales"%>
 <%@page import="ateam.Models.Product"%>
 <%@page import="com.google.gson.Gson"%>
@@ -38,7 +39,7 @@
         <jsp:include page="sidebar.jsp"/>
         <% 
         Employee employee = (Employee) request.getSession(false).getAttribute("Employee"); 
-        Map<String, Integer> monthReport = (Map<String, Integer>) request.getSession(false).getAttribute("reportForThisMonth");
+        Map<String, BigDecimal> monthReport = (Map<String, BigDecimal>) request.getSession(false).getAttribute("reportForThisMonth");
         Map<String, StorePerfomanceInSales> getTopAchievingStores = (Map<String, StorePerfomanceInSales>) request.getSession(false).getAttribute("topAchievingStores");
         List<Store> stores = (List<Store>) request.getSession(false).getAttribute("stores");
         
@@ -88,7 +89,7 @@
         StringBuilder monthDate = new StringBuilder();
         StringBuilder monthData = new StringBuilder();
 
-        for (Map.Entry<String, Integer> entry : monthReport.entrySet()) {
+        for (Map.Entry<String, BigDecimal> entry : monthReport.entrySet()) {
             monthDate.append("'").append(entry.getKey()).append("',");
             monthData.append(entry.getValue()).append(",");
         }
@@ -108,6 +109,10 @@
                 <option value="<%= store.getStore_ID() %>"><%= store.getStore_name() %></option>
                 <% } %>
             </select>
+            <label>Select Month</label>
+            <input name="monthDate" type="month" id="montDatePicker">
+            
+            <button id="RequestMonthReport">Filter</button>
             <div class="input-submit">
                 <input name="submit" value="download" hidden>
                 <button class="submit-btn" id="submit">Download</button>
@@ -152,10 +157,43 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize month report charts
     const monthBarCtx = document.getElementById('monthReportBar').getContext('2d');
     const monthPieCtx = document.getElementById('monthReportPie').getContext('2d');
-    initBarChart(monthBarCtx, monthLabels, monthData, 'Percentage Sold', barBgColor, barBorderColor);
+    BarChart(monthBarCtx, monthLabels, monthData, 'Total Amount', barBgColor, barBorderColor);
     initPieChart(monthPieCtx, monthLabels, monthData, pieBgColor);
-});
+    
+    document.getElementById('RequestMonthReport').addEventListener('click', function(){
+        const storeId = document.getElementById('storeMonthlySales').value;
+        const month = document.getElementById('montDatePicker').value;
+        
+        if (!storeId || !month) {
+            alert('Please select a store and month.');
+            return;
+        }
+        
+        fetch('SalesDemo', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({submit: 'getMonthReport', date: month, storeId: storeId})
+        }).then(response => response.json())
+          .then(data => {
+            const storeNames = data.labels;
+            const storePercentages = data.data;
+            console.log("store achieve target: "+ storeNames);
+            // Update Bar Chart
+            monthBarCtx.data.labels = storeNames;
+            monthBarCtx.data.datasets[0].data = storePercentages;
+            monthBarCtx.update();
 
+            // Update Pie Chart
+            monthPieCtx.data.labels = storeNames;
+            monthPieCtx.data.datasets[0].data = storePercentages;
+           
+            monthPieCtx.update();
+        })
+        .catch(error => console.error('Error fetching data:', error));
+});
+});
 // Function to initialize a bar chart
 function initBarChart(ctx, labels, data, label, bgColor, borderColor) {
     return new Chart(ctx, {
@@ -212,6 +250,30 @@ function initPieChart(ctx, labels, data, bgColor) {
                             return label;
                         }
                     }
+                }
+            }
+        }
+    });
+}
+
+function BarChart(ctx, labels, data, label, bgColor, borderColor) {
+    return new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: label,
+                data: data,
+                backgroundColor: bgColor,
+                borderColor: borderColor,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                    
                 }
             }
         }

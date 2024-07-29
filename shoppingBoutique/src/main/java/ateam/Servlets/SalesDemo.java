@@ -27,6 +27,7 @@ import ateam.ServiceImpl.StoreServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -78,7 +79,7 @@ public class SalesDemo extends HttpServlet {
         Employee manager = (Employee) request.getSession(false).getAttribute("Employee");
         
         Map<String, StorePerfomanceInSales> getTopAchievingStores = reports.getTopAchievingStores();
-        Map<String, Integer> generateMonthReportForStore = reports.generateMonthReportForStore(manager.getStore_ID(), LocalDate.now());
+        Map<String, BigDecimal> generateMonthReportForStore = reports.getMonthSalesReport(manager.getStore_ID(), LocalDate.now());
         List<Store> stores = storeService.getAllStores();
         
         request.getSession(false).setAttribute("reportForThisMonth", generateMonthReportForStore);
@@ -93,7 +94,7 @@ public class SalesDemo extends HttpServlet {
             throws ServletException, IOException {
         processRequest(request, response);
         switch(request.getParameter("submit")){
-            case "filter":
+            case "getMonthReport":
                 try {
                     handleMonthReport(request, response);
                 } catch (ParseException ex) {
@@ -136,23 +137,17 @@ public class SalesDemo extends HttpServlet {
     private void handleMonthReport(HttpServletRequest request, HttpServletResponse response) throws ParseException, ServletException, IOException{
         int storeId = Integer.parseInt(request.getParameter("storeId"));
         
-        Map<String, Integer> report = reports.generateMonthReportForStore(storeId, dateFormatter(request.getParameter("date")));
+        Map<String, BigDecimal> report = reports.getMonthSalesReport(storeId, dateFormatter(request.getParameter("date")));
         
-        Gson gson = new Gson();
-        String json = gson.toJson(report);
-        
-         if (json == null || json.isEmpty()) {
-            json = "{}"; // Set to empty JSON object if there's no data
-        }
-        
-        HttpSession session = request.getSession(false);
-        session.setAttribute("report", report);
-        request.setAttribute("monthlReport", json);
-        response.sendRedirect("SalesDemo");
+        response.setContentType("application/json");
+        PrintWriter out = response.getWriter();
+        // Convert report to JSON format
+        out.print(new Gson().toJson(report));
+        out.flush();
     }
     
     private LocalDate dateFormatter(String date) throws ParseException{
-        return LocalDate.parse(date + "-01", DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        return LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM"));
     }
     
     private void handleRequestTopEmployeeByStore(HttpServletRequest request, HttpServletResponse response) throws IOException{

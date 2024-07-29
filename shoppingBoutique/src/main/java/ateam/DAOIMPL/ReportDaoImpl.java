@@ -13,12 +13,15 @@ import ateam.DTO.SalesData;
 import ateam.DTO.StorePerformance;
 import java.math.BigDecimal;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -245,5 +248,34 @@ public class ReportDaoImpl implements ReportDAO{
         }
 
         return salesDataList;
+    }
+
+    @Override
+    public Map<LocalDate, BigDecimal> getSalesByStoreAndDateRange(int storeId, LocalDate startDate, LocalDate endDate) {
+        if(connection == null) return null;
+        Map<LocalDate, BigDecimal> results = new HashMap<>();
+        String sql = "SELECT DATE(sales_date) AS sales_day, SUM(total_amount) AS total_amount_per_day "
+                + "FROM sales "
+                + "WHERE store_ID = ? "
+                + "AND sales_date BETWEEN ? AND ? "
+                + "GROUP BY DATE(sales_date) "
+                + "ORDER BY sales_day";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, storeId);
+            stmt.setDate(2, Date.valueOf(startDate));
+            stmt.setDate(3, Date.valueOf(endDate));
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Date salesDay = rs.getDate("sales_day");
+                    BigDecimal totalAmountPerDay = rs.getBigDecimal("total_amount_per_day");
+                    results.put(salesDay.toLocalDate(), totalAmountPerDay);
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ReportDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
+        } 
+        return results;
     }
 }
