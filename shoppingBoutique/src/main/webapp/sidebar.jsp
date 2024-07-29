@@ -44,6 +44,13 @@
                 </li>
                 
                 <li class="nav-link">
+                    <a href="SalesDemo?submit=getReports">
+                        <i class='bx bx-home-alt icon' ></i>
+                        <span class="text nav-text">Reports</span>
+                    </a>
+                </li>
+                
+                <li class="nav-link">
                     
                     <a href="EmployeeServlet?submit=getAddEmployee">
                         <i class='bx bx-group icon'></i>

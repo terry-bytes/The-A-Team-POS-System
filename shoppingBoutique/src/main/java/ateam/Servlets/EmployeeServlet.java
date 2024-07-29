@@ -182,17 +182,21 @@ public class EmployeeServlet extends HttpServlet {
         
         newEmployee.setRole(role);
         
-        String otp = generateOTP();
-        Email emailDetails = new Email("ramovhatp@gmail.com", "xaed clmt qpis ctvf");
-        emailDetails.setReceiver(email);
-        emailDetails.setSubject("Email Verification OTP");
-        emailDetails.setMessage("Your OTP for email verification is: " + otp);
-
-        emailService.sendMail(emailDetails);
-        request.getSession().setAttribute("otp", otp);
-        request.getSession().setAttribute("newEmployee", newEmployee);
-
-        response.sendRedirect(request.getContextPath() + "/verifyOTP.jsp");
+        if(employeeService.addEmployee(newEmployee)){
+            request.setAttribute("message", "successfully added");
+        }
+        request.getRequestDispatcher("addEmployee.jsp").forward(request, response);
+//        String otp = generateOTP();
+//        Email emailDetails = new Email("ramovhatp@gmail.com", "xaed clmt qpis ctvf");
+//        emailDetails.setReceiver(email);
+//        emailDetails.setSubject("Email Verification OTP");
+//        emailDetails.setMessage("Your OTP for email verification is: " + otp);
+//
+//        emailService.sendMail(emailDetails);
+//        request.getSession().setAttribute("otp", otp);
+//        request.getSession().setAttribute("newEmployee", newEmployee);
+//
+//        response.sendRedirect(request.getContextPath() + "/verifyOTP.jsp");
         
         
         

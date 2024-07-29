@@ -8,6 +8,8 @@ package ateam.Servlets;
 import ateam.BDconnection.Connect;
 import ateam.DAOIMPL.EmployeeDAOIMPL;
 import ateam.DAOIMPL.StoreDAOIMPL;
+import ateam.DTO.StorePerfomanceInSales;
+import ateam.DTO.TopProductDTO;
 import ateam.DTO.TopSellingEmployee;
 import ateam.Models.Employee;
 import ateam.Models.Product;
@@ -30,6 +32,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -72,29 +75,15 @@ public class SalesDemo extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
+        Employee manager = (Employee) request.getSession(false).getAttribute("Employee");
         
-        
-        Map<String, Integer> salesData = new HashMap<>();
-        salesData.put("Midrand Branch", 189);
-        salesData.put("Sandton Branch", 201);
-        salesData.put("Gomora Branch", 160);
-        salesData.put("Fourways Branch", 313);
-        
-        List<Sale> sales = saleService.getAllSales();
+        Map<String, StorePerfomanceInSales> getTopAchievingStores = reports.getTopAchievingStores();
+        Map<String, Integer> generateMonthReportForStore = reports.generateMonthReportForStore(manager.getStore_ID(), LocalDate.now());
         List<Store> stores = storeService.getAllStores();
-        List<Employee> employees = employeeService.getAllEmployees();
-        Map<String, Integer> topSellingEmployee = reports.generateTopSellingEmployees();
-        List<Product> products = productService.getAllItems();
         
-        HttpSession session = request.getSession(false);
-        
-        session.setAttribute("Products", products);
-        session.setAttribute("Employees", employees);
-        session.setAttribute("Stores", stores);
-        session.setAttribute("Sales", sales);
-        session.setAttribute("topSellingEmp", topSellingEmployee);
-        
-        request.setAttribute("salesData", salesData);
+        request.getSession(false).setAttribute("reportForThisMonth", generateMonthReportForStore);
+        request.getSession(false).setAttribute("topAchievingStores", getTopAchievingStores);
+        request.getSession(false).setAttribute("stores", stores);
         request.getRequestDispatcher("managerDashboard.jsp").forward(request, response);
     }
 
@@ -183,13 +172,14 @@ public class SalesDemo extends HttpServlet {
     }
     
     private void handleStoreAchieveTarget(HttpServletRequest request, HttpServletResponse response) throws ParseException, IOException{
-        LocalDate date = dateFormatter(request.getParameter("date"));
-        int target = 10;
+        LocalDate startDate = dateFormatter(request.getParameter("date"));
+        LocalDate endDate = startDate.withDayOfMonth(startDate.getDayOfMonth());
+        System.out.println("Input date:"+ startDate);
         
-        Map<String, Integer> storeAchievedTarget = reports.StoreAchievedTarget(date, target);
+        Map<String, StorePerfomanceInSales> storeAchievedTarget = reports.StoreAchievedTarget(startDate, endDate);
         
         List<String> labels = storeAchievedTarget.keySet().stream().collect(Collectors.toList());
-        List<Integer> data = storeAchievedTarget.values().stream().collect(Collectors.toList());
+        List<StorePerfomanceInSales> data = storeAchievedTarget.values().stream().collect(Collectors.toList());
         
         Map<String, Object> jsonResponse = new TreeMap<>();
         jsonResponse.put("labels", labels);
@@ -223,7 +213,7 @@ public class SalesDemo extends HttpServlet {
         
         LocalDate endDate = today.minusMonths(interval);
         
-        Map<String, BigDecimal> leastPerformingStores = reports.getLeastPerformingStores(endDate);
+        Map<String, BigDecimal> leastPerformingStores = reports.getLeastsPerformingStores(endDate);
         
         List<String> labels = leastPerformingStores.keySet().stream().collect(Collectors.toList());
         List<BigDecimal> data = leastPerformingStores.values().stream().collect(Collectors.toList());

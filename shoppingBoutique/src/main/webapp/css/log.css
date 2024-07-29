@@ -125,3 +125,8 @@ button{
 .manager-container{
     display: flex;  
 }
+
+.main{
+    margin-left: 300px;
+    padding: 1px 10px;
+}
