@@ -5,6 +5,8 @@
 package ateam.Service;
 
 import ateam.Models.Inventory;
+import ateam.Models.Product;
+import ateam.Models.Sale;
 import java.sql.SQLException;
 import java.util.List;
 

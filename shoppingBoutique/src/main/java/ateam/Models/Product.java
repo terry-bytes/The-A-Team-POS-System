@@ -1,5 +1,6 @@
 package ateam.Models;
 
+import java.io.Serializable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,7 +8,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Product {
+public class Product implements Serializable {
+ private static final long serialVersionUID = 1L;
 
     private int product_ID;
     private String product_name;
