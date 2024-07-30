@@ -6,6 +6,7 @@
  */
 package ateam.DAOIMPL;
 
+import ateam.BDconnection.Connect;
 import ateam.DAO.StoreDAO;
 import ateam.Models.Store;
 import java.sql.Connection;
@@ -29,6 +30,10 @@ public class StoreDAOIMPL implements StoreDAO{
     
     public StoreDAOIMPL(Connection connection) {
         this.connection = connection;
+    }
+    
+    public StoreDAOIMPL(){
+        this.connection = new Connect().connectToDB();
     }
 
     @Override

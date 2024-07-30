@@ -4,19 +4,15 @@
  */
 package ateam.Service;
 
-import ateam.Models.Product;
+import ateam.DTO.TopProductSellEmployee;
+import ateam.Models.SalesItem;
 import java.util.List;
 
 /**
  *
- * @author user
+ * @author Admin
  */
-public interface ProductService {
-
-    List<Product> getProductBySKU(String sku);
-
-    List<Product> getAllItems();
-
-    boolean InsertItems(Product product);
-    Product getProductById(int productId);
+public interface SaleItemsService {
+    List<SalesItem> getSalesItemsByProductId(int productId);
+    List<TopProductSellEmployee> getTotalSalesPerProduct();
 }

@@ -624,6 +624,7 @@
 
             let scanningPaused = false;
 
+
             document.addEventListener('DOMContentLoaded', (event) => {
                 initQuagga();
             });
@@ -658,6 +659,7 @@
                     Quagga.start();
                 });
             }
+
 
             $(document).ready(function () {
                 $("#addLayawayForm").submit(function (event) {
@@ -697,6 +699,7 @@
                     });
                 });
             });
+
         </script>
 
         <script>

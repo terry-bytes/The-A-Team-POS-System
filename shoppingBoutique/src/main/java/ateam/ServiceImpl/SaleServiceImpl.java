@@ -6,6 +6,7 @@ package ateam.ServiceImpl;
 
 import ateam.DAO.SaleDAO;
 import ateam.DAOIMPL.SaleDAOIMPL;
+import ateam.DTO.EmployeeMonthSales;
 import ateam.Models.Employee;
 import ateam.Models.Role;
 import ateam.Models.Sale;
@@ -30,7 +31,6 @@ import java.util.TreeMap;
  */
 public class SaleServiceImpl implements SaleService2{
     private final SaleDAO saleDao;
- 
     
     public SaleServiceImpl(){
         this.saleDao = new SaleDAOIMPL();
@@ -43,10 +43,11 @@ public class SaleServiceImpl implements SaleService2{
     public Map<String, Integer> generateStoreMonthReport(int storeId, int month, int year){
         List<Sale> sales = saleDao.getSalesbyStoreId(storeId);
         
+        // LocalDate/Time, Duration
         
         Map<String, Integer> salesReport = new TreeMap<>();
         
-        Calendar startCalendar = Calendar.getInstance();
+        Calendar startCalendar = Calendar.getInstance(); 
         startCalendar.set(year, month - 1, 1, 0, 0, 0);
         startCalendar.set(Calendar.MILLISECOND, 0);
         Timestamp startDate = new Timestamp(startCalendar.getTimeInMillis());
@@ -69,7 +70,7 @@ public class SaleServiceImpl implements SaleService2{
         return salesReport;
     }
     
-    /*
+    /**
     Goal: Report for top selling employees across the company or in certain store
     UI: I think i need a form to select a store but when it load it should give employees of the company
         with their total sales
@@ -81,6 +82,7 @@ public class SaleServiceImpl implements SaleService2{
     I think i might need to have to methods to achieve this
     one method is gonna calculate the total sales of the company
     another is for the store to 
+    * 
     */
 
     /*
@@ -95,8 +97,17 @@ public class SaleServiceImpl implements SaleService2{
     */
     @Override
     public Map<String, Integer> generateTopSellingEmployee(List<Employee> employees) {
-        List<Sale> sales = saleDao.getAllSales();
-        
+        List<Sale> sales = saleDao.getAllSales();       
+        return topEmp(sales, employees);
+    }
+
+    @Override
+    public Map<String, Integer> generateTopSellingEmployee(int storeId, List<Employee> employees) {
+        List<Sale> sales = saleDao.getSalesbyStoreId(storeId);
+        return topEmp(sales, employees);
+    }
+    
+    private Map<String, Integer> topEmp(List<Sale> sales, List<Employee> employees){
         Map<String, Integer> topSellingEmployee = new TreeMap<>();
         Map<Integer, Integer> employeeSales = new HashMap<>();
         for(Sale sale : sales){
@@ -116,39 +127,19 @@ public class SaleServiceImpl implements SaleService2{
     }
 
     @Override
-    public Map<String, Integer> generateTopSellingEmployee(int storeId, List<Employee> employees) {
-        List<Sale> sales = saleDao.getSalesbyStoreId(storeId);
-        
-        return getTopSellingEmployees(sales, employees);
+    public List<Sale> getAllSalesByStoreId(int storeId) {
+        return saleDao.getSalesbyStoreId(storeId);
     }
-    
-    private Map<String, Integer> getTopSellingEmployees(List<Sale> sales, List<Employee> employees) {
-        Map<String, Integer> topSellingEmployees = new TreeMap<>();
-        Map<Integer, Integer> employeeSales = new HashMap<>();
 
-        // Use iterator for sales list
-        Iterator<Sale> salesIterator = sales.iterator();
-        while (salesIterator.hasNext()) {
-            Sale sale = salesIterator.next();
-            int employeeId = sale.getEmployee_ID();
-            employeeSales.put(employeeId, employeeSales.getOrDefault(employeeId, 0) + 1);
-        }
-
-        // Use iterator for employees list
-        Iterator<Employee> employeesIterator = employees.iterator();
-        while (employeesIterator.hasNext()) {
-            Employee employee = employeesIterator.next();
-            if (employee.getRole() == Role.Teller) {
-                int employeeId = employee.getEmployee_ID();
-                String employeeName = employee.getFirstName();
-                int totalSales = employeeSales.getOrDefault(employeeId, 0);
-                topSellingEmployees.put(employeeName, totalSales);
-            }
-        }
-
-        return topSellingEmployees;
+    @Override
+    public List<Sale> getDailyStoreByStoreId(int storeId) {
+        return saleDao.getDailySalesForStore(storeId);
     }
-    
+
+    @Override
+    public List<Sale> getLeastPerformingStore(LocalDate endDate) {
+        return saleDao.getLeastPerformingStores(endDate);
+    }
     
     
 }
