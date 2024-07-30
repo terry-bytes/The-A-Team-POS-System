@@ -14,18 +14,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class SalesItemDAOIMPL implements SalesItemDAO {
-
     private Connection connection;
+    
     public SalesItemDAOIMPL(){
         this(new Connect().connectToDB());
     }
-    
+
     public SalesItemDAOIMPL(Connection connection){
         this.connection = connection;
     }
-    
-
-
     
     String dao ="SELECT p.product_ID, p.product_name,count(p.product_ID), e.first_name"
                     +" FROM sales_items si" +
@@ -37,6 +34,7 @@ public class SalesItemDAOIMPL implements SalesItemDAO {
                 " products p ON si.product_ID = p.product_ID" +
                 " GROUP BY" +
                 " p.product_ID, p.product_name, e.first_name";
+
     @Override
     public void saveSalesItem(SalesItem salesItem) {
         

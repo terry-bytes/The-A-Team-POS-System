@@ -27,4 +27,5 @@ public interface SaleDAO {
     List<Sale> getDailySalesForStore(int storeId);
     List<Sale> getLeastPerformingStores(LocalDate endDate);
     
+
 }

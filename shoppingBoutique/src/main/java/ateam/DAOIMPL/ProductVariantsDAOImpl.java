@@ -40,6 +40,31 @@ public class ProductVariantsDAOImpl implements ProductVariantsDAO {
 
         return variants;
     }
+    
+    public List<ProductVariants> getAllVariants() {
+        List<ProductVariants> variants = new ArrayList<>();
+        String sql = "SELECT * FROM productvariants";
+
+        try (Connection conn = dbConnect.connectToDB(); 
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                ProductVariants variant = new ProductVariants();
+                variant.setVariant_ID(rs.getInt("variant_ID"));
+                variant.setProduct_SKU(rs.getString("product_SKU"));
+                variant.setSize(rs.getString("size"));
+                variant.setColor(rs.getString("color"));
+                variant.setStore_ID(rs.getInt("store_ID"));
+                variants.add(variant);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return variants;
+    }
 
     @Override
     public ProductVariants getVariantByBarcode(String productSKU) {

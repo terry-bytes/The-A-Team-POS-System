@@ -4,6 +4,7 @@
     Author     : Train 01
 --%>
 
+<%@page import="ateam.DTO.TopProductDTO"%>
 <%@page import="java.math.BigDecimal"%>
 <%@page import="ateam.DTO.StorePerfomanceInSales"%>
 <%@page import="ateam.Models.Product"%>
@@ -38,6 +39,8 @@
     <body>
         <jsp:include page="sidebar.jsp"/>
         <% 
+            
+            
         Employee employee = (Employee) request.getSession(false).getAttribute("Employee"); 
         Map<String, BigDecimal> monthReport = (Map<String, BigDecimal>) request.getSession(false).getAttribute("reportForThisMonth");
         Map<String, StorePerfomanceInSales> getTopAchievingStores = (Map<String, StorePerfomanceInSales>) request.getSession(false).getAttribute("topAchievingStores");
@@ -45,6 +48,15 @@
         Map<String, Integer> topSellingEmployees = (Map<String, Integer>) request.getSession(false).getAttribute("topSellingEmployee");
         Map<String, BigDecimal> leastPerformingStores = (Map<String, BigDecimal>) request.getSession(false).getAttribute("leastPerformingStores");
         Map<String, BigDecimal> todayReport = (Map<String, BigDecimal>) request.getSession(false).getAttribute("Today'sReport");
+        List<TopProductDTO> topProduct = (List<TopProductDTO>) request.getSession(false).getAttribute("top40SellingProducts");
+        
+        int pageSize = 10;
+        int currentPage = request.getParameter("page") != null ? Integer.parseInt(request.getParameter("page")) : 1;
+        int totalRows = topProduct.size();
+        int totalPages = (int) Math.ceil((double) totalRows / pageSize);
+
+        int start = (currentPage - 1) * pageSize;
+        int end = Math.min(start + pageSize, totalRows);
         
         StringBuilder employeeNames = new StringBuilder();
         StringBuilder soldData = new StringBuilder();
@@ -231,9 +243,10 @@
     </div>
     <%} else {%> <h4>No Sales on Progress today</h4><%}%>
     
+    <% if (topProduct != null && !topProduct.isEmpty()){%>
     <div class="report">
         <div class="two">
-            <h4>Stores Who reach the target</h4>
+            <h4>Top 40 Selling Products</h4>
             
  
             <div class="input-submit">
@@ -241,15 +254,39 @@
                 <button class="submit-btn" id="submit">Download</button>
             </div>
         </div>
-        <div class="graphBox">
-            <div class="box">
-                <canvas id="todayReportBar"></canvas>
-            </div>
-            <div class="box">
-                <canvas id="todayReportPie"></canvas>
-            </div>
+        <div class="table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Product Name</th>
+                        <th>Store Name</th>
+                        <th>Amount Sold</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% for (TopProductDTO product :topProduct){%>
+                    <tr>
+                        <td><%= product.getProductName() %></td>
+                        <td><%= product.getStoreName() %></td>
+                        <td><%= product.getTotalQuantitySold()%></td>
+                    </tr>
+                    <%}%>
+                </tbody>
+            </table>
+                <div class="pagination">
+    <% if (currentPage > 1) { %>
+    <a href="?page=<%= currentPage - 1 %>">Previous</a>
+    <% } %>
+    <% for (int i = 1; i <= totalPages; i++) { %>
+    <a href="?page=<%= i %>" <%= (i == currentPage) ? "class='active'" : "" %>><%= i %></a>
+    <% } %>
+    <% if (currentPage < totalPages) { %>
+    <a href="?page=<%= currentPage + 1 %>">Next</a>
+    <% } %>
+</div>
         </div>
     </div>
+                <%}%>
 </div>
 
 <script>
