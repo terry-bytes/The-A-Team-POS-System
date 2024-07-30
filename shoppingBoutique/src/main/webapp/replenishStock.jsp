@@ -95,6 +95,19 @@
             right: 10px;
             color: black;  
         }
+        button {
+            display: block;
+            margin: 20px auto;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        button img {
+            width: 50px;
+            height: 50px;
+        }
+
+        
         /* Modal styles */
         .modal {
             display: none;
@@ -109,7 +122,7 @@
             background-color: rgba(0, 0, 0, 0.4);
             padding-top: 60px;
         }
-        .modal-content {
+         .modal-content {
             background-color: #fefefe;
             margin: 5% auto;
             padding: 20px;
@@ -119,6 +132,7 @@
             text-align: center;
             position: relative;
         }
+        
         .close {
             color: #aaa;
             float: right;
@@ -135,7 +149,7 @@
             width: 50px;
             height: 50px;
             display: block;
-            margin: 0 auto 10px;
+            margin: 0px auto 10px;
         }
         #okButton {
             display: inline-block;
@@ -240,7 +254,7 @@
 <div id="myModal" class="modal">
     <div class="modal-content">
         <span class="close">&times;</span>
-        <img src="button.png" alt="Success">
+        <img src="button.png" alt="Success" id = "modal-content img">
         <p>Product successfully added to inventory!</p>
         <button id="okButton">OK</button>
     </div>

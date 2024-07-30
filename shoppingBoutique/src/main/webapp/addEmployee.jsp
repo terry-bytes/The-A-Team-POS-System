@@ -20,84 +20,89 @@
             String storeName;
         %>
         <% if(employee != null && employee.getRole() == Role.Manager) { %>
-        <jsp:include page="navbar.jsp"/>
-        <div class="container">
-            <div class="login-box">
-                <div class="login-header">
-                    <h3>Add Employee</h3>
+        
+        <div class="manager-container">
+            <div >
+                <jsp:include page="sidebar.jsp"/>
+            </div>
+            <div class="main">
+                <div class="login-box">
+                    <div class="login-header">
+                        <h3>Add Employee</h3>
+                    </div>
+                    <form action="EmployeeServlet" method="post">
+                        <div class="two-forms">
+                            <div class="input-box">
+                                <input type="text"
+                                       placeholder='First Name'
+                                       name='firstName'
+                                       class='input-field'
+                                       autocomplete="off" required
+                                       />
+                                 <i class="bx bx-user"></i>
+                            </div>
+                            <div class="input-box">
+                                <input type="text"
+                                       placeholder='Last Name'
+                                       name='lastName'
+                                       class='input-field'
+                                       autocomplete="off" required
+                                       />
+                                 <i class="bx bx-user"></i>
+                            </div>
+                        </div>
+
+                        <div class="input-box">
+                            <input type="email"
+                                   placeholder='Email'
+                                   name='email'
+                                   class='input-field'
+                                   autocomplete="off" required
+                                   />
+                            <i class="bx bx-envelope"></i>
+                        </div>
+
+                        <div class="input-box">
+                            <input type="password"
+                                   placeholder='Password'
+                                   name='password'
+                                   class="input-field"
+                                   autocomplete="off" required
+                                   />
+                            <i class="bx bx-lock-alt"></i>
+                        </div>
+                        <div class="select-container">
+                            <label>Role</label>
+                            <select class="select-box" name="role" id="roleSelector">
+                                <% if(roles != null) {
+                                    for(Role role : roles) { %>
+                                    <option value="<%=role.name()%>"><%=role.name()%></option>
+                                    <% } } %>
+                            </select>
+                        </div>
+                        <div class="select-container" id="storeSelector" style="display: none;">
+                            <label>Store</label>
+
+                            <select class="select-box" name="managerStoreId">
+                                <% if(stores != null) {
+                                    for(Store store : stores) { %>
+                                    <option value="<%=store.getStore_ID() %>"><%=store.getStore_name() %></option>
+                                    <% } } %>
+                            </select>
+                        </div>
+                        <input type="hidden" name="tellerStoreId" value="<%=employee.getStore_ID()%>"/>
+                        <% if(message != null) { %>
+
+                        <p><%=message%></p>
+                        <% } %>
+                        <div class="input-submit">
+                            <input name="submit" value="add" hidden>
+
+                            <button class="submit-btn" id="submit">Add Employee</button>
+
+                        </div>
+                    </form>
                 </div>
-                <form action="employees" method="post">
-                    <div class="two-forms">
-                        <div class="input-box">
-                            <input type="text"
-                                   placeholder='First Name'
-                                   name='firstName'
-                                   class='input-field'
-                                   autocomplete="off" required
-                                   />
-                             <i class="bx bx-user"></i>
-                        </div>
-                        <div class="input-box">
-                            <input type="text"
-                                   placeholder='Last Name'
-                                   name='lastName'
-                                   class='input-field'
-                                   autocomplete="off" required
-                                   />
-                             <i class="bx bx-user"></i>
-                        </div>
-                    </div>
-
-                    <div class="input-box">
-                        <input type="email"
-                               placeholder='Email'
-                               name='email'
-                               class='input-field'
-                               autocomplete="off" required
-                               />
-                        <i class="bx bx-envelope"></i>
-                    </div>
-
-                    <div class="input-box">
-                        <input type="password"
-                               placeholder='Password'
-                               name='password'
-                               class="input-field"
-                               autocomplete="off" required
-                               />
-                        <i class="bx bx-lock-alt"></i>
-                    </div>
-                    <div class="select-container">
-                        <label>Role</label>
-                        <select class="select-box" name="role" id="roleSelector">
-                            <% if(roles != null) {
-                                for(Role role : roles) { %>
-                                <option value="<%=role.name()%>"><%=role.name()%></option>
-                                <% } } %>
-                        </select>
-                    </div>
-                    <div class="select-container" id="storeSelector" style="display: none;">
-                        <label>Store</label>
-
-                        <select class="select-box" name="managerStoreId">
-                            <% if(stores != null) {
-                                for(Store store : stores) { %>
-                                <option value="<%=store.getStore_ID() %>"><%=store.getStore_name() %></option>
-                                <% } } %>
-                        </select>
-                    </div>
-                    <input type="hidden" name="tellerStoreId" value="<%=employee.getStore_ID()%>"/>
-                    <% if(message != null) { %>
-
-                    <p><%=message%></p>
-                    <% } %>
-                    <div class="input-submit">
-                        <input name="submit" value="add" hidden>
-
-                        <button class="submit-btn" id="submit">Add Employee</button>
-
-                    </div>
-                </form>
             </div>
         </div>
         <% } else { %>

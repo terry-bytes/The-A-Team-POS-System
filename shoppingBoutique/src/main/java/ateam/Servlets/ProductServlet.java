@@ -14,13 +14,17 @@ import ateam.Models.Sale;
 import ateam.Models.SalesItem;
 import ateam.Models.SmsSender;
 
+
 import ateam.Service.InventoryService;
 
 import ateam.Service.EmailService;
 
+
 import ateam.Service.ProductService;
+import ateam.Service.ReturnService;
 import ateam.ServiceImpl.EmailServiceImpl;
 import ateam.ServiceImpl.ProductServiceImpl;
+import ateam.ServiceImpl.ReturnServiceImpl;
 import ateam.Services.impl.InventoryServiceImpl;
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -140,6 +144,8 @@ public class ProductServlet extends HttpServlet {
                     session.setAttribute("scannedItemsList", scannedItemsList);
                     break;
 
+                 
+
                 case "Remove-Item":
                     // Set the SKU in the session for the removal confirmation page
                     session.setAttribute("itemToRemoveSKU", sku2);
@@ -148,7 +154,7 @@ public class ProductServlet extends HttpServlet {
                         request.getRequestDispatcher("confirmRemove.jsp").forward(request, response);
                     }
                     return; // Return to avoid further processing
-
+                
                 case "Confirm-Remove":
                     // Get the SKU to remove from the session
                     String skuToRemove = (String) session.getAttribute("itemToRemoveSKU");
@@ -252,6 +258,11 @@ public class ProductServlet extends HttpServlet {
 
                 case "Inventory":
                     request.getRequestDispatcher("replenishStock.jsp").forward(request, response);
+                    break;
+                case "return":
+                    
+                    request.getRequestDispatcher("returnSale.jsp").forward(request, response);
+                    
                     break;
 
             }

@@ -32,6 +32,7 @@ public class ProductServiceImpl implements ProductService {
         
  
     }
+   
 
     public ProductServiceImpl() {
         
@@ -65,6 +66,11 @@ public class ProductServiceImpl implements ProductService {
     public boolean InsertItems(Product product) {
 
         return productDAO.addProduct(product);
+    }
+
+    @Override
+    public Product getProductById(int productId) {
+        return productDAO.getProductById(productId);
     }
 
 }

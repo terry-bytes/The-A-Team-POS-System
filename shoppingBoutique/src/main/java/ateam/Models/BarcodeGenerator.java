@@ -62,6 +62,7 @@ public class BarcodeGenerator {
     int width = 300; // Width of the barcode image
     int height = 300; // Height of the barcode image
 
+
        
 
     // Ensure the output directory exists

@@ -1,8 +1,13 @@
 package ateam.Services.impl;
 
 import ateam.DAO.InventoryDAO;
+import ateam.DAO.ReturnDao;
 import ateam.DAOIMPL.InventoryDAOIMPL;
+import ateam.DAOIMPL.ReturnDaoImpl;
 import ateam.Models.Inventory;
+import ateam.Models.Product;
+import ateam.Models.Return;
+import ateam.Models.Sale;
 import ateam.Models.SalesItem;
 import ateam.Service.InventoryService;
 
@@ -92,4 +97,8 @@ public class InventoryServiceImpl implements InventoryService {
         
         return inventoryDAO.getAllInventories();
     }
+
+    
+    
+   
 }
