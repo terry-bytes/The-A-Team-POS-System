@@ -16,14 +16,25 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
 
         <style>
+            .payment-section {
+                flex: 1;
+            }
+            .payment-icons img {
+                width: 50px;
+                cursor: pointer;
+                margin: 5px;
+            }
+            .payment-icons img:hover {
+                transform: scale(1.1);
+            }
             .green-arrow-button {
-                background-color: #28a745; /* Green background */
+                background-color: #19a1e0; /* Green background */
                 color: white; /* White text color */
                 border: none; /* Remove border */
                 padding: 10px 20px; /* Adjust padding */
                 font-size: 1em; /* Font size */
                 cursor: pointer; /* Pointer cursor */
-                border-radius: 5px; /* Rounded corners */
+                border-radius: 7px; /* Rounded corners */
                 position: relative; /* For positioning the arrow */
                 display: inline-block; /* Make sure it behaves like a button */
             }
@@ -33,8 +44,8 @@
                 position: absolute; /* Position the arrow */
                 top: 50%; /* Center vertically */
                 right: 10px; /* Position from the right */
-                width: 0; /* Zero width */
-                height: 0; /* Zero height */
+                width: 10; /* Zero width */
+                height: 10; /* Zero height */
                 border-top: 10px solid transparent; /* Top part of the arrow */
                 border-bottom: 10px solid transparent; /* Bottom part of the arrow */
                 border-left: 10px solid #fff; /* Arrow color */
@@ -49,6 +60,7 @@
             body {
                 font-family: 'Open Sans', sans-serif;
                 color: #333;
+                background-color: #d9e2da;
             }
             .container {
                 display: flex;
@@ -112,40 +124,86 @@
             }
             .keyboard {
                 display: flex;
+                justify-content: flex-start; /* Aligns the keyboard to the left */
+                align-items: center;
+                margin-left: 5px;
+            }
+
+            .keyboard-wrapper {
+                display: flex;
                 flex-wrap: wrap;
-                justify-content: flex-start;
-                gap: 5px;
+                width: 300px; /* adjust width as needed */
+                gap: 5px; /* space between keys */
+                padding: 10px;
+                border: 1px solid #ccc;
+                border-radius: 10px;
+                background-color: #3498db;
             }
+
             .key {
-                background: #eee;
-                padding: 15px;
-                border: none;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 50px; /* adjust width as needed */
+                height: 30px; /* adjust height as needed */
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                background-color: #3498db;
                 cursor: pointer;
-                border-radius: 4px;
-                text-align: center;
-                font-size: 1.2em;
-                flex: 0 0 auto;
+                user-select: none;
             }
-            .key:hover {
-                background: #ddd;
+
+            .big-key {
+                width: 100%; /* makes the backspace key span the width */
             }
+
             .manual-entry {
                 display: flex;
                 align-items: center;
                 margin-bottom: 10px;
             }
+            .transaction-buttons {
+                display: grid; /* Use grid layout */
+                grid-template-columns: repeat(2, 1fr); /* 2 columns, each taking up an equal fraction of available space */
+                gap: 5px; /* Space between buttons */
+                padding: 5px; /* Padding inside the container */
+                border: 1px solid #ccc;
+                border-radius: 10px;
+                background-color: #f5f5f5;
+                width: 268px; /* Adjusted width to make the container smaller */
+                max-width: 50%; /* Ensures the container doesn't overflow */
+                box-sizing: border-box; /* Ensures padding and border are included in width */
+                position: absolute; /* Positions the container absolutely */
+                right: 60px; /* Positions the container 10px from the right edge */
+                top: 250px; /* Positions the container 10px from the top edge */
+            }
+
             .transaction-buttons button {
-                background: #3498db;
-                color: white;
-                padding: 10px 15px;
+                display: flex;
+                justify-content: center; /* Center the button content */
+                align-items: center;
+                width: 100%; /* Makes the button take the full width of the grid cell */
+                padding: 5px; /* Padding inside the buttons */
                 border: none;
-                margin-top: 5px;
+                border-radius: 5px;
+                background-color: #fff;
                 cursor: pointer;
-                border-radius: 4px;
+                transition: background-color 0.3s;
             }
+
             .transaction-buttons button:hover {
-                background: #2980b9;
+                background-color: #e0e0e0; /* Change background on hover */
             }
+
+            .transaction-buttons img.icon {
+                max-width: 100%; /* Ensures the icon fits within the button */
+                height: auto;
+            }
+
+
+
+
+
             #barcode-scanner {
 
             }
@@ -321,17 +379,17 @@
                     <form id="product-form" action="ProductServlet" method="post">
                         <div class="manual-entry">
                             <input type="text" id="manual-sku" name="input-field" placeholder="Enter SKU manually">
-                            <button type="submit" name="submit" value="Add-Item" class="green-arrow-button">Enter</button>
+                            <button type="submit" name="submit" value="Add-Item" class="green-arrow-button">OK</button>
                             <button type="submit" name="submit" value="auto-submit" id="auto-submit" style="display: none"></button>
                         </div>
-                        <div>
-                            <label for="payment_method">Payment Method:</label>
-                            <select id="payment_method" name="payment_method" onchange="checkPaymentMethod()">
-                                <option value="cash">Cash</option>
-                                <option value="card">Card</option>
-                                <option value="cardAndcash">Card & Cash</option>
-                            </select>
+                        <div class="payment-icons">
+                            <img src="Icons/cashhh.png" alt="Cash" onclick="selectPaymentMethod('cash')">
+                            <img src="Icons/290142_business_card_cash_credit_money_icon.png" alt="Card" onclick="selectPaymentMethod('card')">
+                            <img src="Icons/wallet.png" alt="Card & Cash" onclick="selectPaymentMethod('cardAndcash')">
                         </div>
+                        <p>   </p>
+
+
                         <div id="card-details" style="display:none;">
                             <div>
                                 <label for="card_number">Card Number:</label>
@@ -346,6 +404,12 @@
                                 <input type="text" id="cvv" name="cvv">
                             </div>
                         </div>
+                        <div id="cash-amount" style="display:none;">
+                            <div>
+                                <label for="cash_amount">Cash Amount:</label>
+                                <input type="text" id="cash_amount" name="cash_amount">
+                            </div>
+                        </div>
                         <div id="cash-card-amount" style="display:none;">
                             <div>
                                 <label for="cash_amount">Cash Amount:</label>
@@ -356,85 +420,99 @@
                                 <input type="text" id="card_amount" name="card_amount">
                             </div>
                         </div>
+                        <p>   </p>
                         <div>
                             <label for="customer_email">Customer Email:</label>
                             <input type="email" id="customer_email" name="customer_email" placeholder="Enter customer email" >
                         </div>
+                        <p>   </p>
                         <input type="hidden" id="scanned-items-count" name="scannedItemsCount" value="<c:out value='${fn:length(scannedItems)}'/>">
                         <button type="submit" name="submit" value="Complete-Sale">Complete Sale</button>
                         <input type="submit" value="Process Layaway" onclick="openPopup()">
                     </form>
-
+                    <p>   </p>
                     <div class="keyboard">
-                        <div class="key" onclick="appendToInput('1')">1</div>
-                        <div class="key" onclick="appendToInput('2')">2</div>
-                        <div class="key" onclick="appendToInput('3')">3</div>
-                        <div class="key" onclick="appendToInput('4')">4</div>
-                        <div class="key" onclick="appendToInput('5')">5</div>
-                        <div class="key" onclick="appendToInput('6')">6</div>
-                        <div class="key" onclick="appendToInput('7')">7</div>
-                        <div class="key" onclick="appendToInput('8')">8</div>
-                        <div class="key" onclick="appendToInput('9')">9</div>
-                        <div class="key" onclick="appendToInput('0')">0</div>
-                        <div class="key" onclick="appendToInput('-')">-</div>
-                        <div class="key" onclick="appendToInput('.')">.</div>
-                        <div class="key" onclick="appendToInput('@')">@</div>
-                        <div class="key" onclick="appendToInput('q')">q</div>
-                        <div class="key" onclick="appendToInput('w')">w</div>
-                        <div class="key" onclick="appendToInput('e')">e</div>
-                        <div class="key" onclick="appendToInput('r')">r</div>
-                        <div class="key" onclick="appendToInput('t')">t</div>
-                        <div class="key" onclick="appendToInput('y')">y</div>
-                        <div class="key" onclick="appendToInput('u')">u</div>
-                        <div class="key" onclick="appendToInput('i')">i</div>
-                        <div class="key" onclick="appendToInput('o')">o</div>
-                        <div class="key" onclick="appendToInput('p')">p</div>
-                        <div class="key" onclick="appendToInput('a')">a</div>
-                        <div class="key" onclick="appendToInput('s')">s</div>
-                        <div class="key" onclick="appendToInput('d')">d</div>
-                        <div class="key" onclick="appendToInput('f')">f</div>
-                        <div class="key" onclick="appendToInput('g')">g</div>
-                        <div class="key" onclick="appendToInput('h')">h</div>
-                        <div class="key" onclick="appendToInput('j')">j</div>
-                        <div class="key" onclick="appendToInput('k')">k</div>
-                        <div class="key" onclick="appendToInput('l')">l</div>
-                        <div class="key" onclick="appendToInput('z')">z</div>
-                        <div class="key" onclick="appendToInput('x')">x</div>
-                        <div class="key" onclick="appendToInput('c')">c</div>
-                        <div class="key" onclick="appendToInput('v')">v</div>
-                        <div class="key" onclick="appendToInput('b')">b</div>
-                        <div class="key" onclick="appendToInput('n')">n</div>
-                        <div class="key" onclick="appendToInput('m')">m</div>
-                        <div class="key big-key" onclick="backspace()">&#9003; Backspace</div>
-
-
-
+                        <div class="keyboard-wrapper">
+                            <div class="key" onclick="appendToInput('1')">1</div>
+                            <div class="key" onclick="appendToInput('2')">2</div>
+                            <div class="key" onclick="appendToInput('3')">3</div>
+                            <div class="key" onclick="appendToInput('4')">4</div>
+                            <div class="key" onclick="appendToInput('5')">5</div>
+                            <div class="key" onclick="appendToInput('6')">6</div>
+                            <div class="key" onclick="appendToInput('7')">7</div>
+                            <div class="key" onclick="appendToInput('8')">8</div>
+                            <div class="key" onclick="appendToInput('9')">9</div>
+                            <div class="key" onclick="appendToInput('0')">0</div>
+                            <div class="key" onclick="appendToInput('-')">-</div>
+                            <div class="key" onclick="appendToInput('.')">.</div>
+                            <div class="key" onclick="appendToInput('@')">@</div>
+                            <div class="key" onclick="appendToInput('q')">q</div>
+                            <div class="key" onclick="appendToInput('w')">w</div>
+                            <div class="key" onclick="appendToInput('e')">e</div>
+                            <div class="key" onclick="appendToInput('r')">r</div>
+                            <div class="key" onclick="appendToInput('t')">t</div>
+                            <div class="key" onclick="appendToInput('y')">y</div>
+                            <div class="key" onclick="appendToInput('u')">u</div>
+                            <div class="key" onclick="appendToInput('i')">i</div>
+                            <div class="key" onclick="appendToInput('o')">o</div>
+                            <div class="key" onclick="appendToInput('p')">p</div>
+                            <div class="key" onclick="appendToInput('a')">a</div>
+                            <div class="key" onclick="appendToInput('s')">s</div>
+                            <div class="key" onclick="appendToInput('d')">d</div>
+                            <div class="key" onclick="appendToInput('f')">f</div>
+                            <div class="key" onclick="appendToInput('g')">g</div>
+                            <div class="key" onclick="appendToInput('h')">h</div>
+                            <div class="key" onclick="appendToInput('j')">j</div>
+                            <div class="key" onclick="appendToInput('k')">k</div>
+                            <div class="key" onclick="appendToInput('l')">l</div>
+                            <div class="key" onclick="appendToInput('z')">z</div>
+                            <div class="key" onclick="appendToInput('x')">x</div>
+                            <div class="key" onclick="appendToInput('c')">c</div>
+                            <div class="key" onclick="appendToInput('v')">v</div>
+                            <div class="key" onclick="appendToInput('b')">b</div>
+                            <div class="key" onclick="appendToInput('n')">n</div>
+                            <div class="key" onclick="appendToInput('m')">m</div>
+                            <div class="key big-key" onclick="backspace()">&#9003; Backspace</div>
+                        </div>
                     </div>
+
+                    <div class="transaction-buttons">
+                        <form action="ReturnItemServlet" method="post">
+                            <button type="submit" name ="submit" value ="return">
+                                <img src="Icons/11419687_return_icon.png" alt="Return Item" class="icon">
+                            </button>
+                        </form>
+                        <form action="LayawayDashboard.jsp" method="post">
+                            <button type="submit" onclick="redirectToAnotherPage()" title="Lay Away">
+                                <img src="Icons/172576_box_icon.png" alt="Lay Away" class="icon">
+                            </button>
+                        </form>
+                        <form action="VoidSaleServlet" method="post">
+                            <button type="submit" title="Void Sale">
+                                <img src="Icons/8140875_pos_void_ticket_cancal_cinema_icon.png" alt="Void Sale" class="icon">
+                            </button>
+                        </form>
+                        <form action="Search.jsp" method="post">
+                            <button type="submit" title="Search Item">
+                                <img src="Icons/211818_search_icon.png" alt="Search Item" class="icon">
+                            </button>
+                        </form>
+                        <form action="ViewReportsServlet" method="post">
+                            <button type="submit" title="View Reports">
+                                <img src="https://static.vecteezy.com/system/resources/previews/024/607/383/non_2x/data-analysis-icon-profit-graph-illustration-sign-data-science-symbol-or-logo-vector.jpg" alt="View Reports" class="icon">
+                            </button>
+                        </form>
+                        <form action="ProductServlet" method="post">
+                            <button type="submit" name="submit" value="Inventory" title="Inventory Management">
+                                <img src="https://static.vecteezy.com/system/resources/previews/015/890/404/non_2x/checklist-parcel-icon-outline-delivery-box-vector.jpg" alt="Inventory Management" class="icon">
+                            </button>
+                        </form>
+                    </div>
+
+
                 </div>
 
-                <div class="transaction-buttons">
-                    <form action="ProductServlet" method="post">
-                        <button type="submit" name ="submit" value ="return">Return Item</button>
-                    </form>
-                    <form action="LayawayDashboard.jsp" method="post">
-                        <button onclick="redirectToAnotherPage()">Lay Away</button>
-                    </form>
-                    <form action="VoidSaleServlet" method="post">
-                        <button type="submit">Void Sale</button>
-                    </form>
-                    <form action="RemoveItemServlet" method="post">
-                        <button type="submit">Remove Item</button>
-                    </form>
-                    <form action="listProductVariants.jsp" method="post">
-                        <button type="submit">Search Item</button>
-                    </form>
-                    <form action="ViewReportsServlet" method="post">
-                        <button type="submit">View Reports</button>
-                    </form>
-                    <form action="ProductServlet" method="post">
-                        <button type="submit" name ="submit" value ="Inventory">Inventory Management</button>
-                    </form>
-                </div>
+
             </div>
         </div>
 
@@ -442,6 +520,23 @@
         <audio id="beep-sound" src="beep.mp3" preload="auto"></audio>
 
         <script>
+            function selectPaymentMethod(method) {
+                document.getElementById('payment-method').value = method;
+            }
+            function selectPaymentMethod(method) {
+                document.getElementById("card-details").style.display = "none";
+                document.getElementById("cash-card-amount").style.display = "none";
+                document.getElementById("cash-amount").style.display = "none";
+
+                if (method === 'card') {
+                    document.getElementById("card-details").style.display = "block";
+                } else if (method === 'cardAndcash') {
+                    document.getElementById("cash-card-amount").style.display = "block";
+                } else if (method === 'cash') {
+                    document.getElementById("cash-amount").style.display = "block";
+                }
+            }
+
             function redirectToAnotherPage() {
                 // Redirect to another JSP page
                 window.location.href = 'LayawayDashboard.jsp'; // Replace 'AnotherPage.jsp' with your actual JSP page path

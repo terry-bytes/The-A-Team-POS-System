@@ -1,4 +1,3 @@
-
 package ateam.ServiceImpl;
 
 import ateam.Models.Email;
@@ -80,13 +79,12 @@ public class EmailServiceImpl implements EmailService {
         final String password = "xaed clmt qpis ctvf";
 
         Properties props = new Properties();
-        props.put("mail.smtp.host", "smtp.gmail.com");
-        props.put("mail.smtp.socketFactory.port", "465");
-        props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
         props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.port", "465");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.host", "smtp.gmail.com");
+        props.put("mail.smtp.port", "587");
 
-        Session session = Session.getDefaultInstance(props, new javax.mail.Authenticator() {
+        Session session = Session.getInstance(props, new javax.mail.Authenticator() {
             protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication(from, password);
             }
@@ -108,15 +106,16 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public void sendSaleReceipt(String toEmail, String salespersonName, String saleTime, List<Product> items, BigDecimal totalAmount, String paymentMethod) {
+    public void sendSaleReceipt(String toEmail, String salespersonName, String saleTime, List<Product> items, BigDecimal totalAmountWithVAT, BigDecimal vatAmount, BigDecimal change, String paymentMethod) {
         final String from = "ramovhatp@gmail.com";
         final String password = "xaed clmt qpis ctvf";
-
         Properties props = new Properties();
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true");
         props.put("mail.smtp.host", "smtp.gmail.com");
         props.put("mail.smtp.port", "587");
+        props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
+        props.put("mail.smtp.ssl.protocols", "TLSv1.2");
 
         Session session = Session.getInstance(props, new javax.mail.Authenticator() {
             protected PasswordAuthentication getPasswordAuthentication() {
@@ -190,9 +189,11 @@ public class EmailServiceImpl implements EmailService {
 
             document.add(table);
             document.add(new Paragraph(" "));
-            Paragraph totalAmountParagraph = new Paragraph("Total Amount: " + String.format("R%.2f", totalAmount), headerFont);
+            Paragraph totalAmountParagraph = new Paragraph("Total Amount: " + String.format("R%.2f", totalAmountWithVAT), headerFont);
             totalAmountParagraph.setSpacingBefore(10);
             document.add(totalAmountParagraph);
+            document.add(new Paragraph("VAT Amount: " + String.format("R%.2f", vatAmount), normalFont));
+            document.add(new Paragraph("Change: " + String.format("R%.2f", change), normalFont));
             document.add(new Paragraph("Payment Method: " + paymentMethod, normalFont));
             document.add(new Paragraph(" "));
 
@@ -239,8 +240,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     private boolean isValidEmail(String email) {
-        String emailRegex = "^[A-Za-z0-9+_.-]+@(.+)$";
+        String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$";
         return email.matches(emailRegex);
     }
-
 }
