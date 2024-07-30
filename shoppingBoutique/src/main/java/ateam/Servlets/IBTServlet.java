@@ -8,6 +8,7 @@ package ateam.Servlets;
 import ateam.BDconnection.Connect;
 import ateam.DAOIMPL.IBTDAOIMPL;
 import ateam.Models.IBT;
+import ateam.Models.SmsSender;
 import ateam.Models.Store;
 import ateam.Service.IBTService;
 import ateam.ServiceImpl.IBTServiceIMPL;
@@ -221,6 +222,7 @@ public class IBTServlet extends HttpServlet {
         int IBTRequestID = Integer.parseInt(request.getParameter("ibt-id"));
         int customerNumber = ibtService.retrieveCustomerNumber(IBTRequestID); //USE THIS VARIABLE FOR SENDING IBT SMS
         request.getRequestDispatcher("IBTMainDashboard.jsp").forward(request, response);
+        SmsSender.sendSms("+27812705816", "Hello world");
         System.out.println("CUSTOMER NUMBER " + customerNumber);
     }
 }

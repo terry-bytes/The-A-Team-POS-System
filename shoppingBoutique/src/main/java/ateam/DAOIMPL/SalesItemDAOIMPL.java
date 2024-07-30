@@ -31,6 +31,8 @@ public class SalesItemDAOIMPL implements SalesItemDAO {
 "    ->     p.product_ID, p.product_name, e.first_name, e.last_name, e.role\n" +
 "    -> ORDER BY\n" +
 "    ->     total_sales_amount DESC";
+    
+    
     @Override
     public void saveSalesItem(SalesItem salesItem) {
         

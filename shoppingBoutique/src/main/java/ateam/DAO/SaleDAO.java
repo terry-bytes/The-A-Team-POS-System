@@ -24,4 +24,6 @@ public interface SaleDAO {
     List<Sale> getSalesbyStoreId(int storeId);
   void updateStockQuantities(List<SalesItem> salesItems);
 
+    
+
 }

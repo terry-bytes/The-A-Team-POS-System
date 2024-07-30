@@ -16,4 +16,6 @@ public interface ProductVariantsService {
     List<ProductVariants> searchProductVariants(String product_SKU, String size, String color, int store_ID);
     
     List<ProductVariants> searchProductVariants(String product_SKU, String size, int store_ID);
+    
+    List<ProductVariants> getAllVariants();
 }
