@@ -53,6 +53,7 @@ public class ProductServlet extends HttpServlet {
     private EmailService emailService = new EmailServiceImpl();
     private Connect dbConnect = new Connect();
     private InventoryService inventoryService = new InventoryServiceImpl();
+    private static final double VAT_RATE = 0.15;
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -72,6 +73,7 @@ public class ProductServlet extends HttpServlet {
         String sku = request.getParameter("input-field");
         String sku2 = request.getParameter("sku");
         String managerPassword = request.getParameter("manager_password");
+        String cashPaidStr = request.getParameter("cash_amount");
 
         try {
             switch (submit) {
@@ -178,48 +180,73 @@ public class ProductServlet extends HttpServlet {
 
                 case "Complete-Sale":
                     BigDecimal totalAmount = BigDecimal.valueOf(calculateTotalPrice(scannedItems));
+                    BigDecimal vatAmount = totalAmount.multiply(BigDecimal.valueOf(VAT_RATE));
+                    // The total amount with VAT is not needed in the final price; instead, show VAT separately
+                    BigDecimal totalAmountWithoutVAT = totalAmount;
+                    BigDecimal change = BigDecimal.ZERO;
 
-                    if (totalAmount.compareTo(BigDecimal.ZERO) <= 0) {
-                        request.setAttribute("errorMessage", "Total amount cannot be zero or negative.");
-                        break;
-                    }
+                    try {
+                        cashPaidStr = cashPaidStr.trim().replace(",", "");
+                        BigDecimal cashPaid = new BigDecimal(cashPaidStr);
 
-                    Sale newSale = new Sale();
-                    newSale.setSales_date(new Timestamp(System.currentTimeMillis()));
-                    newSale.setTotal_amount(totalAmount);
-                    newSale.setPayment_method(request.getParameter("payment_method"));
-                    if (loggedInUser != null) {
-                        newSale.setEmployee_ID(loggedInUser.getEmployee_ID());
-                        newSale.setStore_ID(loggedInUser.getStore_ID());
-                    } else {
-                        request.setAttribute("errorMessage", "Employee not logged in.");
-                    }
-
-                    int newSalesID = saleDAO.saveSale(newSale);
-                    if (newSalesID != -1) {
-                        for (Product item : scannedItems) {
-                            SalesItem salesItem = new SalesItem();
-                            salesItem.setSales_ID(newSalesID);
-                            salesItem.setProduct_ID(item.getProduct_ID());
-                            salesItem.setQuantity(item.getScanCount());
-                            salesItem.setUnit_price(BigDecimal.valueOf(item.getProduct_price()));
-
-                            salesItemDAO.saveSalesItem(salesItem);
+                        // Calculate change to be returned
+                        change = cashPaid.subtract(totalAmountWithoutVAT);
+                        if (change.compareTo(BigDecimal.ZERO) < 0) {
+                            request.setAttribute("errorMessage", "Cash paid is less than the total amount.");
+                            break;
                         }
 
-                         // Call processSale method to update inventory and product quantities
+                        Sale newSale = new Sale();
+                        newSale.setSales_date(new Timestamp(System.currentTimeMillis()));
+                        newSale.setTotal_amount(totalAmountWithoutVAT);
+                        newSale.setPayment_method(request.getParameter("payment_method"));
+
+                        if (loggedInUser != null) {
+                            newSale.setEmployee_ID(loggedInUser.getEmployee_ID());
+                            newSale.setStore_ID(loggedInUser.getStore_ID());
+                        } else {
+                            request.setAttribute("errorMessage", "Employee not logged in.");
+                        }
+
+                        int newSalesID = saleDAO.saveSale(newSale);
+                        if (newSalesID != -1) {
+                            for (Product item : scannedItems) {
+                                SalesItem salesItem = new SalesItem();
+                                salesItem.setSales_ID(newSalesID);
+                                salesItem.setProduct_ID(item.getProduct_ID());
+                                salesItem.setQuantity(item.getScanCount());
+                                salesItem.setUnit_price(BigDecimal.valueOf(item.getProduct_price()));
+
+                                salesItemDAO.saveSalesItem(salesItem);
+                            }
+
                             inventoryService.processSale(newSalesID);
-                        
-                        String salespersonName = loggedInUser.getFirstName() + " " + loggedInUser.getLastName();
-                        String saleTime = newSale.getSales_date().toString();
-                        String customerEmail = request.getParameter("customer_email");
 
-                        emailService.sendSaleReceipt(customerEmail, salespersonName, saleTime, scannedItems, totalAmount, newSale.getPayment_method());
-                        SmsSender.sendSms("+27631821265", saleTime);
 
-                        scannedItems.clear();
-                    } else {
-                        request.setAttribute("errorMessage", "Failed to save sale.");
+                            String salespersonName = loggedInUser.getFirstName() + " " + loggedInUser.getLastName();
+                            String saleTime = newSale.getSales_date().toString();
+                            String customerEmail = request.getParameter("customer_email");
+
+
+                            emailService.sendSaleReceipt(customerEmail, salespersonName, saleTime, scannedItems, totalAmountWithoutVAT, vatAmount, change, newSale.getPayment_method());
+                            SmsSender.sendSms("+27631821265", saleTime);
+
+                            scannedItems.clear();
+
+                            request.setAttribute("totalAmount", totalAmountWithoutVAT);
+                            request.setAttribute("vatAmount", vatAmount);
+                            request.setAttribute("change", change);
+                            request.getRequestDispatcher("saleReceipt.jsp").forward(request, response);
+                            return; 
+                        } else {
+                            request.setAttribute("errorMessage", "Failed to save sale.");
+                        }
+                    } catch (NumberFormatException e) {
+                        Logger.getLogger(ProductServlet.class.getName()).log(Level.SEVERE, "Invalid number format for cash paid: " + cashPaidStr, e);
+                        request.setAttribute("errorMessage", "Invalid number format for cash paid.");
+                    } catch (Exception e) {
+                        Logger.getLogger(ProductServlet.class.getName()).log(Level.SEVERE, "Error processing sale: ", e);
+                        request.setAttribute("errorMessage", "Error processing sale.");
                     }
                     break;
 
