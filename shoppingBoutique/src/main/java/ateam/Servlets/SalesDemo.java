@@ -78,10 +78,17 @@ public class SalesDemo extends HttpServlet {
         processRequest(request, response);
         Employee manager = (Employee) request.getSession(false).getAttribute("Employee");
         
-        Map<String, StorePerfomanceInSales> getTopAchievingStores = reports.getTopAchievingStores();
+        Map<String, StorePerfomanceInSales> getTopAchievingStores;
+        getTopAchievingStores = reports.getTopAchievingStores();
         Map<String, BigDecimal> generateMonthReportForStore = reports.getMonthSalesReport(manager.getStore_ID(), LocalDate.now());
         List<Store> stores = storeService.getAllStores();
+        Map<String, Integer> topSellingEmployees = reports.generateTopSellingEmployees();
+        Map<String, BigDecimal> leastPerformingStore = reports.leastPerformingStores(3, 40.0);
+        Map<String, BigDecimal> todaysSales = reports.getTodaysReportForAllStores();
         
+        request.getSession(false).setAttribute("Today'sReport", todaysSales);
+        request.getSession(false).setAttribute("leastPerformingStores", leastPerformingStore);
+        request.getSession(false).setAttribute("topSellingEmployee", topSellingEmployees);
         request.getSession(false).setAttribute("reportForThisMonth", generateMonthReportForStore);
         request.getSession(false).setAttribute("topAchievingStores", getTopAchievingStores);
         request.getSession(false).setAttribute("stores", stores);
@@ -136,8 +143,9 @@ public class SalesDemo extends HttpServlet {
 
     private void handleMonthReport(HttpServletRequest request, HttpServletResponse response) throws ParseException, ServletException, IOException{
         int storeId = Integer.parseInt(request.getParameter("storeId"));
-        
-        Map<String, BigDecimal> report = reports.getMonthSalesReport(storeId, dateFormatter(request.getParameter("date")));
+        String dateStr = request.getParameter("date");
+        System.out.println(dateStr);
+        Map<String, BigDecimal> report = reports.getMonthSalesReport(storeId, LocalDate.parse(dateStr, DateTimeFormatter.ofPattern("yyyy-MM")));
         
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();

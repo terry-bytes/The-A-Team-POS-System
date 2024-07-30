@@ -42,7 +42,16 @@
         Map<String, BigDecimal> monthReport = (Map<String, BigDecimal>) request.getSession(false).getAttribute("reportForThisMonth");
         Map<String, StorePerfomanceInSales> getTopAchievingStores = (Map<String, StorePerfomanceInSales>) request.getSession(false).getAttribute("topAchievingStores");
         List<Store> stores = (List<Store>) request.getSession(false).getAttribute("stores");
+        Map<String, Integer> topSellingEmployees = (Map<String, Integer>) request.getSession(false).getAttribute("topSellingEmployee");
+        Map<String, BigDecimal> leastPerformingStores = (Map<String, BigDecimal>) request.getSession(false).getAttribute("leastPerformingStores");
+        Map<String, BigDecimal> todayReport = (Map<String, BigDecimal>) request.getSession(false).getAttribute("Today'sReport");
         
+        StringBuilder employeeNames = new StringBuilder();
+        StringBuilder soldData = new StringBuilder();
+        StringBuilder leastStoreLabels = new StringBuilder();
+        StringBuilder leastStoreData = new StringBuilder();
+        StringBuilder todaysLabels = new StringBuilder();
+        StringBuilder todaysData = new StringBuilder();
         if(employee != null){
             if(getTopAchievingStores != null && !getTopAchievingStores.isEmpty()){
                 StringBuilder labels = new StringBuilder();
@@ -127,7 +136,120 @@
             </div>
         </div>
     </div>
+     
+    <%if(topSellingEmployees != null && !topSellingEmployees.isEmpty()){
+        
+        
+       for(Map.Entry<String, Integer> entry : topSellingEmployees.entrySet()){
+           employeeNames.append("'").append(entry.getKey()).append("',");
+           soldData.append(entry.getValue()).append(",");
+       }
+       
+       %>
+    <div class="report">
+        <div class="two">
+            <h4>Top Selling Employee</h4>
+            <label>Select a store</label>
+            <select id="topSellingEmployee">
+                <% for (Store store : stores) { %>
+                <option value="<%= store.getStore_ID() %>"><%= store.getStore_name() %></option>
+                <% } %>
+            </select>
+ 
+            <div class="input-submit">
+                <input name="submit" value="download" hidden>
+                <button class="submit-btn" id="submit">Download</button>
+            </div>
+        </div>
+        <div class="graphBox">
+            <div class="box">
+                <canvas id="topSellingEmpReportBar"></canvas>
+            </div>
+            <div class="box">
+                <canvas id="topSellingEmpReportPie"></canvas>
+            </div>
+        </div>
+    </div>
+    <%}%>
     
+    <%if (leastPerformingStores != null && !leastPerformingStores.isEmpty()){
+        for (Map.Entry<String, BigDecimal> entry : leastPerformingStores.entrySet()){
+            leastStoreLabels.append("'").append(entry.getKey()).append("',");
+            leastStoreData.append(entry.getValue()).append(",");
+        }%>
+    
+    <div class="report">
+        <div class="two">
+            <h4>Least Performing Stores</h4>
+            <label>Stores who failed to reach in stock</label>
+            <select id="leastPerformingStore">
+                <option value="">40%</option>
+                <option value="">50%</option>
+                <option value="">60%</option>
+            </select>
+ 
+            <div class="input-submit">
+                <input name="submit" value="download" hidden>
+                <button class="submit-btn" id="submit">Download</button>
+            </div>
+        </div>
+        <div class="graphBox">
+            <div class="box">
+                <canvas id="leastPerformingStoreBar"></canvas>
+            </div>
+            <div class="box">
+                <canvas id="leastPerformingStorePie"></canvas>
+            </div>
+        </div>
+    </div>
+    <%}%>
+    
+    <% if (todayReport != null && !todayReport.isEmpty()){
+        for (Map.Entry<String, BigDecimal> entry : todayReport.entrySet()){
+            todaysLabels.append("'").append(entry.getKey()).append("',");
+            todaysData.append(entry.getValue()).append(",");
+        }
+    %>
+    <div class="report">
+        <div class="two">
+            <h4>Today's Report for All Stores</h4>
+            
+ 
+            <div class="input-submit">
+                <input name="submit" value="download" hidden>
+                <button class="submit-btn" id="submit">Download</button>
+            </div>
+        </div>
+        <div class="graphBox">
+            <div class="box">
+                <canvas id="todayReportBar"></canvas>
+            </div>
+            <div class="box">
+                <canvas id="todayReportPie"></canvas>
+            </div>
+        </div>
+    </div>
+    <%} else {%> <h4>No Sales on Progress today</h4><%}%>
+    
+    <div class="report">
+        <div class="two">
+            <h4>Stores Who reach the target</h4>
+            
+ 
+            <div class="input-submit">
+                <input name="submit" value="download" hidden>
+                <button class="submit-btn" id="submit">Download</button>
+            </div>
+        </div>
+        <div class="graphBox">
+            <div class="box">
+                <canvas id="todayReportBar"></canvas>
+            </div>
+            <div class="box">
+                <canvas id="todayReportPie"></canvas>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -137,7 +259,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const salesData = [<%= data.toString() %>]; // Replace with actual data
     const monthLabels = [<%= monthDate.toString() %>]; // Replace with actual month labels
     const monthData = [<%= monthData.toString() %>]; // Replace with actual month data
+    const topSellingEmployees = [<%= employeeNames.toString() %>];
+    const topSellingEmpData = [<%= soldData.toString() %>];
+    const todaysReportLabels = [<%= todaysLabels.toString() %>];
+    const todaysReportData = [<%= todaysData.toString() %>];
+    
 
+console.log(topSellingEmployees);
+console.log(topSellingEmpData);
     // Colors
     const barBgColor = 'rgba(54, 162, 235, 0.2)';
     const barBorderColor = 'rgba(54, 162, 235, 1)';
@@ -160,6 +289,24 @@ document.addEventListener('DOMContentLoaded', () => {
     BarChart(monthBarCtx, monthLabels, monthData, 'Total Amount', barBgColor, barBorderColor);
     initPieChart(monthPieCtx, monthLabels, monthData, pieBgColor);
     
+    // Initialize topSelling employee charts
+    const topSellingEmpBarCtx = document.getElementById('topSellingEmpReportBar').getContext('2d');
+    const topSellingEmpPieCtx = document.getElementById('topSellingEmpReportPie').getContext('2d');
+    BarChart(topSellingEmpBarCtx, topSellingEmployees, topSellingEmpData, 'Top Employee', barBgColor, barBorderColor);
+    initPieChart(topSellingEmpPieCtx, topSellingEmployees, topSellingEmpData, pieBgColor);
+    
+    // Initialize Least Performing Stores Charts
+    const leastPerformingBarCtx = document.getElementById('leastPerformingStoreBar').getContext('2d');
+    const leastPerformingPieCtx = document.getElementById('leastPerformingStorePie').getContext('2d');
+    BarChart(leastPerformingBarCtx, [<%= leastStoreLabels.toString() %>], [<%= leastStoreData.toString() %>],'Least Performing Stores', barBgColor, barBorderColor);
+    initPieChart(leastPerformingPieCtx, [<%= leastStoreLabels.toString() %>], [<%= leastStoreData.toString() %>],pieBgColor);
+    
+    // Initialize today's progress reports
+    const todayReportBarCtx = document.getElementById('todayReportBar').getContext('2d');
+    const todayReportPieCtx = document.getElementyId('todayReportPie').getContext('2d');
+    BarChart(todayReportBarCtx, todaysReportLabels, todaysReportData, 'Today\'s Progress', barBgColor, barBorderColor);
+    initPieChart(todayReportPieCtx, todaysReportLabels, todaysReportData, pieBgColor);
+    
     document.getElementById('RequestMonthReport').addEventListener('click', function(){
         const storeId = document.getElementById('storeMonthlySales').value;
         const month = document.getElementById('montDatePicker').value;
@@ -172,9 +319,9 @@ document.addEventListener('DOMContentLoaded', () => {
         fetch('SalesDemo', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/x-www-form-urlencoded'
             },
-            body: JSON.stringify({submit: 'getMonthReport', date: month, storeId: storeId})
+            body: new URLSearchParams({submit: 'getMonthReport', date: month, storeId: storeId})
         }).then(response => response.json())
           .then(data => {
             const storeNames = data.labels;
@@ -193,6 +340,26 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .catch(error => console.error('Error fetching data:', error));
 });
+
+    document.getElementById('topSellingEmployee').addEventListener('change', function(){
+        const storeId = this.value;
+        console.log("store id need want to check for top employee"+storeId);
+        
+        fetch('SalesDemo',{
+            method:'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded'},
+            body: new URLSearchParams({
+                submit: '',
+                storeId: storeId
+            })
+        })
+        .then(response => response.json())
+            .then(data => {
+                const names = data;
+                
+            })
+            .catch(error => console.error('Error fetching data:', error));
+    });
 });
 // Function to initialize a bar chart
 function initBarChart(ctx, labels, data, label, bgColor, borderColor) {

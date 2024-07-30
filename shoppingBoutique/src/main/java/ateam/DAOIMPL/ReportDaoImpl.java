@@ -11,13 +11,16 @@ import ateam.DTO.InventoryData;
 import ateam.DTO.ProductSalesData;
 import ateam.DTO.SalesData;
 import ateam.DTO.StorePerformance;
+import ateam.Models.Sale;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -277,5 +280,136 @@ public class ReportDaoImpl implements ReportDAO{
             Logger.getLogger(ReportDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
         } 
         return results;
+    }
+    
+    @Override
+   public Map<Integer, BigDecimal> getTotalInventoryValuePerStore(LocalDate startDate, LocalDate endDate) {
+    if (connection == null) return null;
+    String query = "SELECT i.store_ID, SUM(p.product_price * i.inventory_quantity) AS total_inventory_value " +
+                   "FROM inventory i " +
+                   "JOIN products p ON i.product_ID = p.product_ID " +
+                   "WHERE i.last_updated BETWEEN ? AND ? " +
+                   "GROUP BY i.store_ID";
+
+    Map<Integer, BigDecimal> inventoryValuePerStore = new HashMap<>();
+
+    try (PreparedStatement stmt = connection.prepareStatement(query)) {
+        // Convert LocalDate to LocalDateTime at the start of the day
+        LocalDateTime startDateTime = startDate.atStartOfDay();
+        LocalDateTime endDateTime = endDate.atTime(23, 59, 59, 999999999);
+
+        System.out.println("startDate"+ startDateTime);
+        System.out.println("endDate: "+ endDateTime);
+        // Convert LocalDateTime to Timestamp
+        Timestamp startTimestamp = Timestamp.valueOf(startDateTime);
+        Timestamp endTimestamp = Timestamp.valueOf(endDateTime);
+
+        stmt.setTimestamp(1, startTimestamp);
+        stmt.setTimestamp(2, endTimestamp);
+        
+        try (ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                int storeId = rs.getInt("store_ID");
+                BigDecimal totalValue = rs.getBigDecimal("total_inventory_value");
+                inventoryValuePerStore.put(storeId, totalValue);
+            }
+        }
+    } catch (SQLException ex) {
+        Logger.getLogger(ReportDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
+    }
+
+    return inventoryValuePerStore;
+}
+
+    
+    @Override
+   public Map<Integer, BigDecimal> getTotalSalesAmountPerStore(LocalDate startDate, LocalDate endDate) {
+    String query = "SELECT store_ID, SUM(total_amount) AS total_sales_amount " +
+                       "FROM sales " +
+                       "WHERE sales_date BETWEEN ? AND ? " +
+                       "GROUP BY store_ID";
+
+        Map<Integer, BigDecimal> salesAmountPerStore = new HashMap<>();
+
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+             LocalDateTime startDateTime = startDate.atStartOfDay();
+            LocalDateTime endDateTime = endDate.atTime(23, 59, 59, 999999999);
+
+            
+            // Convert LocalDateTime to Timestamp
+            Timestamp startTimestamp = Timestamp.valueOf(startDateTime);
+            Timestamp endTimestamp = Timestamp.valueOf(endDateTime);
+
+            stmt.setTimestamp(1, startTimestamp);
+            stmt.setTimestamp(2, endTimestamp);
+
+        try (ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                int storeId = rs.getInt("store_ID");
+                BigDecimal totalSalesAmount = rs.getBigDecimal("total_sales_amount");
+                salesAmountPerStore.put(storeId, totalSalesAmount);
+            }
+        }
+    } catch (SQLException ex) {
+        Logger.getLogger(ReportDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
+    }
+
+    return salesAmountPerStore;
+}
+
+    
+    public List<Sale> getDailySalesForStore() {
+       if(connection == null) return null;
+       List<Sale> sales = new ArrayList<>();
+       String sql = "SELECT sales_ID, total_amount, payment_method, employee_ID, sales_date " +
+             "FROM sales " +
+             "WHERE DATE(sales_date) = CURDATE()";
+
+       try(PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+
+           try(ResultSet resultSet = preparedStatement.executeQuery()){
+               while(resultSet.next()){
+                    Sale sale = new Sale();
+                    sale.setEmployee_ID(resultSet.getInt("employee_ID"));
+                    sale.setPayment_method(resultSet.getString("payment_method"));
+                    sale.setSales_ID(resultSet.getInt("sales_ID"));
+                    sale.setSales_date(resultSet.getTimestamp("sales_date"));
+                    sale.setTotal_amount(resultSet.getBigDecimal("total_amount"));
+
+                    sales.add(sale);
+               }
+           }
+       } catch (SQLException ex) {
+            Logger.getLogger(SaleDAOIMPL.class.getName()).log(Level.SEVERE, null, ex);
+        }
+       return sales;
+    }
+
+    @Override
+    public List<Sale> getTodaysSales() {
+         if(connection == null) return null;
+       List<Sale> sales = new ArrayList<>();
+       String sql = "SELECT sales_ID, total_amount, payment_method, employee_ID, sales_date " +
+             "FROM sales " +
+             "WHERE DATE(sales_date) = CURDATE()";
+
+       try(PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+
+           try(ResultSet resultSet = preparedStatement.executeQuery()){
+               while(resultSet.next()){
+                    Sale sale = new Sale();
+                    sale.setEmployee_ID(resultSet.getInt("employee_ID"));
+                    sale.setPayment_method(resultSet.getString("payment_method"));
+                    sale.setSales_ID(resultSet.getInt("sales_ID"));
+                    sale.setSales_date(resultSet.getTimestamp("sales_date"));
+                    sale.setTotal_amount(resultSet.getBigDecimal("total_amount"));
+
+                    sales.add(sale);
+               }
+           }
+       } catch (SQLException ex) {
+            Logger.getLogger(SaleDAOIMPL.class.getName()).log(Level.SEVERE, null, ex);
+        }
+       return sales;
     }
 }

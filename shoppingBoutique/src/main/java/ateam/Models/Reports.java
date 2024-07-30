@@ -119,23 +119,28 @@ public class Reports {
      */
     
    private Map<String, Integer> topSellingEmployees(List<Sale> sales){
-//        Map<String, Integer> topSellingEmployees = new TreeMap<>();
-//        Map<Integer, Integer> employeeSales = new HashMap<>();
-//        for(Sale sale : sales){
-//           int employee_Id = sale.getEmployee_ID();
-//           employeeSales.put(employee_Id, employeeSales.getOrDefault(employee_Id, 0)+ 1);
-//        }
-//        
-//        for(Employee employee : employeeService.getAllEmployees()){
-//            if(employee.getRole() == Role.Teller){
-//                int employee_Id = employee.getEmployee_ID();
-//                String employeeName = employee.getFirstName();
-//                int totalSales = employeeSales.getOrDefault(employee_Id, 0);
-//                if(totalSales >= targetSalesPerEmployee)
-//                    topSellingEmployees.put(employeeName, totalSales);
-//            }
-//        }
-       return null;
+        Map<String, Integer> topSellingEmployees = new TreeMap<>();
+        Map<Integer, Integer> employeeSales = new HashMap<>();
+        
+        sales.stream()
+                .map(sale -> sale.getEmployee_ID())
+                .forEachOrdered(employee_Id -> {
+            employeeSales.put(employee_Id, employeeSales.getOrDefault(employee_Id, 0)+ 1);
+        });
+        System.out.println(employeeSales.size());
+        
+        employeeService.getAllEmployees().stream()
+                .filter(employee -> (employee.getRole() == Role.Teller))
+                .forEachOrdered(employee -> {
+                    int employee_Id = employee.getEmployee_ID();
+                    String employeeName = employee.getFirstName();
+                    int totalSales = employeeSales.getOrDefault(employee_Id, 0);
+                    if (totalSales >= targetSalesPerEmployee) {
+                        topSellingEmployees.put(employeeName, totalSales);
+                }
+        });
+        System.out.println("Top selling employees: "+ topSellingEmployees.size());
+       return topSellingEmployees;
    }
     
     /**
@@ -407,7 +412,7 @@ public class Reports {
         ));
     }
     
-    public Map<String, StorePerfomanceInSales> getLeastPerformingStore(LocalDate today, LocalDate endDate, double target){
+    public Map<String, StorePerfomanceInSales> getLeastPerformingStoree(LocalDate today, LocalDate endDate, double target){
 
         return storesPerformance(today, endDate).values().stream()
                 .filter(s -> s.getPercentageSold() < target)
@@ -463,5 +468,37 @@ public class Reports {
         
     }
 
+    public Map<String, BigDecimal> leastPerformingStores(int months, double target){
+        LocalDate endDate = LocalDate.now();
+        LocalDate startDate = endDate.minusMonths(months);
+        System.out.println("Start date for least performing store"+startDate);
+        System.out.println(endDate);
+        
+        Map<Integer, BigDecimal> totalInventoryMap = reportDao.getTotalInventoryValuePerStore(startDate, endDate);
+        Map<Integer, BigDecimal> totalAmountSalesMap = reportDao.getTotalSalesAmountPerStore(startDate, endDate);
+        System.out.println("totalInve: "+ totalInventoryMap.size());
+        System.out.println("totalSale: "+ totalAmountSalesMap.size());
+        return totalAmountSalesMap.entrySet().stream()
+            .filter(entry -> totalInventoryMap.containsKey(entry.getKey()) && totalInventoryMap.get(entry.getKey()).compareTo(BigDecimal.ZERO) > 0)
+            .filter(entry -> {
+                BigDecimal totalSales = entry.getValue();
+                BigDecimal totalInventory = totalInventoryMap.get(entry.getKey());
+                double salesPercentage = totalSales.divide(totalInventory, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100)).doubleValue();
+                return salesPercentage < target;
+            })
+            .collect(Collectors.toMap(
+                    entry -> storeService.getStoreById(entry.getKey()).getStore_name(),
+                    Map.Entry::getValue
+            ));
+    }
     
+    public Map<String, BigDecimal> getTodaysReportForAllStores(){
+        return reportDao.getTodaysSales().stream()
+                .collect(Collectors.groupingBy(
+                    sale -> storeService.getStoreById(sale.getStore_ID()).getStore_name(),
+                        Collectors.mapping(
+                                Sale::getTotal_amount,
+                                Collectors.reducing(BigDecimal.ZERO, BigDecimal::add))
+                ));
+    }
 }
