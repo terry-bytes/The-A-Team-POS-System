@@ -14,6 +14,7 @@ import ateam.DTO.StorePerformance;
 import ateam.DTO.TopProductDTO;
 import ateam.DTO.TopProductSellEmployee;
 import ateam.DTO.TopSellingEmployee;
+import ateam.DTO.TopSellingEmployeeDTO;
 import ateam.Service.EmployeeService;
 import ateam.Service.ProductService;
 import ateam.Service.SaleItemsService;
@@ -504,5 +505,9 @@ public class Reports {
                                 Sale::getTotal_amount,
                                 Collectors.reducing(BigDecimal.ZERO, BigDecimal::add))
                 ));
+    }
+    
+    public TopSellingEmployeeDTO getTopSellingEmployeeForProduct(int productId){
+        return reportDao.getTopSellingEmployeeForProduct(productId);
     }
 }

@@ -11,6 +11,7 @@ import ateam.DAOIMPL.StoreDAOIMPL;
 import ateam.DTO.StorePerfomanceInSales;
 import ateam.DTO.TopProductDTO;
 import ateam.DTO.TopSellingEmployee;
+import ateam.DTO.TopSellingEmployeeDTO;
 import ateam.Models.Employee;
 import ateam.Models.Product;
 import ateam.Models.Reports;
@@ -86,7 +87,9 @@ public class SalesDemo extends HttpServlet {
         Map<String, BigDecimal> leastPerformingStore = reports.leastPerformingStores(3, 40.0);
         Map<String, BigDecimal> todaysSales = reports.getTodaysReportForAllStores();
         List<TopProductDTO> topProduct = reports.top40SellingProducts();
+        List<Product> products = productService.getAllItems();
         
+        request.getSession(false).setAttribute("Products", products);
         request.getSession(false).setAttribute("top40SellingProducts", topProduct);
         request.getSession(false).setAttribute("Today'sReport", todaysSales);
         request.getSession(false).setAttribute("leastPerformingStores", leastPerformingStore);
@@ -194,14 +197,27 @@ public class SalesDemo extends HttpServlet {
     }
     
     private void handleTopSellingEmployeeBasedOnProduct(HttpServletRequest request, HttpServletResponse response) throws IOException{
-        TopSellingEmployee topEmp = reports.topSellingEmployeeForProduct(Integer.parseInt(request.getParameter("productId")));
-        
-        String result = "<p>Top Selling employee is " + topEmp.getEmployeeName() + "</p>"
-                      + "<p>Total sales: " + topEmp.getTotalSales() + "</p>"
-                      + "<p>Total sales for this product: " + topEmp.getTotalSalesForProduct() + "</p>";
-        
-        response.setContentType("text/html");
-        response.getWriter().write(result);
+        int productId = Integer.parseInt(request.getParameter("productId"));
+        TopSellingEmployeeDTO topEmp = reports.getTopSellingEmployeeForProduct(productId);
+
+        if (topEmp != null) {
+            // Assuming you have methods to get product name and teller name
+            String productName = productService.getProductById(topEmp.getProductId()).getProduct_name();
+            String tellerName = employeeService.getEmployeeById(topEmp.getEmployeeId()).getFirstName();
+
+            Map<String, Object> responseData = new HashMap<>();
+            responseData.put("productName", productName);
+            responseData.put("tellerName", tellerName);
+            responseData.put("amountSold", topEmp.getTotalAmount());
+
+            String json = new Gson().toJson(responseData);
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write(json);
+        } else {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        }
+       
     }
     
     private void handleCurrentSalesBasedOnStore(HttpServletRequest request, HttpServletResponse response) throws IOException{

@@ -49,6 +49,7 @@
         Map<String, BigDecimal> leastPerformingStores = (Map<String, BigDecimal>) request.getSession(false).getAttribute("leastPerformingStores");
         Map<String, BigDecimal> todayReport = (Map<String, BigDecimal>) request.getSession(false).getAttribute("Today'sReport");
         List<TopProductDTO> topProduct = (List<TopProductDTO>) request.getSession(false).getAttribute("top40SellingProducts");
+        List<Product> products = (List<Product>) request.getSession(false).getAttribute("Products");
         
         int pageSize = 10;
         int currentPage = request.getParameter("page") != null ? Integer.parseInt(request.getParameter("page")) : 1;
@@ -244,7 +245,7 @@
     <%} else {%> <h4>No Sales on Progress today</h4><%}%>
     
     <% if (topProduct != null && !topProduct.isEmpty()){%>
-    <div class="report">
+    <div class="report tables">
         <div class="two">
             <h4>Top 40 Selling Products</h4>
             
@@ -254,25 +255,26 @@
                 <button class="submit-btn" id="submit">Download</button>
             </div>
         </div>
-        <div class="table">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Product Name</th>
-                        <th>Store Name</th>
-                        <th>Amount Sold</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% for (TopProductDTO product :topProduct){%>
-                    <tr>
-                        <td><%= product.getProductName() %></td>
-                        <td><%= product.getStoreName() %></td>
-                        <td><%= product.getTotalQuantitySold()%></td>
-                    </tr>
-                    <%}%>
-                </tbody>
-            </table>
+        <div class="table1">
+    <table>
+        <thead>
+            <tr>
+                <th>Product Name</th>
+                <th>Store Name</th>
+                <th>Amount Sold</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% for (int i = start; i < end; i++) { %>
+            <tr>
+                <td><%= topProduct.get(i).getProductName() %></td>
+                <td><%= topProduct.get(i).getStoreName() %></td>
+                <td><%= topProduct.get(i).getTotalQuantitySold() %></td>
+            </tr>
+            <% } %>
+        </tbody>
+    </table>
+
                 <div class="pagination">
     <% if (currentPage > 1) { %>
     <a href="?page=<%= currentPage - 1 %>">Previous</a>
@@ -285,6 +287,33 @@
     <% } %>
 </div>
         </div>
+<%if (products != null && !products.isEmpty()){%>
+<<div class="table2">
+    <div class="two">
+        <h4>Select the product to find a star teller for that product</h4>
+        <select id='topProductSeller'>
+            <option value='' disabled selected>Select Product</option>
+            <% for (Product product : products) { %>
+                <option value="<%= product.getProduct_ID() %>"><%= product.getProduct_name() %></option>
+            <% } %>
+        </select>
+    </div>
+    <div id='topSellingProduct' style="display: none">
+        <table>
+            <thead>
+                <tr>
+                    <th>Product Name</th>
+                    <th>Teller Name</th>
+                    <th>Amount Sold</th>
+                </tr>
+            </thead>
+            <tbody id='productSellerDetails'>
+                <!-- Dynamic content will be inserted here -->
+            </tbody>
+        </table>
+    </div>
+</div>
+        <%}%>
     </div>
                 <%}%>
 </div>
@@ -377,6 +406,50 @@ console.log(topSellingEmpData);
         })
         .catch(error => console.error('Error fetching data:', error));
 });
+
+const selectElement = document.getElementById('topProductSeller');
+
+    selectElement.addEventListener('change', function() {
+        const productId = this.value;
+
+console.log("product id from topProduct: "+ productId);
+        if (productId) {
+            fetchTopSellingEmployee(productId);
+        }
+    });
+
+    function fetchTopSellingEmployee(productId) {
+        fetch('SalesDemo', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({
+                submit: 'getTopSellingEmployeeBasedOnProduct',
+                productId: productId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            updateTable(data);
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function updateTable(data) {
+        const tableBody = document.getElementById('productSellerDetails');
+        tableBody.innerHTML = ''; // Clear existing rows
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${data.productName}</td>
+            <td>${data.tellerName}</td>
+            <td>${data.amountSold}</td>
+        `;
+
+        tableBody.appendChild(row);
+        document.getElementById('topSellingProduct').style.display = 'block';
+    }
 
     document.getElementById('topSellingEmployee').addEventListener('change', function(){
         const storeId = this.value;
