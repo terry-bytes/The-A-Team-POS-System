@@ -11,27 +11,7 @@ import java.util.logging.Logger;
 
 public class SalesItemDAOIMPL implements SalesItemDAO {
 
-    
-    String dao ="SELECT\n" +
-"    ->     p.product_ID,\n" +
-"    ->     p.product_name,count(p.product_ID),\n" +
-"    ->     SUM(si.quantity * si.unit_price) AS total_sales_amount,\n" +
-"    ->     e.first_name,\n" +
-"    ->     e.last_name,\n" +
-"    ->     e.role\n" +
-"    -> FROM\n" +
-"    ->     sales_items si\n" +
-"    -> JOIN\n" +
-"    ->     sales s ON si.sales_ID = s.sales_ID\n" +
-"    -> JOIN\n" +
-"    ->     employees e ON s.employee_ID = e.employee_ID\n" +
-"    -> JOIN\n" +
-"    ->     products p ON si.product_ID = p.product_ID\n" +
-"    -> GROUP BY\n" +
-"    ->     p.product_ID, p.product_name, e.first_name, e.last_name, e.role\n" +
-"    -> ORDER BY\n" +
-"    ->     total_sales_amount DESC";
-    
+ 
     
     @Override
     public void saveSalesItem(SalesItem salesItem) {
@@ -53,5 +33,32 @@ public class SalesItemDAOIMPL implements SalesItemDAO {
         } catch (SQLException ex) {
             Logger.getLogger(SalesItemDAOIMPL.class.getName()).log(Level.SEVERE, null, ex);
         } 
+    }
+    
+    
+    @Override
+    public boolean decreaseItem(int quantity,int salesItemId){
+        
+        boolean success = false;
+        String sql = "Update sales_items set quantity = quantity -? where sales_item_ID=?";
+        
+        try(
+                Connection conn = new Connect().connectToDB();
+                PreparedStatement prs = conn.prepareStatement(sql);
+                
+                ){
+            
+            prs.setInt(1, quantity);
+            prs.setInt(2,salesItemId);
+            
+            if(prs.executeUpdate()>0){
+                success = true;
+            }
+            
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(SalesItemDAOIMPL.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return success;
     }
 }
