@@ -493,6 +493,10 @@ public class Reports {
     }
     
     public Map<String, BigDecimal> getTodaysReportForAllStores(){
+        List<Sale> sales = reportDao.getTodaysSales();
+        
+        if(sales == null && sales.isEmpty()) return null;
+        
         return reportDao.getTodaysSales().stream()
                 .collect(Collectors.groupingBy(
                     sale -> storeService.getStoreById(sale.getStore_ID()).getStore_name(),
