@@ -20,10 +20,11 @@ public class SalesItemDAOIMPL implements SalesItemDAO {
         this(new Connect().connectToDB());
     }
 
+
     public SalesItemDAOIMPL(Connection connection){
         this.connection = connection;
     }
-    
+
     String dao ="SELECT p.product_ID, p.product_name,count(p.product_ID), e.first_name"
                     +" FROM sales_items si" +
                 " JOIN" +
