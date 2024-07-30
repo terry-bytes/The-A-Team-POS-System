@@ -18,6 +18,7 @@ public class Connect {
     private static final String USER = "root";
 
     private static final String PASSWORD = "Zahlo@5538";
+    private static final String PASSWORD = "root";
 
     
     private Connection connection;
