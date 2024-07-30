@@ -224,7 +224,7 @@ public class IBTServlet extends HttpServlet {
         String customerNumber = ibtService.retrieveCustomerNumber(IBTRequestID); //USE THIS VARIABLE FOR SENDING IBT SMS
         request.getRequestDispatcher("IBTMainDashboard.jsp").forward(request, response);
         String message = "Your product is ready for Collection. Your IBT ID number is: ";
-        SmsSender.sendSms(customerNumber, message);
+        SmsSender.sendSms("+27631821265", message);
         System.out.println("CUSTOMER NUMBER " + customerNumber);
     }
 }

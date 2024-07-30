@@ -28,6 +28,6 @@ public class SmsSender {
         System.out.println("SMS sent successfully. SID: " + message.getSid());
     }
     public static void main(String[] args) {
-        sendSms("+27631821265", "the A team , collect your order");
+        sendSms("+27631821265", "the A team , Anakie testing");
     }
 }
