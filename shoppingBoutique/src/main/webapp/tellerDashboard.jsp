@@ -477,7 +477,7 @@
                     </div>
 
                     <div class="transaction-buttons">
-                        <form action="ReturnItemServlet" method="post">
+                        <form action="ReturnServlet" method="post">
                             <button type="submit" name ="submit" value ="return">
                                 <img src="Icons/11419687_return_icon.png" alt="Return Item" class="icon">
                             </button>
