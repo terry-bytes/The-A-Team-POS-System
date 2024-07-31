@@ -363,6 +363,7 @@
                                                 <button type="submit" name="submit" value="Remove-Item">Remove</button>
                                             </form>
                                         </td>
+
                                     </tr>
                                 </c:forEach>
                             </table>
@@ -376,7 +377,8 @@
 
             <div class="payment-section">
                 <div class="manual-entry-section">
-                    <form id="product-form" action="ProductServlet" method="post">
+                    <form id="product-form" action="ProductServlet" method="post" onsubmit="return validateForm()">
+                        <input type="hidden" id="payment-method" name="payment_method" value="">
                         <div class="manual-entry">
                             <input type="text" id="manual-sku" name="input-field" placeholder="Enter SKU manually">
                             <button type="submit" name="submit" value="Add-Item" class="green-arrow-button">OK</button>
@@ -524,6 +526,9 @@
                 document.getElementById('payment-method').value = method;
             }
             function selectPaymentMethod(method) {
+                document.getElementById("payment-method").value = method;
+
+                // Hide or show payment details based on method
                 document.getElementById("card-details").style.display = "none";
                 document.getElementById("cash-card-amount").style.display = "none";
                 document.getElementById("cash-amount").style.display = "none";
@@ -536,6 +541,7 @@
                     document.getElementById("cash-amount").style.display = "block";
                 }
             }
+
 
             function redirectToAnotherPage() {
                 // Redirect to another JSP page

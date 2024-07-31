@@ -14,11 +14,9 @@ import ateam.Models.Sale;
 import ateam.Models.SalesItem;
 import ateam.Models.SmsSender;
 
-
 import ateam.Service.InventoryService;
 
 import ateam.Service.EmailService;
-
 
 import ateam.Service.ProductService;
 import ateam.Service.ReturnService;
@@ -144,8 +142,6 @@ public class ProductServlet extends HttpServlet {
                     session.setAttribute("scannedItemsList", scannedItemsList);
                     break;
 
-                 
-
                 case "Remove-Item":
                     // Set the SKU in the session for the removal confirmation page
                     session.setAttribute("itemToRemoveSKU", sku2);
@@ -154,7 +150,7 @@ public class ProductServlet extends HttpServlet {
                         request.getRequestDispatcher("confirmRemove.jsp").forward(request, response);
                     }
                     return; // Return to avoid further processing
-                
+
                 case "Confirm-Remove":
                     // Get the SKU to remove from the session
                     String skuToRemove = (String) session.getAttribute("itemToRemoveSKU");
@@ -187,7 +183,6 @@ public class ProductServlet extends HttpServlet {
                 case "Complete-Sale":
                     BigDecimal totalAmount = BigDecimal.valueOf(calculateTotalPrice(scannedItems));
                     BigDecimal vatAmount = totalAmount.multiply(BigDecimal.valueOf(VAT_RATE));
-                    // The total amount with VAT is not needed in the final price; instead, show VAT separately
                     BigDecimal totalAmountWithoutVAT = totalAmount;
                     BigDecimal change = BigDecimal.ZERO;
 
@@ -195,7 +190,6 @@ public class ProductServlet extends HttpServlet {
                         cashPaidStr = cashPaidStr.trim().replace(",", "");
                         BigDecimal cashPaid = new BigDecimal(cashPaidStr);
 
-                        // Calculate change to be returned
                         change = cashPaid.subtract(totalAmountWithoutVAT);
                         if (change.compareTo(BigDecimal.ZERO) < 0) {
                             request.setAttribute("errorMessage", "Cash paid is less than the total amount.");
@@ -232,7 +226,7 @@ public class ProductServlet extends HttpServlet {
                             String saleTime = newSale.getSales_date().toString();
                             String customerEmail = request.getParameter("customer_email");
 
-                            emailService.sendSaleReceipt(customerEmail, salespersonName, saleTime, scannedItems, totalAmountWithoutVAT, vatAmount, change, newSale.getPayment_method());
+                            emailService.sendSaleReceipt(customerEmail, salespersonName, saleTime, scannedItems, totalAmountWithoutVAT, vatAmount, change, newSale.getPayment_method(),cashPaid);
                             SmsSender.sendSms("+27631821265", saleTime);
 
                             scannedItems.clear();
@@ -240,8 +234,9 @@ public class ProductServlet extends HttpServlet {
                             request.setAttribute("totalAmount", totalAmountWithoutVAT);
                             request.setAttribute("vatAmount", vatAmount);
                             request.setAttribute("change", change);
+                            request.setAttribute("cashPaid", cashPaid);
                             request.getRequestDispatcher("saleReceipt.jsp").forward(request, response);
-                            return; 
+                            return;
                         } else {
                             request.setAttribute("errorMessage", "Failed to save sale.");
                         }
@@ -258,9 +253,9 @@ public class ProductServlet extends HttpServlet {
                     request.getRequestDispatcher("replenishStock.jsp").forward(request, response);
                     break;
                 case "return":
-                    
+
                     request.getRequestDispatcher("returnSale.jsp").forward(request, response);
-                    
+
                     break;
 
             }
