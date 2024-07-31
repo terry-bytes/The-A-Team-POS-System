@@ -14,11 +14,9 @@ import ateam.Models.Sale;
 import ateam.Models.SalesItem;
 import ateam.Models.SmsSender;
 
-
 import ateam.Service.InventoryService;
 
 import ateam.Service.EmailService;
-
 
 import ateam.Service.ProductService;
 import ateam.Service.ReturnService;
@@ -147,8 +145,6 @@ public class ProductServlet extends HttpServlet {
                     session.setAttribute("scannedItemsList", scannedItemsList);
                     break;
 
-                 
-
                 case "Remove-Item":
                     // Set the SKU in the session for the removal confirmation page
                     session.setAttribute("itemToRemoveSKU", sku2);
@@ -157,7 +153,7 @@ public class ProductServlet extends HttpServlet {
                         request.getRequestDispatcher("confirmRemove.jsp").forward(request, response);
                     }
                     return; // Return to avoid further processing
-                
+
                 case "Confirm-Remove":
                     // Get the SKU to remove from the session
                     String skuToRemove = (String) session.getAttribute("itemToRemoveSKU");
@@ -190,31 +186,73 @@ public class ProductServlet extends HttpServlet {
                 case "Complete-Sale":
                     BigDecimal totalAmount = BigDecimal.valueOf(calculateTotalPrice(scannedItems));
                     BigDecimal vatAmount = totalAmount.multiply(BigDecimal.valueOf(VAT_RATE));
-                    // The total amount with VAT is not needed in the final price; instead, show VAT separately
                     BigDecimal totalAmountWithoutVAT = totalAmount;
                     BigDecimal change = BigDecimal.ZERO;
+                    BigDecimal cashPaid = BigDecimal.ZERO;
+                    BigDecimal cardPaid = BigDecimal.ZERO;
 
                     try {
-                        cashPaidStr = cashPaidStr.trim().replace(",", "");
-                        BigDecimal cashPaid = new BigDecimal(cashPaidStr);
+                        String paymentMethod = request.getParameter("payment_method");
 
-                        // Calculate change to be returned
-                        change = cashPaid.subtract(totalAmountWithoutVAT);
-                        if (change.compareTo(BigDecimal.ZERO) < 0) {
-                            request.setAttribute("errorMessage", "Cash paid is less than the total amount.");
-                            break;
+                        if ("cash".equals(paymentMethod)) {
+                            cashPaidStr = request.getParameter("cash_amount");
+                            if (cashPaidStr != null && !cashPaidStr.trim().isEmpty()) {
+                                cashPaidStr = cashPaidStr.trim().replace(",", "");
+                                cashPaid = new BigDecimal(cashPaidStr);
+                                if (cashPaid.compareTo(totalAmountWithoutVAT) < 0) {
+                                    request.setAttribute("errorMessage", "Cash paid is less than the total amount.");
+                                    break;
+                                }
+                                change = cashPaid.subtract(totalAmountWithoutVAT);
+                            } else {
+                                request.setAttribute("errorMessage", "Cash amount is required.");
+                                break;
+                            }
+
+                        } else if ("card".equals(paymentMethod)) {
+                            cardPaid = totalAmountWithoutVAT; // Assuming the full amount is paid by card
+
+                        } else if ("cardAndcash".equals(paymentMethod)) {
+                            String cashPaidStr2 = request.getParameter("cash_amount2");
+                            String cardPaidStr2 = request.getParameter("card_amount2");
+                            System.out.println(cardPaidStr2);
+                            System.out.println(cashPaidStr);
+                            if (cashPaidStr2 != null && !cashPaidStr2.trim().isEmpty()) {
+                                cashPaidStr2 = cashPaidStr2.trim().replace(",", "");
+                                cashPaid = new BigDecimal(cashPaidStr2);
+                            } else {
+                                request.setAttribute("errorMessage", "Cash amount is required.");
+                                break;
+                            }
+
+                            if (cardPaidStr2 != null && !cardPaidStr2.trim().isEmpty()) {
+                                cardPaidStr2 = cardPaidStr2.trim().replace(",", "");
+                                cardPaid = new BigDecimal(cardPaidStr2);
+                            } else {
+                                request.setAttribute("errorMessage", "Card amount is required.");
+                                break;
+                            }
+
+                            BigDecimal totalPaid = cashPaid.add(cardPaid);
+                            if (totalPaid.compareTo(totalAmountWithoutVAT) < 0) {
+                                request.setAttribute("errorMessage", "Total amount is not covered by cash and card payments.");
+                                break;
+                            }
+
+                            change = totalPaid.subtract(totalAmountWithoutVAT);
                         }
 
                         Sale newSale = new Sale();
                         newSale.setSales_date(new Timestamp(System.currentTimeMillis()));
                         newSale.setTotal_amount(totalAmountWithoutVAT);
-                        newSale.setPayment_method(request.getParameter("payment_method"));
+                        newSale.setPayment_method(paymentMethod);
 
                         if (loggedInUser != null) {
                             newSale.setEmployee_ID(loggedInUser.getEmployee_ID());
                             newSale.setStore_ID(loggedInUser.getStore_ID());
                         } else {
                             request.setAttribute("errorMessage", "Employee not logged in.");
+                            break;
                         }
 
                         int newSalesID = saleDAO.saveSale(newSale);
@@ -231,11 +269,14 @@ public class ProductServlet extends HttpServlet {
 
                             inventoryService.processSale(newSalesID);
 
+
                             String salespersonName = loggedInUser.getFirstName() + " " + loggedInUser.getLastName();
                             String saleTime = newSale.getSales_date().toString();
                             String customerEmail = request.getParameter("customer_email");
 
-                            emailService.sendSaleReceipt(customerEmail, salespersonName, saleTime, scannedItems, totalAmountWithoutVAT, vatAmount, change, newSale.getPayment_method());
+
+                            emailService.sendSaleReceipt(customerEmail, salespersonName, saleTime, scannedItems, totalAmountWithoutVAT, vatAmount, change, newSale.getPayment_method(), cashPaid, cardPaid);
+
                             SmsSender.sendSms("+27631821265", saleTime);
 
                             scannedItems.clear();
@@ -243,14 +284,17 @@ public class ProductServlet extends HttpServlet {
                             request.setAttribute("totalAmount", totalAmountWithoutVAT);
                             request.setAttribute("vatAmount", vatAmount);
                             request.setAttribute("change", change);
+                            request.setAttribute("cashPaid", cashPaid);
+                            request.setAttribute("cardPaid", cardPaid);
+                            request.setAttribute("scannedItems", scannedItems);
                             request.getRequestDispatcher("saleReceipt.jsp").forward(request, response);
-                            return; 
+                            return;
                         } else {
                             request.setAttribute("errorMessage", "Failed to save sale.");
                         }
                     } catch (NumberFormatException e) {
-                        Logger.getLogger(ProductServlet.class.getName()).log(Level.SEVERE, "Invalid number format for cash paid: " + cashPaidStr, e);
-                        request.setAttribute("errorMessage", "Invalid number format for cash paid.");
+                        Logger.getLogger(ProductServlet.class.getName()).log(Level.SEVERE, "Invalid number format for payment amounts", e);
+                        request.setAttribute("errorMessage", "Invalid number format for payment amounts.");
                     } catch (Exception e) {
                         Logger.getLogger(ProductServlet.class.getName()).log(Level.SEVERE, "Error processing sale: ", e);
                         request.setAttribute("errorMessage", "Error processing sale.");
@@ -261,9 +305,9 @@ public class ProductServlet extends HttpServlet {
                     request.getRequestDispatcher("replenishStock.jsp").forward(request, response);
                     break;
                 case "return":
-                    
+
                     request.getRequestDispatcher("returnSale.jsp").forward(request, response);
-                    
+
                     break;
 
             }

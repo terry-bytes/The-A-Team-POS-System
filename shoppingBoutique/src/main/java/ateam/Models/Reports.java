@@ -14,6 +14,7 @@ import ateam.DTO.StorePerformance;
 import ateam.DTO.TopProductDTO;
 import ateam.DTO.TopProductSellEmployee;
 import ateam.DTO.TopSellingEmployee;
+import ateam.DTO.TopSellingEmployeeDTO;
 import ateam.Service.EmployeeService;
 import ateam.Service.ProductService;
 import ateam.Service.SaleItemsService;
@@ -129,7 +130,7 @@ public class Reports {
                 .forEachOrdered(employee_Id -> {
             employeeSales.put(employee_Id, employeeSales.getOrDefault(employee_Id, 0)+ 1);
         });
-        System.out.println(employeeSales.size());
+
         
         employeeService.getAllEmployees().stream()
                 .filter(employee -> (employee.getRole() == Role.Teller))
@@ -141,7 +142,6 @@ public class Reports {
                         topSellingEmployees.put(employeeName, totalSales);
                 }
         });
-        System.out.println("Top selling employees: "+ topSellingEmployees.size());
        return topSellingEmployees;
    }
     
@@ -278,7 +278,7 @@ public class Reports {
                totalSalesPerStore.put(sale.getStore_ID(), sale.getTotal_amount());
            }
         }
-        totalSalesPerStore.forEach((k, v) -> System.out.println(k +"  :  "+v));
+
         
         
         Map<String, BigDecimal> totalSales = new HashMap<>(); //I want to convert storeid into store name
@@ -288,7 +288,6 @@ public class Reports {
            } 
         }
         
-        System.out.println("Filtered sales");
         totalSales.forEach((k, v) -> System.out.println(k +"  :  "+v));
         return totalSales;
     }
@@ -473,12 +472,11 @@ public class Reports {
     public Map<String, BigDecimal> leastPerformingStores(int months, double target){
         LocalDate endDate = LocalDate.now();
         LocalDate startDate = endDate.minusMonths(months);
-        System.out.println("Start date for least performing store"+startDate);
-        System.out.println(endDate);
+
         
         Map<Integer, BigDecimal> totalInventoryMap = reportDao.getTotalInventoryValuePerStore(startDate, endDate);
         Map<Integer, BigDecimal> totalAmountSalesMap = reportDao.getTotalSalesAmountPerStore(startDate, endDate);
-        System.out.println("totalInve: "+ totalInventoryMap.size());
+        System.out.println("totalInventory: "+ totalInventoryMap.size());
         System.out.println("totalSale: "+ totalAmountSalesMap.size());
         return totalAmountSalesMap.entrySet().stream()
             .filter(entry -> totalInventoryMap.containsKey(entry.getKey()) && totalInventoryMap.get(entry.getKey()).compareTo(BigDecimal.ZERO) > 0)
@@ -500,7 +498,6 @@ public class Reports {
     if (sales == null || sales.isEmpty()) {
         return Collections.emptyMap(); // Return an empty map instead of null
     }
-    
     return sales.stream()
         .map(sale -> {
             Store store = storeService.getStoreById(sale.getStore_ID());
@@ -517,6 +514,9 @@ public class Reports {
                 Collectors.reducing(BigDecimal.ZERO, BigDecimal::add)
             )
         ));
-}
+    }
 
+    public TopSellingEmployeeDTO getTopSellingEmployeeForProduct(int productId){
+        return reportDao.getTopSellingEmployeeForProduct(productId);
+    }
 }

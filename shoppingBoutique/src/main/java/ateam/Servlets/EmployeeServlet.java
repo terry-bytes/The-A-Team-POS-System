@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpSession;
@@ -115,6 +116,8 @@ public class EmployeeServlet extends HttpServlet {
             case "deleteConfirm":
                 showDeleteConfirm(request, response);
                 break;
+            case "myEmployees":
+                handleGetMyEmployee(request, response);
             case "logout":
               
 
@@ -262,7 +265,7 @@ public class EmployeeServlet extends HttpServlet {
 
             switch (employee.getRole()) {
                 case Admin:
-                    request.getRequestDispatcher("admin.jsp").forward(request, response);
+                    request.getRequestDispatcher("AdminDashboard.jsp").forward(request, response);
                     break;
                 case Manager:
                     response.sendRedirect("SalesDemo");
@@ -339,5 +342,13 @@ public class EmployeeServlet extends HttpServlet {
             request.setAttribute("message", "Error changing password.");
             request.getRequestDispatcher("/changePassword.jsp").forward(request, response);
         }
+    }
+    
+    private void handleGetMyEmployee(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
+        Employee manager = (Employee) request.getSession(false).getAttribute("Employee");
+        Set<Employee> myEmployees = employeeService.managersEmployee(manager.getStore_ID());
+        
+        request.getSession(false).setAttribute("MyEmployees", myEmployees);
+        request.getRequestDispatcher("MyEmployees.jsp").forward(request, response);
     }
 }

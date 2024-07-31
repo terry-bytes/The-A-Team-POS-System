@@ -19,4 +19,5 @@ public class TopSellingEmployee {
     private String employeeName;
     private int totalSales;
     private BigDecimal totalSalesForProduct;
+    
 }

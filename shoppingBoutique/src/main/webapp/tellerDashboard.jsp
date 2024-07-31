@@ -14,6 +14,43 @@
         <!-- Include jQuery library -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+        
+         <style>
+        /* Popup Form Styles */
+        .popup {
+            display: none; /* Hidden by default */
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4); /* Black with opacity */
+        }
+
+        .popup-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
 
         <style>
             .payment-section {
@@ -363,6 +400,7 @@
                                                 <button type="submit" name="submit" value="Remove-Item">Remove</button>
                                             </form>
                                         </td>
+
                                     </tr>
                                 </c:forEach>
                             </table>
@@ -376,7 +414,8 @@
 
             <div class="payment-section">
                 <div class="manual-entry-section">
-                    <form id="product-form" action="ProductServlet" method="post">
+                    <form id="product-form" action="ProductServlet" method="post" onsubmit="return validateForm()">
+                        <input type="hidden" id="payment-method" name="payment_method" value="">
                         <div class="manual-entry">
                             <input type="text" id="manual-sku" name="input-field" placeholder="Enter SKU manually">
                             <button type="submit" name="submit" value="Add-Item" class="green-arrow-button">OK</button>
@@ -412,12 +451,12 @@
                         </div>
                         <div id="cash-card-amount" style="display:none;">
                             <div>
-                                <label for="cash_amount">Cash Amount:</label>
-                                <input type="text" id="cash_amount" name="cash_amount">
+                                <label for="cash_amount2">Cash Amount:</label>
+                                <input type="text" id="cash_amount2" name="cash_amount2">
                             </div>
                             <div>
-                                <label for="card_amount">Card Amount:</label>
-                                <input type="text" id="card_amount" name="card_amount">
+                                <label for="card_amount2">Card Amount:</label>
+                                <input type="text" id="card_amount2" name="card_amount2">
                             </div>
                         </div>
                         <p>   </p>
@@ -429,6 +468,7 @@
                         <input type="hidden" id="scanned-items-count" name="scannedItemsCount" value="<c:out value='${fn:length(scannedItems)}'/>">
                         <button type="submit" name="submit" value="Complete-Sale">Complete Sale</button>
                         <input type="submit" value="Process Layaway" onclick="openPopup()">
+                        <input type="button" value="Process IBT" id="openPopupButton">
                     </form>
                     <p>   </p>
                     <div class="keyboard">
@@ -481,7 +521,6 @@
                         <form action="ReturnServlet" method="post">
                             <button type="submit" name="submit" value="return" title ="Return Item">
                                 <img src="https://th.bing.com/th/id/OIP.-YCUILzwkqhEWv0dTnBCxgHaHa?w=800&h=800&rs=1&pid=ImgDetMain" alt="Return Item" class="icon"> <!-- Custom icon -->
-
                             </button>
                         </form>
                         <form action="LayawayDashboard.jsp" method="post">
@@ -520,15 +559,57 @@
 
             </div>
         </div>
+                        
+    <!-- The Popup Form -->
+    <div id="popupForm" class="popup">
+        <div class="popup-content">
+            <span class="close" id="closePopup">&times;</span>
+            <h2>Enter IBT ID Number</h2>
+            <form id="ibtForm">
+                <label for="ibtNumber">IBT ID:</label>
+                <input type="text" id="ibtNumber" name="ibtNumber" required>
+                <label>Store ID: </label><label></label>
+                <label></label><label></label>
+                <label></label><label></label>
+                <input type="submit" value="Submit">
+            </form>
+        </div>
+    </div>
+         
+         <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get the popup and button elements
+            var popup = document.getElementById("popupForm");
+            var btn = document.getElementById("openPopupButton");
+            var close = document.getElementById("closePopup");
+
+            // When the user clicks the button, open the popup
+            btn.onclick = function() {
+                popup.style.display = "block";
+            };
+
+            // When the user clicks on <span> (x), close the popup
+            close.onclick = function() {
+                popup.style.display = "none";
+            };
+
+            // When the user clicks anywhere outside of the popup, close it
+            window.onclick = function(event) {
+                if (event.target === popup) {
+                    popup.style.display = "none";
+                }
+            };
+        });
+    </script>
 
         <video id="barcode-scanner" autoplay></video>
         <audio id="beep-sound" src="beep.mp3" preload="auto"></audio>
 
         <script>
             function selectPaymentMethod(method) {
-                document.getElementById('payment-method').value = method;
-            }
-            function selectPaymentMethod(method) {
+                document.getElementById("payment-method").value = method;
+
+                // Hide or show payment details based on method
                 document.getElementById("card-details").style.display = "none";
                 document.getElementById("cash-card-amount").style.display = "none";
                 document.getElementById("cash-amount").style.display = "none";
@@ -541,6 +622,47 @@
                     document.getElementById("cash-amount").style.display = "block";
                 }
             }
+
+            function validateForm() {
+                var paymentMethod = document.getElementById("payment-method").value;
+
+                if (paymentMethod === 'card' || paymentMethod === 'cardAndcash') {
+                    var cardNumber = document.getElementById("card_number").value;
+                    var expiryDate = document.getElementById("expiry_date").value;
+                    var cvv = document.getElementById("cvv").value;
+
+                    if (!cardNumber || !expiryDate || !cvv) {
+                        alert("Please fill in all card details.");
+                        return false;
+                    }
+                }
+
+                if (paymentMethod === 'cash' || paymentMethod === 'cardAndcash') {
+                    var cashAmount = document.getElementById("cash_amount").value;
+
+                    if (!cashAmount || isNaN(cashAmount) || parseFloat(cashAmount) <= 0) {
+                        alert("Please enter a valid cash amount.");
+                        return false;
+                    }
+                }
+
+                if (paymentMethod === 'cardAndcash') {
+                    var cardAmount2 = document.getElementById("card_amount2").value;
+                    var cashAmount2 = document.getElementById("cash_amount2").value;
+
+                    if (!cardAmount2 || isNaN(cardAmount2) || parseFloat(cardAmount2) <= 0) {
+                        alert("Please enter a valid card amount.");
+                        return false;
+                    }
+                     if (!cashAmount2 || isNaN(cashAmount2) || parseFloat(cashAmount2) <= 0) {
+                        alert("Please enter a valid cash amount.");
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
 
             function redirectToAnotherPage() {
                 // Redirect to another JSP page

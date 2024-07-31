@@ -9,6 +9,7 @@ import ateam.DTO.InventoryData;
 import ateam.DTO.ProductSalesData;
 import ateam.DTO.SalesData;
 import ateam.DTO.StorePerformance;
+import ateam.DTO.TopSellingEmployeeDTO;
 import ateam.Models.Sale;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -31,4 +32,5 @@ public interface ReportDAO {
     Map<Integer, BigDecimal> getTotalInventoryValuePerStore(LocalDate startDate, LocalDate endDate);
     Map<Integer, BigDecimal> getTotalSalesAmountPerStore(LocalDate startDate, LocalDate endDate);
     List<Sale> getTodaysSales();
+    TopSellingEmployeeDTO getTopSellingEmployeeForProduct(int productId);
 }

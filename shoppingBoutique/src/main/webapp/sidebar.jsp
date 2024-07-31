@@ -52,7 +52,7 @@
                 
                 <li class="nav-link">
                     
-                    <a href="EmployeeServlet?submit=getAddEmployee">
+                    <a href="EmployeeServlet?submit=myEmployees">
                         <i class='bx bx-group icon'></i>
                         <span class="text nav-text">My Employees</span>
                     </a>
@@ -71,9 +71,12 @@
                         <span class="text nav-text">Notifications</span>
                     </a>
                 </li>
-                <li "class="logo">
-                     <a href="IBTMainDashboard.jsp" class="nav-item">IBT</a>
+                <li "class="nav-link">
+                     <a href="IBTMainDashboard.jsp">
+                     <i class='bx bx-store icon' ></i>
+                        <span class="text nav-text">IBT</span>
                      <%request.getSession().setAttribute("ibtNotifications", true);%>
+                     </a>
                 </li>
             </ul>
         </div>
