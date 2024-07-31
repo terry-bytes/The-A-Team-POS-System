@@ -106,7 +106,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public void sendSaleReceipt(String toEmail, String salespersonName, String saleTime, List<Product> items, BigDecimal totalAmountWithVAT, BigDecimal vatAmount, BigDecimal change, String paymentMethod,BigDecimal cashPaid) {
+    public void sendSaleReceipt(String toEmail, String salespersonName, String saleTime, List<Product> items, BigDecimal totalAmountWithVAT, BigDecimal vatAmount, BigDecimal change, String paymentMethod,BigDecimal cashPaid,BigDecimal cardPaid) {
         final String from = "ramovhatp@gmail.com";
         final String password = "xaed clmt qpis ctvf";
         Properties props = new Properties();

@@ -1,3 +1,5 @@
+<%@page import="ateam.Models.Product"%>
+<%@page import="java.util.List"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -37,7 +39,7 @@
         th {
             background-color: #f2f2f2;
         }
-        .total, .vat, .cash-paid, .change {
+        .total, .vat, .cash-paid, .card-paid, .change {
             text-align: right;
             font-weight: bold;
         }
@@ -47,7 +49,7 @@
         .vat {
             background-color: #f9f9f9;
         }
-        .cash-paid {
+        .cash-paid, .card-paid {
             background-color: #f9f9f9;
         }
         .change {
@@ -59,21 +61,51 @@
     <div class="container">
         <h1>Sale Successful</h1>
         <table>
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Quantity</th>
+                    <th>Unit Price (R)</th>
+                    <th>Total Price (R)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <%-- Assuming `scannedItems` is available in request scope and iterates over items --%>
+                <% 
+                    List<Product> scannedItems = (List<Product>) request.getAttribute("scannedItems");
+                    if (scannedItems != null) {
+                        for (Product item : scannedItems) {
+                %>
+                <tr>
+                    <td><%= item.getProduct_name() %></td>
+                    <td><%= item.getScanCount() %></td>
+                    <td><%= item.getProduct_price() %></td>
+                    <td><%= item.getScanCount() * item.getProduct_price() %></td>
+                </tr>
+                <% 
+                        }
+                    }
+                %>
+            </tbody>
             <tfoot>
                 <tr>
-                    <td colspan="5" class="total">Total Amount (R)</td>
+                    <td colspan="3" class="total">Total Amount (R)</td>
                     <td>${totalAmount}</td>
                 </tr>
                 <tr>
-                    <td colspan="5" class="vat">VAT (15%) (R)</td>
+                    <td colspan="3" class="vat">VAT (15%) (R)</td>
                     <td>${vatAmount}</td>
                 </tr>
                 <tr>
-                    <td colspan="5" class="cash-paid">Cash Paid (R)</td>
+                    <td colspan="3" class="cash-paid">Cash Paid (R)</td>
                     <td>${cashPaid}</td>
                 </tr>
                 <tr>
-                    <td colspan="5" class="change">Change (R)</td>
+                    <td colspan="3" class="card-paid">Card Paid (R)</td>
+                    <td>${cardPaid}</td>
+                </tr>
+                <tr>
+                    <td colspan="3" class="change">Change (R)</td>
                     <td>${change}</td>
                 </tr>
             </tfoot>
