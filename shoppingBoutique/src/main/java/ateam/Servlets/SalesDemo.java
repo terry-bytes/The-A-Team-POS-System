@@ -149,14 +149,17 @@ public class SalesDemo extends HttpServlet {
     private void handleMonthReport(HttpServletRequest request, HttpServletResponse response) throws ParseException, ServletException, IOException{
         int storeId = Integer.parseInt(request.getParameter("storeId"));
         String dateStr = request.getParameter("date");
-        System.out.println(dateStr);
-        Map<String, BigDecimal> report = reports.getMonthSalesReport(storeId, LocalDate.parse(dateStr, DateTimeFormatter.ofPattern("yyyy-MM")));
+
+        Map<String, BigDecimal> report = reports.getMonthSalesReport(storeId, LocalDate.parse(dateStr+"-01", DateTimeFormatter.ofPattern("yyyy-MM-dd")));
         
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, Object> responseData = new HashMap<>();
+        responseData.put("labels", report.keySet().toArray(new String[0])); // Convert keys to array for labels
+        responseData.put("data", report.values().toArray(new BigDecimal[0]));
+       
         response.setContentType("application/json");
-        PrintWriter out = response.getWriter();
-        // Convert report to JSON format
-        out.print(new Gson().toJson(report));
-        out.flush();
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(mapper.writeValueAsString(responseData));
     }
     
     private LocalDate dateFormatter(String date) throws ParseException{
@@ -182,7 +185,7 @@ public class SalesDemo extends HttpServlet {
     private void handleStoreAchieveTarget(HttpServletRequest request, HttpServletResponse response) throws ParseException, IOException{
         LocalDate startDate = dateFormatter(request.getParameter("date"));
         LocalDate endDate = startDate.withDayOfMonth(startDate.getDayOfMonth());
-        System.out.println("Input date:"+ startDate);
+        
         
         Map<String, StorePerfomanceInSales> storeAchievedTarget = reports.StoreAchievedTarget(startDate, endDate);
         
@@ -200,24 +203,18 @@ public class SalesDemo extends HttpServlet {
         int productId = Integer.parseInt(request.getParameter("productId"));
         TopSellingEmployeeDTO topEmp = reports.getTopSellingEmployeeForProduct(productId);
 
-        if (topEmp != null) {
-            // Assuming you have methods to get product name and teller name
-            String productName = productService.getProductById(topEmp.getProductId()).getProduct_name();
-            String tellerName = employeeService.getEmployeeById(topEmp.getEmployeeId()).getFirstName();
+      response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
 
-            Map<String, Object> responseData = new HashMap<>();
-            responseData.put("productName", productName);
-            responseData.put("tellerName", tellerName);
-            responseData.put("amountSold", topEmp.getTotalAmount());
 
-            String json = new Gson().toJson(responseData);
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            response.getWriter().write(json);
-        } else {
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-        }
-       
+        // Convert the list to JSON
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonResponse = mapper.writeValueAsString(topEmp);
+
+        // Send the response back to the client
+        PrintWriter out = response.getWriter();
+        out.print(jsonResponse);
+        out.flush();   
     }
     
     private void handleCurrentSalesBasedOnStore(HttpServletRequest request, HttpServletResponse response) throws IOException{
@@ -230,19 +227,20 @@ public class SalesDemo extends HttpServlet {
     }
     private void handleGetLeastPerformingStore(HttpServletRequest request, HttpServletResponse response) throws IOException{
         LocalDate today = LocalDate.now();
-        int interval = Integer.parseInt(request.getParameter("interval"));
-        
+        int interval = Integer.parseInt(request.getParameter("month"));
+        double target = Double.parseDouble(request.getParameter("target"));
         LocalDate endDate = today.minusMonths(interval);
         
-        Map<String, BigDecimal> leastPerformingStores = reports.getLeastsPerformingStores(endDate);
+        Map<String, BigDecimal> leastPerformingStores = reports.leastPerformingStores(interval, target);
         
-        List<String> labels = leastPerformingStores.keySet().stream().collect(Collectors.toList());
-        List<BigDecimal> data = leastPerformingStores.values().stream().collect(Collectors.toList());
         
-        Map<String, Object> jsonResponse = new TreeMap<>();
-        jsonResponse.put("labels", labels);
-        jsonResponse.put("data", data);
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, Object> responseData = new HashMap<>();
+        responseData.put("labels", leastPerformingStores.keySet().toArray(new String[0])); // Convert keys to array for labels
+        responseData.put("data", leastPerformingStores.values().toArray(new BigDecimal[0]));
+       
         response.setContentType("application/json");
-        response.getWriter().write(new ObjectMapper().writeValueAsString(jsonResponse));
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(mapper.writeValueAsString(responseData));
     }
 }

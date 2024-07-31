@@ -418,7 +418,7 @@ public class ReportDaoImpl implements ReportDAO{
     String query = "SELECT sd.product_ID, s.employee_ID, COUNT(sd.product_ID) AS total_sales, " +
                    "SUM(sd.quantity * sd.unit_price) AS total_amount " +
                    "FROM sales s " +
-                   "JOIN sales_details sd ON s.sales_ID = sd.sales_ID " +
+                   "JOIN sales_items sd ON s.sales_ID = sd.sales_ID " +
                    "WHERE sd.product_ID = ? " +
                    "GROUP BY sd.product_ID, s.employee_ID " +
                    "ORDER BY total_sales DESC " +
