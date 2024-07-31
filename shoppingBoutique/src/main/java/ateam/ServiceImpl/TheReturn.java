@@ -14,6 +14,7 @@ import ateam.DAOIMPL.ProductDAOIMPL;
 import ateam.DAOIMPL.ReturnDaoImpl;
 import ateam.DAOIMPL.SaleDAOIMPL;
 import ateam.DAOIMPL.SalesItemDAOIMPL;
+import ateam.Models.Product;
 import ateam.Models.Return;
 import ateam.Models.Sale;
 import ateam.Models.SalesItem;
@@ -34,7 +35,7 @@ public class TheReturn {
     private final InventoryDAO inventoryDAO;
     private ProductDAO productDAO ;
     private SaleDAO saleDao;
-    private SalesItemDAO saleItems;
+   
     private SalesItemDAO salesItemDao = new SalesItemDAOIMPL();
     
     public TheReturn() {
@@ -70,7 +71,7 @@ public class TheReturn {
         BigDecimal newTotalAmount =BigDecimal.ZERO;
         
             
-            newTotalAmount = totalA.subtract(returnAmount.multiply(intAsBigDecimal));
+           newTotalAmount = totalA.subtract(returnAmount.multiply(intAsBigDecimal));
             
             if(saleDao.updateTotalAmount(sales_ID, newTotalAmount)){
                 success =true;
@@ -82,6 +83,48 @@ public class TheReturn {
             
         
        
+    }
+    
+    
+
+
+    public boolean handleCustomerOptions(int salesId, BigDecimal remainingAmount, String customerChoice, int selectedProductId) {
+        
+        boolean success= false;
+        switch (customerChoice) {
+            case "Select-New-Item":
+                
+                if (selectedProductId != -1) {
+                    Product selectedProduct = getProductById(selectedProductId);
+                    SalesItem sales = new SalesItem();
+                    sales.setSales_ID(salesId);
+                    double item =selectedProduct.getProduct_price(); 
+                    sales.setUnit_price(BigDecimal.valueOf(item));
+                    sales.setProduct_ID(selectedProduct.getProduct_ID());
+                    addSalesItem(sales);
+                    updateProductQuantity(selectedProduct.getProduct_ID(), -1);
+                    return success= true;
+                }
+                break;
+
+            case "Receive-Change":
+                BigDecimal big = getUnitPrice(salesId,selectedProductId);
+                // Implement logic to provide change to the customer
+                break;
+
+            default:
+                throw new IllegalArgumentException("Invalid customer choice: " + customerChoice);
+        }
+       return success; 
+    }
+    
+    public List<Product> getProductsByPrice(BigDecimal price) {
+       
+        return returnDao.getProductsByPrice(price);
+    }
+    public Product getProductById(int productId) {
+        
+     return returnDao.getProductById(productId);
     }
     
     public BigDecimal getUnitPrice(int salesId, int productId){
@@ -101,7 +144,10 @@ public class TheReturn {
         return returnDao.getSaleById(sales_ID);
     }
     
-    
+     public void addSalesItem(SalesItem sales) {
+        
+      salesItemDao.saveSalesItem(sales);
+    }
      
     public void updateProductQuantity(int productId, int quantity) {
         

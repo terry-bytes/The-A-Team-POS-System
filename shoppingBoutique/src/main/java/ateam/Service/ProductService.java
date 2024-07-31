@@ -18,5 +18,5 @@ public interface ProductService {
     List<Product> getAllItems();
 
     boolean InsertItems(Product product);
-
+    Product getProductById(int productId);
 }

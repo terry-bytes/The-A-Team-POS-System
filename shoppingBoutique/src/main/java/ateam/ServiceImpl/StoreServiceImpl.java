@@ -6,6 +6,7 @@
 package ateam.ServiceImpl;
 
 import ateam.DAO.StoreDAO;
+import ateam.DAOIMPL.StoreDAOIMPL;
 import ateam.Models.Store;
 import ateam.Service.StoreService;
 import java.util.List;
@@ -19,6 +20,9 @@ public class StoreServiceImpl implements StoreService{
 
     public StoreServiceImpl(StoreDAO storeDao) {
         this.storeDao = storeDao;
+    }
+    public StoreServiceImpl(){
+        storeDao = new StoreDAOIMPL();
     }
     
 

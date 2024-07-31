@@ -1,4 +1,4 @@
-<%-- 
+ <%-- 
     Document   : sidebar
     Created on : Jul 17, 2024, 9:15:57 AM
     Author     : Admin
@@ -13,40 +13,81 @@
         <title>Sidebar</title>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/>
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/sidebar.css" />
+        
+        <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+        <script src="${pageContext.request.contextPath}/js/sidebar.js" defer></script>
     </head>
     <body>
         <% Employee employee = (Employee) request.getSession(false).getAttribute("Employee");%>
         
-        <nav class="sidebar">
-            <ul class="nav">
-                <li class="logo">
-                    <h4>CB</h4>
-                    <span>Carols Boutique</span>
+        <nav class="sidebar close">
+            <div class="menu">
+            <ul class="menu-link">
+                <header>
+                    <div class="image-text">
+                   
+
+                        <div class="text logo-text">
+                            <span class="name">Carols Boutique</span>
+                            <span class="profession">Where comfort meets style</span>
+                        </div>
+                    </div>
+
+                    <i class='bx bx-chevron-right toggle'></i>
+                </header>
+                
+                <li class="nav-link">
+                    <a href="#">
+                        <i class='bx bx-home-alt icon' ></i>
+                        <span class="text nav-text">Dashboard</span>
+                    </a>
                 </li>
-                <li>
-                    <i class="fa fa-bar-chart" aria-hidden="true"></i>
-                    <a href="#" class="nav-item">Dashboard</a>
+                
+                <li class="nav-link">
+                    <a href="SalesDemo?submit=getReports">
+                        <i class='bx bx-home-alt icon' ></i>
+                        <span class="text nav-text">Reports</span>
+                    </a>
                 </li>
-                <li>
-                    <i class="fa fa-users" aria-hidden="true"></i>
-                    <a href="#" class="nav-item">My Employees</a>
+                
+                <li class="nav-link">
+                    
+                    <a href="EmployeeServlet?submit=getAddEmployee">
+                        <i class='bx bx-group icon'></i>
+                        <span class="text nav-text">My Employees</span>
+                    </a>
                 </li>
-                <li>
-                    <i class="fa fa-shopping-bag" aria-hidden="true"></i>
-                    <a href="#" class="nav-item">My Store</a>
+                
+                <li class="nav-link">
+                    <a href="StoreServlet?submit=getStoreDashboard">
+                        <i class='bx bx-store icon' ></i>
+                        <span class="text nav-text">My Store</span>
+                    </a>
                 </li>
-                <li>
-                    <i class="fa fa-bell" aria-hidden="true"></i>
-                    <a href="#" class="nav-item">Notification</a>
-                </li>
-                <li>
-                    <i class="fa fa-sign-out" aria-hidden="true"></i>
-                    <a href="#" class="nav-item">Logout</a>
+                
+                <li class="nav-link">
+                    <a href="#">
+                        <i class='bx bx-bell icon'></i>
+                        <span class="text nav-text">Notifications</span>
+                    </a>
                 </li>
                 <li "class="logo">
                      <a href="IBTMainDashboard.jsp" class="nav-item">IBT</a>
                      <%request.getSession().setAttribute("ibtNotifications", true);%>
                 </li>
+            </ul>
+        </div>
+                
+               <div class="bottom-content">
+                    <li class="">
+                        <a href="EmployeeServlet?submit=logout">
+                            <i class='bx bx-log-out icon' ></i>
+                            <span class="text nav-text">Logout</span>
+                        </a>
+                    </li>
+
+                </div>
+                
             </ul>
         </nav>
     </body>

@@ -14,9 +14,11 @@ import ateam.Models.Sale;
 import ateam.Models.SalesItem;
 import ateam.Models.SmsSender;
 
+
 import ateam.Service.InventoryService;
 
 import ateam.Service.EmailService;
+
 
 import ateam.Service.ProductService;
 import ateam.Service.ReturnService;
@@ -55,6 +57,7 @@ public class ProductServlet extends HttpServlet {
     private EmailService emailService = new EmailServiceImpl();
     private Connect dbConnect = new Connect();
     private InventoryService inventoryService = new InventoryServiceImpl();
+
 
     private static final double VAT_RATE = 0.15;
 

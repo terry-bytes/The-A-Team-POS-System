@@ -7,6 +7,7 @@ import ateam.Models.SalesItem;
 
 import java.math.BigDecimal;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -166,4 +167,68 @@ public class SaleDAOIMPL implements SaleDAO {
         }
         return sales;
     }
+
+    @Override
+    public List<Sale> getDailySalesForStore(int storeId) {
+       if(connection == null) return null;
+       List<Sale> sales = new ArrayList<>();
+       String sql = "SELECT sales_ID, total_amount, payment_method, employee_ID, sales_date " +
+             "FROM sales " +
+             "WHERE store_ID = ? AND DATE(sales_date) = CURDATE()";
+
+       try(PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+           preparedStatement.setInt(1, storeId);
+           try(ResultSet resultSet = preparedStatement.executeQuery()){
+               while(resultSet.next()){
+                    Sale sale = new Sale();
+                    sale.setEmployee_ID(resultSet.getInt("employee_ID"));
+                    sale.setPayment_method(resultSet.getString("payment_method"));
+                    sale.setSales_ID(resultSet.getInt("sales_ID"));
+                    sale.setSales_date(resultSet.getTimestamp("sales_date"));
+                    sale.setTotal_amount(resultSet.getBigDecimal("total_amount"));
+
+                    sales.add(sale);
+               }
+           }
+       } catch (SQLException ex) {
+            Logger.getLogger(SaleDAOIMPL.class.getName()).log(Level.SEVERE, null, ex);
+        }
+       return sales;
+    }
+
+
+    @Override
+    public List<Sale> getLeastPerformingStores(LocalDate endDate) {
+        if(connection == null) return null;
+        
+        List<Sale> sales = new ArrayList<>();
+        String sql = "SELECT sales_ID, total_amount, payment_method, employee_ID, sales_date " +
+                     "FROM sales " +
+                     "WHERE sales_date BETWEEN ? AND NOW()";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            Timestamp endDateTimestamp = Timestamp.valueOf(endDate.atStartOfDay());
+
+            // Set the endDate parameter
+            preparedStatement.setTimestamp(1, endDateTimestamp);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    Sale sale = new Sale();
+                    sale.setSales_ID(resultSet.getInt("sales_ID"));
+                    sale.setTotal_amount(resultSet.getBigDecimal("total_amount"));
+                    sale.setPayment_method(resultSet.getString("payment_method"));
+                    sale.setEmployee_ID(resultSet.getInt("employee_ID"));
+                    sale.setSales_date(resultSet.getTimestamp("sales_date"));
+
+                    sales.add(sale);
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(SaleDAOIMPL.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return sales;
+    }
+
 }

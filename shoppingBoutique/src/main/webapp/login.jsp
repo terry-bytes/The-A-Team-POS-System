@@ -16,9 +16,6 @@
                 </div>
 
                 <form action="EmployeeServlet" method="post">
-
-                <form action="employees" method="post">
-
                     <div class="input-box">
                         <input type="text"
                                placeholder='Employee Id'

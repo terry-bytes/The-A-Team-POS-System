@@ -155,4 +155,30 @@ public class ProductDAOIMPL implements ProductDAO {
         return allItems;
 
     }
+
+    @Override
+    public Product getProductById(int productId) {
+        if(connection == null) return null;
+        String sql = "SELECT product_name, product_description, product_price, category_ID, product_SKU, quantity_in_stock, productImagePath FROM products WHERE product_ID = ?";
+        Product product = new Product();
+        try(PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+            preparedStatement.setInt(1, productId);
+            
+            try(ResultSet resultSet = preparedStatement.executeQuery()){
+                if(resultSet.next()){
+                    product.setProduct_ID(productId);
+                    product.setProduct_name(resultSet.getString("product_name"));
+                    product.setProduct_description(resultSet.getString("product_description"));
+                    product.setProduct_price(resultSet.getDouble("product_price"));
+                    product.setCategory_ID(resultSet.getInt("category_ID"));
+                    product.setProduct_SKU(resultSet.getString("product_SKU"));
+                    product.setQuantity_in_stock(resultSet.getInt("quantity_in_stock"));
+                    product.setProduct_image_path(resultSet.getString("productImagePath"));
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ProductDAOIMPL.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return product;
+    }
 }

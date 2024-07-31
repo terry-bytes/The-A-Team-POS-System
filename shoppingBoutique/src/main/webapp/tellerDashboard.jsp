@@ -124,61 +124,84 @@
             }
             .keyboard {
                 display: flex;
+                justify-content: flex-start; /* Aligns the keyboard to the left */
+                align-items: center;
+                margin-left: 5px;
+            }
+
+            .keyboard-wrapper {
+                display: flex;
                 flex-wrap: wrap;
-                justify-content: flex-start;
-                gap: 5px;
+                width: 300px; /* adjust width as needed */
+                gap: 5px; /* space between keys */
+                padding: 10px;
+                border: 1px solid #ccc;
+                border-radius: 10px;
+                background-color: #3498db;
             }
+
             .key {
-                background: #82caeb;
-                padding: 15px;
-                border: none;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 50px; /* adjust width as needed */
+                height: 30px; /* adjust height as needed */
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                background-color: #3498db;
                 cursor: pointer;
-                border-radius: 4px;
-                text-align: center;
-                font-size: 1.2em;
-                flex: 0 0 auto;
+                user-select: none;
             }
-            .key:hover {
-                background: #ddd;
+
+            .big-key {
+                width: 100%; /* makes the backspace key span the width */
             }
+
             .manual-entry {
                 display: flex;
                 align-items: center;
                 margin-bottom: 10px;
             }
-
             .transaction-buttons {
-                display: flex;
-                flex-wrap: wrap; /* Allows buttons to wrap to a new line if space is insufficient */
-                gap: 22px; /* Increased spacing between buttons */
-                justify-content: center; /* Center buttons horizontally */
-                padding: 10px; /* Add padding around the container */
+                display: grid; /* Use grid layout */
+                grid-template-columns: repeat(2, 1fr); /* 2 columns, each taking up an equal fraction of available space */
+                gap: 5px; /* Space between buttons */
+                padding: 5px; /* Padding inside the container */
+                border: 1px solid #ccc;
+                border-radius: 10px;
+                background-color: #f5f5f5;
+                width: 268px; /* Adjusted width to make the container smaller */
+                max-width: 50%; /* Ensures the container doesn't overflow */
+                box-sizing: border-box; /* Ensures padding and border are included in width */
+                position: absolute; /* Positions the container absolutely */
+                right: 60px; /* Positions the container 10px from the right edge */
+                top: 250px; /* Positions the container 10px from the top edge */
             }
 
             .transaction-buttons button {
-                background: none; /* Remove default background */
-                border: none; /* Remove default border */
-                cursor: pointer; /* Change cursor on hover */
-                padding: 10px; /* Add padding around the icon */
-                display: flex; /* Flexbox for centering content */
-                justify-content: center; /* Center content horizontally */
-                align-items: center; /* Center content vertically */
-                width: 60px; /* Fixed width for buttons */
-                height: 60px; /* Fixed height for buttons */
-                border-radius: 8px; /* Optional: rounded corners */
-                transition: background-color 0.3s, opacity 0.3s; /* Smooth transition for background and opacity */
+                display: flex;
+                justify-content: center; /* Center the button content */
+                align-items: center;
+                width: 100%; /* Makes the button take the full width of the grid cell */
+                padding: 5px; /* Padding inside the buttons */
+                border: none;
+                border-radius: 5px;
+                background-color: #fff;
+                cursor: pointer;
+                transition: background-color 0.3s;
             }
 
             .transaction-buttons button:hover {
-                opacity: 0.8; /* Slightly fade icon on hover */
-                background-color: #444; /* Optional: background color on hover */
+                background-color: #e0e0e0; /* Change background on hover */
             }
 
-            .transaction-buttons .icon {
-                width: 70px; /* Fixed size for icons */
-                height: 70px; /* Fixed size for icons */
-                object-fit: contain; /* Ensure the icon fits within the dimensions */
+            .transaction-buttons img.icon {
+                max-width: 100%; /* Ensures the icon fits within the button */
+                height: auto;
             }
+
+
+
 
 
             #barcode-scanner {
@@ -360,9 +383,9 @@
                             <button type="submit" name="submit" value="auto-submit" id="auto-submit" style="display: none"></button>
                         </div>
                         <div class="payment-icons">
-                            <img src="https://th.bing.com/th/id/R.f50425b14e844bcb90abb0f96c63035f?rik=GB2zRtYycKegvQ&riu=http%3a%2f%2fclipart-library.com%2fimg%2f1867131.png&ehk=JHCBEE17zWHHjFLG3qhbaIoG2vKydXdPRPRWPVL9AME%3d&risl=&pid=ImgRaw&r=0" alt="Cash" onclick="selectPaymentMethod('cash')">
-                            <img src="https://th.bing.com/th/id/OIP.zx9HaAZ6G-qacPDvkz7IhQHaHh?rs=1&pid=ImgDetMain" alt="Card" onclick="selectPaymentMethod('card')">
-                            <img src="https://th.bing.com/th/id/OIP.WbM79d11TS0NkV_votIkhAHaHa?rs=1&pid=ImgDetMain" alt="Card & Cash" onclick="selectPaymentMethod('cardAndcash')">
+                            <img src="Icons/cashhh.png" alt="Cash" onclick="selectPaymentMethod('cash')">
+                            <img src="Icons/290142_business_card_cash_credit_money_icon.png" alt="Card" onclick="selectPaymentMethod('card')">
+                            <img src="Icons/wallet.png" alt="Card & Cash" onclick="selectPaymentMethod('cardAndcash')">
                         </div>
                         <p>   </p>
 
@@ -409,108 +432,91 @@
                     </form>
                     <p>   </p>
                     <div class="keyboard">
-                        <div class="key" onclick="appendToInput('1')">1</div>
-                        <div class="key" onclick="appendToInput('2')">2</div>
-                        <div class="key" onclick="appendToInput('3')">3</div>
-                        <div class="key" onclick="appendToInput('4')">4</div>
-                        <div class="key" onclick="appendToInput('5')">5</div>
-                        <div class="key" onclick="appendToInput('6')">6</div>
-                        <div class="key" onclick="appendToInput('7')">7</div>
-                        <div class="key" onclick="appendToInput('8')">8</div>
-                        <div class="key" onclick="appendToInput('9')">9</div>
-                        <div class="key" onclick="appendToInput('0')">0</div>
-                        <div class="key" onclick="appendToInput('-')">-</div>
-                        <div class="key" onclick="appendToInput('.')">.</div>
-                        <div class="key" onclick="appendToInput('@')">@</div>
-                        <div class="key" onclick="appendToInput('q')">q</div>
-                        <div class="key" onclick="appendToInput('w')">w</div>
-                        <div class="key" onclick="appendToInput('e')">e</div>
-                        <div class="key" onclick="appendToInput('r')">r</div>
-                        <div class="key" onclick="appendToInput('t')">t</div>
-                        <div class="key" onclick="appendToInput('y')">y</div>
-                        <div class="key" onclick="appendToInput('u')">u</div>
-                        <div class="key" onclick="appendToInput('i')">i</div>
-                        <div class="key" onclick="appendToInput('o')">o</div>
-                        <div class="key" onclick="appendToInput('p')">p</div>
-                        <div class="key" onclick="appendToInput('a')">a</div>
-                        <div class="key" onclick="appendToInput('s')">s</div>
-                        <div class="key" onclick="appendToInput('d')">d</div>
-                        <div class="key" onclick="appendToInput('f')">f</div>
-                        <div class="key" onclick="appendToInput('g')">g</div>
-                        <div class="key" onclick="appendToInput('h')">h</div>
-                        <div class="key" onclick="appendToInput('j')">j</div>
-                        <div class="key" onclick="appendToInput('k')">k</div>
-                        <div class="key" onclick="appendToInput('l')">l</div>
-                        <div class="key" onclick="appendToInput('z')">z</div>
-                        <div class="key" onclick="appendToInput('x')">x</div>
-                        <div class="key" onclick="appendToInput('c')">c</div>
-                        <div class="key" onclick="appendToInput('v')">v</div>
-                        <div class="key" onclick="appendToInput('b')">b</div>
-                        <div class="key" onclick="appendToInput('n')">n</div>
-                        <div class="key" onclick="appendToInput('m')">m</div>
-                        <div class="key big-key" onclick="backspace()">&#9003; Backspace</div>
-
-
-
+                        <div class="keyboard-wrapper">
+                            <div class="key" onclick="appendToInput('1')">1</div>
+                            <div class="key" onclick="appendToInput('2')">2</div>
+                            <div class="key" onclick="appendToInput('3')">3</div>
+                            <div class="key" onclick="appendToInput('4')">4</div>
+                            <div class="key" onclick="appendToInput('5')">5</div>
+                            <div class="key" onclick="appendToInput('6')">6</div>
+                            <div class="key" onclick="appendToInput('7')">7</div>
+                            <div class="key" onclick="appendToInput('8')">8</div>
+                            <div class="key" onclick="appendToInput('9')">9</div>
+                            <div class="key" onclick="appendToInput('0')">0</div>
+                            <div class="key" onclick="appendToInput('-')">-</div>
+                            <div class="key" onclick="appendToInput('.')">.</div>
+                            <div class="key" onclick="appendToInput('@')">@</div>
+                            <div class="key" onclick="appendToInput('q')">q</div>
+                            <div class="key" onclick="appendToInput('w')">w</div>
+                            <div class="key" onclick="appendToInput('e')">e</div>
+                            <div class="key" onclick="appendToInput('r')">r</div>
+                            <div class="key" onclick="appendToInput('t')">t</div>
+                            <div class="key" onclick="appendToInput('y')">y</div>
+                            <div class="key" onclick="appendToInput('u')">u</div>
+                            <div class="key" onclick="appendToInput('i')">i</div>
+                            <div class="key" onclick="appendToInput('o')">o</div>
+                            <div class="key" onclick="appendToInput('p')">p</div>
+                            <div class="key" onclick="appendToInput('a')">a</div>
+                            <div class="key" onclick="appendToInput('s')">s</div>
+                            <div class="key" onclick="appendToInput('d')">d</div>
+                            <div class="key" onclick="appendToInput('f')">f</div>
+                            <div class="key" onclick="appendToInput('g')">g</div>
+                            <div class="key" onclick="appendToInput('h')">h</div>
+                            <div class="key" onclick="appendToInput('j')">j</div>
+                            <div class="key" onclick="appendToInput('k')">k</div>
+                            <div class="key" onclick="appendToInput('l')">l</div>
+                            <div class="key" onclick="appendToInput('z')">z</div>
+                            <div class="key" onclick="appendToInput('x')">x</div>
+                            <div class="key" onclick="appendToInput('c')">c</div>
+                            <div class="key" onclick="appendToInput('v')">v</div>
+                            <div class="key" onclick="appendToInput('b')">b</div>
+                            <div class="key" onclick="appendToInput('n')">n</div>
+                            <div class="key" onclick="appendToInput('m')">m</div>
+                            <div class="key big-key" onclick="backspace()">&#9003; Backspace</div>
+                        </div>
                     </div>
+
                     <div class="transaction-buttons">
+
                         <form action="ReturnServlet" method="post">
-                            <button type="submit" name="submit" value="Inventory" title ="Return Item">
+                            <button type="submit" name="submit" value="return" title ="Return Item">
                                 <img src="https://th.bing.com/th/id/OIP.-YCUILzwkqhEWv0dTnBCxgHaHa?w=800&h=800&rs=1&pid=ImgDetMain" alt="Return Item" class="icon"> <!-- Custom icon -->
+
                             </button>
                         </form>
                         <form action="LayawayDashboard.jsp" method="post">
                             <button type="submit" onclick="redirectToAnotherPage()" title="Lay Away">
-                                <img src="https://th.bing.com/th/id/R.0f694a16ad88cb05e475b40be9d6ce90?rik=Cpc%2ftKvFXCuHEQ&riu=http%3a%2f%2feastonfranklinbooks.com%2fimages%2flayaway_box-lg.png&ehk=huFrJkO9u1eSmYEOHBxVPQcPfqgfjq85uY4WSXUzz4M%3d&risl=&pid=ImgRaw&r=0" alt="Lay Away" class="icon"> <!-- Custom icon -->
+                                <img src="Icons/172576_box_icon.png" alt="Lay Away" class="icon">
                             </button>
                         </form>
                         <form action="VoidSaleServlet" method="post">
                             <button type="submit" title="Void Sale">
-                                <img src="https://th.bing.com/th/id/OIP.EpcMhvdK5Fj7MltlPwNzUgAAAA?rs=1&pid=ImgDetMain" alt="Void Sale" class="icon"> <!-- Custom icon -->
+                                <img src="Icons/8140875_pos_void_ticket_cancal_cinema_icon.png" alt="Void Sale" class="icon">
                             </button>
                         </form>
                         <form action="Search.jsp" method="post">
                             <button type="submit" title="Search Item">
-                                <img src="https://th.bing.com/th/id/OIP.MLu0Ae5k7MD3gTU1TQ5svQHaHa?rs=1&pid=ImgDetMain" alt="Search Item" class="icon"> <!-- Custom icon -->
+                                <img src="Icons/211818_search_icon.png" alt="Search Item" class="icon">
                             </button>
                         </form>
                         <form action="ViewReportsServlet" method="post">
                             <button type="submit" title="View Reports">
-                                <img src="https://th.bing.com/th/id/OIP.9EG55S-fBqneTnNdtmXPHAHaHa?rs=1&pid=ImgDetMain" alt="View Reports" class="icon"> <!-- Custom icon -->
+                                <img src="https://static.vecteezy.com/system/resources/previews/024/607/383/non_2x/data-analysis-icon-profit-graph-illustration-sign-data-science-symbol-or-logo-vector.jpg" alt="View Reports" class="icon">
                             </button>
                         </form>
                         <form action="ProductServlet" method="post">
                             <button type="submit" name="submit" value="Inventory" title="Inventory Management">
-                                <img src="https://th.bing.com/th/id/R.73e53d4939d9d0277b14bd80d2a3ca91?rik=RlFgLZ6PqgjZew&riu=http%3a%2f%2fwww.newdesignfile.com%2fpostpic%2f2014%2f04%2fwarehouse-inventory-management_359862.jpg&ehk=YsRn9EnHehUI%2fzbSDqnBvh6%2bl%2f8jxebTg3Pik91f5Bg%3d&risl=&pid=ImgRaw&r=0" alt="Inventory Management" class="icon"> <!-- Custom icon -->
+                                <img src="https://static.vecteezy.com/system/resources/previews/015/890/404/non_2x/checklist-parcel-icon-outline-delivery-box-vector.jpg" alt="Inventory Management" class="icon">
                             </button>
                         </form>
                     </div>
 
+
                 </div>
 
-                <div class="transaction-buttons">
-                    <form action="ProductServlet" method="post">
-                        <button type="submit" name ="submit" value ="return">Return Item</button>
-                    </form>
-                    <form action="LayawayDashboard.jsp" method="post">
-                        <button onclick="redirectToAnotherPage()">Lay Away</button>
-                    </form>
-                    <form action="VoidSaleServlet" method="post">
-                        <button type="submit">Void Sale</button>
-                    </form>
-                    <form action="RemoveItemServlet" method="post">
-                        <button type="submit">Remove Item</button>
-                    </form>
-                    <form action="listProductVariants.jsp" method="post">
-                        <button type="submit">Search Item</button>
-                    </form>
-                    <form action="ViewReportsServlet" method="post">
-                        <button type="submit">View Reports</button>
-                    </form>
-                    <form action="ProductServlet" method="post">
-                        <button type="submit" name ="submit" value ="Inventory">Inventory Management</button>
-                    </form>
-                </div>
+
+                
+
 
             </div>
         </div>
@@ -623,6 +629,7 @@
 
             let scanningPaused = false;
 
+
             document.addEventListener('DOMContentLoaded', (event) => {
                 initQuagga();
             });
@@ -657,6 +664,7 @@
                     Quagga.start();
                 });
             }
+
 
             $(document).ready(function () {
                 $("#addLayawayForm").submit(function (event) {
@@ -696,6 +704,7 @@
                     });
                 });
             });
+
         </script>
 
         <script>
