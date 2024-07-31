@@ -55,7 +55,10 @@ public class ProductServlet extends HttpServlet {
     private EmailService emailService = new EmailServiceImpl();
     private Connect dbConnect = new Connect();
     private InventoryService inventoryService = new InventoryServiceImpl();
+
+
     private static final double VAT_RATE = 0.15;
+
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

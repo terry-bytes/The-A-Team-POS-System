@@ -517,9 +517,10 @@
                     </div>
 
                     <div class="transaction-buttons">
+
                         <form action="ReturnServlet" method="post">
-                            <button type="submit" name ="submit" value ="return">
-                                <img src="Icons/11419687_return_icon.png" alt="Return Item" class="icon">
+                            <button type="submit" name="submit" value="return" title ="Return Item">
+                                <img src="https://th.bing.com/th/id/OIP.-YCUILzwkqhEWv0dTnBCxgHaHa?w=800&h=800&rs=1&pid=ImgDetMain" alt="Return Item" class="icon"> <!-- Custom icon -->
                             </button>
                         </form>
                         <form action="LayawayDashboard.jsp" method="post">
@@ -551,6 +552,9 @@
 
 
                 </div>
+
+
+                
 
 
             </div>

@@ -63,8 +63,9 @@ public class ReturnServlet extends HttpServlet {
 
     private void processReturn(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws IOException {
         int salesId = Integer.parseInt(request.getParameter("sales_ID"));
-        String productSKU = request.getParameter("product_SKU");
-        int productId = returnService.getProductIdBySKU(productSKU);
+        int salesItemId = Integer.parseInt(request.getParameter("salesItemId"));
+        SalesItem sales = returnService.getSalesItemById(salesItemId);
+        int productId = sales.getProduct_ID();
         int quantity = Integer.parseInt(request.getParameter("quantity"));
         String email = request.getParameter("email");
         String reason = request.getParameter("return_reason");
@@ -100,4 +101,14 @@ public class ReturnServlet extends HttpServlet {
         session.setAttribute("message", "Product selected and added to the sale.");
         response.sendRedirect("returnSale.jsp");
     }
+    
+//    private double calculateTotalPrice(List<SalesItem> scannedItems) {
+//        BigDecimal totalPrice = BigDecimal.ZERO;
+//        for (SalesItem  item : scannedItems) {
+//            BigDecimal itemPrice = item.getUnit_price();
+//            int quantity = item.getQuantity();
+//            totalPrice += itemPrice.multiply(quantity);
+//        }
+//        return totalPrice;
+//    }
 }
