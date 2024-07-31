@@ -11,6 +11,7 @@ import ateam.DTO.InventoryData;
 import ateam.DTO.ProductSalesData;
 import ateam.DTO.SalesData;
 import ateam.DTO.StorePerformance;
+import ateam.DTO.TopSellingEmployeeDTO;
 import ateam.Models.Sale;
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -412,4 +413,34 @@ public class ReportDaoImpl implements ReportDAO{
         }
        return sales;
     }
+    
+    public TopSellingEmployeeDTO getTopSellingEmployeeForProduct(int productId) {
+    String query = "SELECT sd.product_ID, s.employee_ID, COUNT(sd.product_ID) AS total_sales, " +
+                   "SUM(sd.quantity * sd.unit_price) AS total_amount " +
+                   "FROM sales s " +
+                   "JOIN sales_items sd ON s.sales_ID = sd.sales_ID " +
+                   "WHERE sd.product_ID = ? " +
+                   "GROUP BY sd.product_ID, s.employee_ID " +
+                   "ORDER BY total_sales DESC " +
+                   "LIMIT 1";
+
+    try (PreparedStatement stmt = connection.prepareStatement(query)) {
+        stmt.setInt(1, productId);
+
+        try (ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) {
+                int employeeId = rs.getInt("employee_ID");
+                int totalSales = rs.getInt("total_sales");
+                BigDecimal totalAmount = rs.getBigDecimal("total_amount");
+
+                return new TopSellingEmployeeDTO(productId, employeeId, totalSales, totalAmount);
+            }
+        }
+    } catch (SQLException ex) {
+        Logger.getLogger(ReportDaoImpl.class.getName()).log(Level.SEVERE, null, ex);
+    }
+
+    return null;
+}
+
 }
