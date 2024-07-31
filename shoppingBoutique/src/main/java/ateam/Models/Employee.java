@@ -17,5 +17,4 @@ public class Employee {
     private String employeePassword;
     private Role role;
     private String email;
-
 }

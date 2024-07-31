@@ -266,11 +266,14 @@ public class ProductServlet extends HttpServlet {
 
                             inventoryService.processSale(newSalesID);
 
+
                             String salespersonName = loggedInUser.getFirstName() + " " + loggedInUser.getLastName();
                             String saleTime = newSale.getSales_date().toString();
                             String customerEmail = request.getParameter("customer_email");
 
+
                             emailService.sendSaleReceipt(customerEmail, salespersonName, saleTime, scannedItems, totalAmountWithoutVAT, vatAmount, change, newSale.getPayment_method(), cashPaid, cardPaid);
+
                             SmsSender.sendSms("+27631821265", saleTime);
 
                             scannedItems.clear();

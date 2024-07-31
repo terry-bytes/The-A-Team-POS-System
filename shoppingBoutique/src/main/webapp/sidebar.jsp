@@ -71,9 +71,12 @@
                         <span class="text nav-text">Notifications</span>
                     </a>
                 </li>
-                <li "class="logo">
-                     <a href="IBTMainDashboard.jsp" class="nav-item">IBT</a>
+                <li "class="nav-link">
+                     <a href="IBTMainDashboard.jsp">
+                     <i class='bx bx-store icon' ></i>
+                        <span class="text nav-text">IBT</span>
                      <%request.getSession().setAttribute("ibtNotifications", true);%>
+                     </a>
                 </li>
             </ul>
         </div>

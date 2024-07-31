@@ -14,6 +14,43 @@
         <!-- Include jQuery library -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+        
+         <style>
+        /* Popup Form Styles */
+        .popup {
+            display: none; /* Hidden by default */
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4); /* Black with opacity */
+        }
+
+        .popup-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
 
         <style>
             .payment-section {
@@ -431,6 +468,7 @@
                         <input type="hidden" id="scanned-items-count" name="scannedItemsCount" value="<c:out value='${fn:length(scannedItems)}'/>">
                         <button type="submit" name="submit" value="Complete-Sale">Complete Sale</button>
                         <input type="submit" value="Process Layaway" onclick="openPopup()">
+                        <input type="button" value="Process IBT" id="openPopupButton">
                     </form>
                     <p>   </p>
                     <div class="keyboard">
@@ -517,6 +555,48 @@
 
             </div>
         </div>
+                        
+    <!-- The Popup Form -->
+    <div id="popupForm" class="popup">
+        <div class="popup-content">
+            <span class="close" id="closePopup">&times;</span>
+            <h2>Enter IBT ID Number</h2>
+            <form id="ibtForm">
+                <label for="ibtNumber">IBT ID:</label>
+                <input type="text" id="ibtNumber" name="ibtNumber" required>
+                <label>Store ID: </label><label></label>
+                <label></label><label></label>
+                <label></label><label></label>
+                <input type="submit" value="Submit">
+            </form>
+        </div>
+    </div>
+         
+         <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get the popup and button elements
+            var popup = document.getElementById("popupForm");
+            var btn = document.getElementById("openPopupButton");
+            var close = document.getElementById("closePopup");
+
+            // When the user clicks the button, open the popup
+            btn.onclick = function() {
+                popup.style.display = "block";
+            };
+
+            // When the user clicks on <span> (x), close the popup
+            close.onclick = function() {
+                popup.style.display = "none";
+            };
+
+            // When the user clicks anywhere outside of the popup, close it
+            window.onclick = function(event) {
+                if (event.target === popup) {
+                    popup.style.display = "none";
+                }
+            };
+        });
+    </script>
 
         <video id="barcode-scanner" autoplay></video>
         <audio id="beep-sound" src="beep.mp3" preload="auto"></audio>
