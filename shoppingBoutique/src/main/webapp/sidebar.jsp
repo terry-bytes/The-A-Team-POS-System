@@ -52,7 +52,7 @@
                 
                 <li class="nav-link">
                     
-                    <a href="EmployeeServlet?submit=getAddEmployee">
+                    <a href="EmployeeServlet?submit=myEmployees">
                         <i class='bx bx-group icon'></i>
                         <span class="text nav-text">My Employees</span>
                     </a>

@@ -9,6 +9,7 @@ import ateam.Exception.EmployeeNotFoundException;
 import ateam.Exception.InvalidPasswordException;
 import ateam.Models.Employee;
 import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -39,4 +40,6 @@ public interface EmployeeService {
     Employee findByEmail(String email);
 
     boolean updatePasswordByEmail(String email, String newPassword);
+    
+    Set<Employee> managersEmployee(int storeId);
 }
