@@ -262,7 +262,7 @@ public class EmployeeServlet extends HttpServlet {
 
             switch (employee.getRole()) {
                 case Admin:
-                    request.getRequestDispatcher("admin.jsp").forward(request, response);
+                    request.getRequestDispatcher("AdminDashboard.jsp").forward(request, response);
                     break;
                 case Manager:
                     response.sendRedirect("SalesDemo");

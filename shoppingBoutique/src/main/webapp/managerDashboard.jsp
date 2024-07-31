@@ -19,7 +19,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Admin Dashboard</title>
+        <title>Manager Dashboard</title>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/report.css">
         <!-- Script to trigger notification update on IBT Main Dashboard -->
