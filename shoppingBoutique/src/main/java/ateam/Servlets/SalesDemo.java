@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package ateam.Servlets;
 
 import ateam.BDconnection.Connect;
@@ -16,19 +11,23 @@ import ateam.Models.Employee;
 import ateam.Models.Product;
 import ateam.Models.Reports;
 import ateam.Models.Sale;
+import ateam.Models.SalesItem;
 import ateam.Models.Store;
 import ateam.Service.EmployeeService;
 import ateam.Service.ProductService;
+import ateam.Service.SaleItemsService;
 import ateam.Service.SaleService2;
 import ateam.Service.StoreService;
 import ateam.ServiceImpl.EmployeeServiceImpl;
 import ateam.ServiceImpl.ProductServiceImpl;
+import ateam.ServiceImpl.SaleItemServiceImpl;
 import ateam.ServiceImpl.SaleServiceImpl;
 import ateam.ServiceImpl.StoreServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -37,8 +36,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,32 +50,27 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-
-
-/**
- *
- * @author T440
- */
 @WebServlet(name = "SalesDemo", urlPatterns = {"/SalesDemo"})
 public class SalesDemo extends HttpServlet {
+
     private final SaleService2 saleService = new SaleServiceImpl();
     private final StoreService storeService = new StoreServiceImpl(new StoreDAOIMPL(new Connect().connectToDB()));
     private final EmployeeService employeeService = new EmployeeServiceImpl(new EmployeeDAOIMPL());
     private final Reports reports = new Reports();
     private final ProductService productService = new ProductServiceImpl();
-    
+    SaleItemsService saleItemsService = new SaleItemServiceImpl();
+
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
     }
 
-    
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
         Employee manager = (Employee) request.getSession(false).getAttribute("Employee");
-        
+
         Map<String, StorePerfomanceInSales> getTopAchievingStores;
         getTopAchievingStores = reports.getTopAchievingStores();
         Map<String, BigDecimal> generateMonthReportForStore = reports.getMonthSalesReport(manager.getStore_ID(), LocalDate.now());
@@ -88,7 +80,7 @@ public class SalesDemo extends HttpServlet {
         Map<String, BigDecimal> todaysSales = reports.getTodaysReportForAllStores();
         List<TopProductDTO> topProduct = reports.top40SellingProducts();
         List<Product> products = productService.getAllItems();
-        
+
         request.getSession(false).setAttribute("Products", products);
         request.getSession(false).setAttribute("top40SellingProducts", topProduct);
         request.getSession(false).setAttribute("Today'sReport", todaysSales);
@@ -100,12 +92,11 @@ public class SalesDemo extends HttpServlet {
         request.getRequestDispatcher("managerDashboard.jsp").forward(request, response);
     }
 
-    
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
-        switch(request.getParameter("submit")){
+        switch (request.getParameter("submit")) {
             case "getMonthReport":
                 try {
                     handleMonthReport(request, response);
@@ -133,41 +124,38 @@ public class SalesDemo extends HttpServlet {
             case "getLeastPerformingStore":
                 handleGetLeastPerformingStore(request, response);
                 break;
+            case "downloadReport":
+                handleDownloadRequest(request, response);
+                break;
         }
     }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
     @Override
     public String getServletInfo() {
         return "Short description";
-    }// </editor-fold>
+    }
 
-    private void handleMonthReport(HttpServletRequest request, HttpServletResponse response) throws ParseException, ServletException, IOException{
+    private void handleMonthReport(HttpServletRequest request, HttpServletResponse response) throws ParseException, ServletException, IOException {
         int storeId = Integer.parseInt(request.getParameter("storeId"));
         String dateStr = request.getParameter("date");
 
-        Map<String, BigDecimal> report = reports.getMonthSalesReport(storeId, LocalDate.parse(dateStr+"-01", DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-        
+        Map<String, BigDecimal> report = reports.getMonthSalesReport(storeId, LocalDate.parse(dateStr + "-01", DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+
         ObjectMapper mapper = new ObjectMapper();
         Map<String, Object> responseData = new HashMap<>();
         responseData.put("labels", report.keySet().toArray(new String[0])); // Convert keys to array for labels
         responseData.put("data", report.values().toArray(new BigDecimal[0]));
-       
+
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write(mapper.writeValueAsString(responseData));
     }
-    
-    private LocalDate dateFormatter(String date) throws ParseException{
+
+    private LocalDate dateFormatter(String date) throws ParseException {
         return LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM"));
     }
-    
-    private void handleRequestTopEmployeeByStore(HttpServletRequest request, HttpServletResponse response) throws IOException{
-        
+
+    private void handleRequestTopEmployeeByStore(HttpServletRequest request, HttpServletResponse response) throws IOException {
         int storeId = Integer.parseInt(request.getParameter("storeId"));
         Map<String, Integer> topSellingEmpByStore = reports.generateTopSellingEmployees(storeId);
 
@@ -181,31 +169,29 @@ public class SalesDemo extends HttpServlet {
         response.setContentType("application/json");
         response.getWriter().write(new ObjectMapper().writeValueAsString(jsonResponse));
     }
-    
-    private void handleStoreAchieveTarget(HttpServletRequest request, HttpServletResponse response) throws ParseException, IOException{
+
+    private void handleStoreAchieveTarget(HttpServletRequest request, HttpServletResponse response) throws ParseException, IOException {
         LocalDate startDate = dateFormatter(request.getParameter("date"));
         LocalDate endDate = startDate.withDayOfMonth(startDate.getDayOfMonth());
-        
-        
+
         Map<String, StorePerfomanceInSales> storeAchievedTarget = reports.StoreAchievedTarget(startDate, endDate);
-        
+
         List<String> labels = storeAchievedTarget.keySet().stream().collect(Collectors.toList());
         List<StorePerfomanceInSales> data = storeAchievedTarget.values().stream().collect(Collectors.toList());
-        
+
         Map<String, Object> jsonResponse = new TreeMap<>();
         jsonResponse.put("labels", labels);
         jsonResponse.put("data", data);
         response.setContentType("application/json");
         response.getWriter().write(new ObjectMapper().writeValueAsString(jsonResponse));
     }
-    
-    private void handleTopSellingEmployeeBasedOnProduct(HttpServletRequest request, HttpServletResponse response) throws IOException{
+
+    private void handleTopSellingEmployeeBasedOnProduct(HttpServletRequest request, HttpServletResponse response) throws IOException {
         int productId = Integer.parseInt(request.getParameter("productId"));
         TopSellingEmployeeDTO topEmp = reports.getTopSellingEmployeeForProduct(productId);
 
-      response.setContentType("application/json");
+        response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
-
 
         // Convert the list to JSON
         ObjectMapper mapper = new ObjectMapper();
@@ -214,33 +200,52 @@ public class SalesDemo extends HttpServlet {
         // Send the response back to the client
         PrintWriter out = response.getWriter();
         out.print(jsonResponse);
-        out.flush();   
+        out.flush();
     }
-    
-    private void handleCurrentSalesBasedOnStore(HttpServletRequest request, HttpServletResponse response) throws IOException{
+
+    private void handleCurrentSalesBasedOnStore(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String rs = reports.generateDailySaleReport(Integer.parseInt(request.getParameter("storeId")));
-        
-        String result =rs;
-        
+
+        String result = rs;
+
         response.setContentType("text/html");
         response.getWriter().write(result);
     }
-    private void handleGetLeastPerformingStore(HttpServletRequest request, HttpServletResponse response) throws IOException{
+
+    private void handleGetLeastPerformingStore(HttpServletRequest request, HttpServletResponse response) throws IOException {
         LocalDate today = LocalDate.now();
-        int interval = Integer.parseInt(request.getParameter("month"));
-        double target = Double.parseDouble(request.getParameter("target"));
-        LocalDate endDate = today.minusMonths(interval);
-        
-        Map<String, BigDecimal> leastPerformingStores = reports.leastPerformingStores(interval, target);
-        
-        
-        ObjectMapper mapper = new ObjectMapper();
-        Map<String, Object> responseData = new HashMap<>();
-        responseData.put("labels", leastPerformingStores.keySet().toArray(new String[0])); // Convert keys to array for labels
-        responseData.put("data", leastPerformingStores.values().toArray(new BigDecimal[0]));
-       
+        Map<String, BigDecimal> leastPerformingStores = reports.leastPerformingStores(3, 40.0);
+
+        List<String> labels = leastPerformingStores.keySet().stream().collect(Collectors.toList());
+        List<BigDecimal> data = leastPerformingStores.values().stream().collect(Collectors.toList());
+
+        Map<String, Object> jsonResponse = new HashMap<>();
+        jsonResponse.put("labels", labels);
+        jsonResponse.put("data", data);
+
         response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(mapper.writeValueAsString(responseData));
+        response.getWriter().write(new ObjectMapper().writeValueAsString(jsonResponse));
     }
+
+    private void handleDownloadRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setContentType("text/csv");
+        response.setHeader("Content-Disposition", "attachment;filename=sales_items_report.csv");
+
+        try (PrintWriter writer = response.getWriter()) {
+            writer.println("Sales Item ID,Sales ID,Product ID,Quantity,Unit Price");
+
+            List<SalesItem> salesItems = saleItemsService.getAllSalesItems();
+
+// Print out the sales items
+            for (SalesItem salesItem : salesItems) {
+                writer.printf("%d,%d,%d,%d,%.2f%n",
+                        salesItem.getSales_item_ID(),
+                        salesItem.getSales_ID(),
+                        salesItem.getProduct_ID(),
+                        salesItem.getQuantity(),
+                        salesItem.getUnit_price());
+            }
+        }
+    }
+
 }
