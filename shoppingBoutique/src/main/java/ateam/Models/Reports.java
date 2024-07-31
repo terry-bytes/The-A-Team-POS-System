@@ -28,7 +28,9 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -492,13 +494,29 @@ public class Reports {
             ));
     }
     
-    public Map<String, BigDecimal> getTodaysReportForAllStores(){
-        return reportDao.getTodaysSales().stream()
-                .collect(Collectors.groupingBy(
-                    sale -> storeService.getStoreById(sale.getStore_ID()).getStore_name(),
-                        Collectors.mapping(
-                                Sale::getTotal_amount,
-                                Collectors.reducing(BigDecimal.ZERO, BigDecimal::add))
-                ));
+    public Map<String, BigDecimal> getTodaysReportForAllStores() {
+    List<Sale> sales = reportDao.getTodaysSales();
+    
+    if (sales == null || sales.isEmpty()) {
+        return Collections.emptyMap(); // Return an empty map instead of null
     }
+    
+    return sales.stream()
+        .map(sale -> {
+            Store store = storeService.getStoreById(sale.getStore_ID());
+            return new AbstractMap.SimpleEntry<>(
+                store != null ? store.getStore_name() : "Unknown Store", // Handle potential null store
+                sale.getTotal_amount()
+            );
+        })
+        .filter(entry -> entry.getKey() != null) // Ensure store name is not null
+        .collect(Collectors.groupingBy(
+            Map.Entry::getKey,
+            Collectors.mapping(
+                Map.Entry::getValue,
+                Collectors.reducing(BigDecimal.ZERO, BigDecimal::add)
+            )
+        ));
+}
+
 }

@@ -106,7 +106,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public void sendSaleReceipt(String toEmail, String salespersonName, String saleTime, List<Product> items, BigDecimal totalAmountWithVAT, BigDecimal vatAmount, BigDecimal change, String paymentMethod) {
+    public void sendSaleReceipt(String toEmail, String salespersonName, String saleTime, List<Product> items, BigDecimal totalAmountWithVAT, BigDecimal vatAmount, BigDecimal change, String paymentMethod,BigDecimal cashPaid,BigDecimal cardPaid) {
         final String from = "ramovhatp@gmail.com";
         final String password = "xaed clmt qpis ctvf";
         Properties props = new Properties();
@@ -193,6 +193,7 @@ public class EmailServiceImpl implements EmailService {
             totalAmountParagraph.setSpacingBefore(10);
             document.add(totalAmountParagraph);
             document.add(new Paragraph("VAT Amount: " + String.format("R%.2f", vatAmount), normalFont));
+            document.add(new Paragraph("Cash Paid: " + String.format("R%.2f", cashPaid), normalFont));
             document.add(new Paragraph("Change: " + String.format("R%.2f", change), normalFont));
             document.add(new Paragraph("Payment Method: " + paymentMethod, normalFont));
             document.add(new Paragraph(" "));

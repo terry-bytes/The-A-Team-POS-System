@@ -85,7 +85,9 @@ public class SalesDemo extends HttpServlet {
         Map<String, Integer> topSellingEmployees = reports.generateTopSellingEmployees();
         Map<String, BigDecimal> leastPerformingStore = reports.leastPerformingStores(3, 40.0);
         Map<String, BigDecimal> todaysSales = reports.getTodaysReportForAllStores();
+        List<TopProductDTO> topProduct = reports.top40SellingProducts();
         
+        request.getSession(false).setAttribute("top40SellingProducts", topProduct);
         request.getSession(false).setAttribute("Today'sReport", todaysSales);
         request.getSession(false).setAttribute("leastPerformingStores", leastPerformingStore);
         request.getSession(false).setAttribute("topSellingEmployee", topSellingEmployees);
