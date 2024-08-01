@@ -64,13 +64,10 @@
             StringBuilder leastStoreData = new StringBuilder();
             StringBuilder todaysLabels = new StringBuilder();
             StringBuilder todaysData = new StringBuilder();
-            StringBuilder labels = new StringBuilder();
-            StringBuilder data = new StringBuilder();
-            StringBuilder monthDate = new StringBuilder();
-            StringBuilder monthData = new StringBuilder();
-
             if (employee != null) {
                 if (getTopAchievingStores != null && !getTopAchievingStores.isEmpty()) {
+                    StringBuilder labels = new StringBuilder();
+                    StringBuilder data = new StringBuilder();
 
                     for (Map.Entry<String, StorePerfomanceInSales> entry : getTopAchievingStores.entrySet()) {
 
@@ -94,11 +91,15 @@
                 <form action="DownloadReportPDF" method="get">
                     <button type="submit" class="submit-btn">Download PDF</button>
                 </form>
+                <form action="SalesDemo" method="post">
+                    <input type="hidden" name="submit" value="downloadReport">
+                    <button type="submit">Download Sales Items Report</button>
+                </form>
 
                 <!------------------- Top Achieving Store ---------------------->
                 <div class="report">
                     <div class="two">
-                        <h4>Top Achieving Store <%= topSellingEmployees.size()%></h4>
+                        <h4>Top Achieving Store</h4>
                         <div class="input-submit">
                             <input name="submit" value="download" hidden>
                             <button class="submit-btn" id="submit">Download</button>
@@ -115,11 +116,12 @@
                 </div>
 
                 <% if (monthReport != null && !monthReport.isEmpty()) {
+                        StringBuilder monthDate = new StringBuilder();
+                        StringBuilder monthData = new StringBuilder();
 
                         for (Map.Entry<String, BigDecimal> entry : monthReport.entrySet()) {
                             monthDate.append("'").append(entry.getKey()).append("',");
                             monthData.append(entry.getValue()).append(",");
-                            System.out.println("month date: " + monthDate);
                         }
 
                         if (monthData.length() > 0) {
@@ -160,14 +162,12 @@
                         </div>
                     </div>
                 </div>
-                        <%}%>
 
                 <%if (topSellingEmployees != null && !topSellingEmployees.isEmpty()) {
 
                         for (Map.Entry<String, Integer> entry : topSellingEmployees.entrySet()) {
                             employeeNames.append("'").append(entry.getKey()).append("',");
                             soldData.append(entry.getValue()).append(",");
-                            
                         }
 
                 %>
@@ -201,8 +201,7 @@
                         for (Map.Entry<String, BigDecimal> entry : leastPerformingStores.entrySet()) {
                             leastStoreLabels.append("'").append(entry.getKey()).append("',");
                             leastStoreData.append(entry.getValue()).append(",");
-            }
-                %>
+            }%>
 
                 <div class="report">
                     <div class="two">
@@ -337,346 +336,333 @@
                     </div>
                     <%}%>
                 </div>
-            </div>
-        </div>
-        
+
+                <script>
+                    document.addEventListener('DOMContentLoaded', () => {
+                        // Data from server-side (replace with actual data from JSP)
+                        const salesLabels = [<%= labels.toString()%>]; // Replace with actual labels
+                        const salesData = [<%= data.toString()%>]; // Replace with actual data
+                        const monthLabels = [<%= monthDate.toString()%>]; // Replace with actual month labels
+                        const monthData = [<%= monthData.toString()%>]; // Replace with actual month data
+                        const topSellingEmployees = [<%= employeeNames.toString()%>];
+                        const topSellingEmpData = [<%= soldData.toString()%>];
+                        const todaysReportLabels = [<%= todaysLabels.toString()%>];
+                        const todaysReportData = [<%= todaysData.toString()%>];
+
+                        let monthBarChart = null;
+                        let monthPieChart = null;
+                        let leastBarChart = null;
+                        let leastPieChart = null;
+                        console.log(topSellingEmployees);
+                        console.log(topSellingEmpData);
+                        // Colors
+                        const barBgColor = 'rgba(54, 162, 235, 0.2)';
+                        const barBorderColor = 'rgba(54, 162, 235, 1)';
+                        const pieBgColor = [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(123, 89, 132, 1)',
+                            'rgba(255, 165, 99, 1)',
+                            'rgba(94, 83, 83, 1)'
+                        ];
+
+                        // Initialize sales charts
+                        const salesCtx = document.getElementById('salesChart').getContext('2d');
+                        const salesPieCtx = document.getElementById('salesPieChart').getContext('2d');
+                        initBarChart(salesCtx, salesLabels, salesData, 'Sales', barBgColor, barBorderColor);
+                        initPieChart(salesPieCtx, salesLabels, salesData, pieBgColor);
+
+                        // Initialize month report charts
+                        const monthBarCtx = document.getElementById('monthReportBar').getContext('2d');
+                        const monthPieCtx = document.getElementById('monthReportPie').getContext('2d');
+                        BarChart(monthBarCtx, monthLabels, monthData, 'Total Amount', barBgColor, barBorderColor);
+                        initPieChart(monthPieCtx, monthLabels, monthData, pieBgColor);
+
+                        // Initialize topSelling employee charts
+                        const topSellingEmpBarCtx = document.getElementById('topSellingEmpReportBar').getContext('2d');
+                        const topSellingEmpPieCtx = document.getElementById('topSellingEmpReportPie').getContext('2d');
+                        BarChart(topSellingEmpBarCtx, topSellingEmployees, topSellingEmpData, 'Top Employee', barBgColor, barBorderColor);
+                        initPieChart(topSellingEmpPieCtx, topSellingEmployees, topSellingEmpData, pieBgColor);
+
+                        // Initialize Least Performing Stores Charts
+                        const leastPerformingBarCtx = document.getElementById('leastPerformingStoreBar').getContext('2d');
+                        const leastPerformingPieCtx = document.getElementById('leastPerformingStorePie').getContext('2d');
+                        BarChart(leastPerformingBarCtx, [<%= leastStoreLabels.toString()%>], [<%= leastStoreData.toString()%>], 'Least Performing Stores', barBgColor, barBorderColor);
+                        initPieChart(leastPerformingPieCtx, [<%= leastStoreLabels.toString()%>], [<%= leastStoreData.toString()%>], pieBgColor);
 
 
 
+                        document.getElementById('RequestMonthReport').addEventListener('click', function () {
+                            const storeId = document.getElementById('storeMonthlySales').value;
+                            const monthDate = document.getElementById('monthDatePicker').value;
 
-        <% }
-                }%>
-        <script>
-            document.addEventListener('DOMContentLoaded', () => {
-                console.log("Screen loaded successfully...");
-                console.log("Employee name " + [<%= employeeNames.toString()%>]);
-                // Data from server-side (replace with actual data from JSP)
-                const salesLabels = [<%= labels.toString()%>];
-                const salesData = [<%= data.toString()%>];
-                const monthLabels = [<%= monthDate.toString()%>]; // Replace with actual month labels
-                const monthData = [<%= monthData.toString()%>]; // Replace with actual month data
-                const topSellingEmployees = [<%= employeeNames.toString()%>];
-                const topSellingEmpData = [<%= soldData.toString()%>];
-                const todaysReportLabels = [<%= todaysLabels.toString()%>];
-                const todaysReportData = [<%= todaysData.toString()%>];
-                const leastPerformingLabels = [<%= leastStoreLabels.toString()%>];
-                const leastPerformingData = [<%= leastStoreData.toString()%>];
-
-                let monthBarChart = null;
-                let monthPieChart = null;
-                let leastBarChart = null;
-                let leastPieChart = null;
-                console.log(topSellingEmployees);
-                console.log(topSellingEmpData);
-                console.log("Sales Labels:", leastPerformingLabels);
-console.log("Sales Data:", salesData);
-                // Colors
-                const barBgColor = 'rgba(54, 162, 235, 0.2)';
-                const barBorderColor = 'rgba(54, 162, 235, 1)';
-                const pieBgColor = [
-                    'rgba(255, 99, 132, 1)',
-                    'rgba(123, 89, 132, 1)',
-                    'rgba(255, 165, 99, 1)',
-                    'rgba(94, 83, 83, 1)'
-                ];
-
-                // Initialize sales charts
-                const salesCtx = document.getElementById('salesChart').getContext('2d');
-                const salesPieCtx = document.getElementById('salesPieChart').getContext('2d');
-                initBarChart(salesCtx, salesLabels, salesData, 'Sales', barBgColor, barBorderColor);
-                initPieChart(salesPieCtx, salesLabels, salesData, pieBgColor);
-
-                if (!monthLabels || !monthData) {
-                    // Initialize month report charts
-                    const monthBarCtx = document.getElementById('monthReportBar').getContext('2d');
-                    const monthPieCtx = document.getElementById('monthReportPie').getContext('2d');
-                    BarChart(monthBarCtx, monthLabels, monthData, 'Total Amount', barBgColor, barBorderColor);
-                    initPieChart(monthPieCtx, monthLabels, monthData, pieBgColor);
-                }
-
-                if (topSellingEmployees.length > 0 && topSellingEmpData.length > 0) {
-                    // Initialize topSelling employee charts
-                    const topSellingEmpBarCtx = document.getElementById('topSellingEmpReportBar').getContext('2d');
-                    const topSellingEmpPieCtx = document.getElementById('topSellingEmpReportPie').getContext('2d');
-                    BarChart(topSellingEmpBarCtx, topSellingEmployees, topSellingEmpData, 'Top Employee', barBgColor, barBorderColor);
-                    initPieChart(topSellingEmpPieCtx, topSellingEmployees, topSellingEmpData, pieBgColor);
-                }
-
-                if (leastPerformingData.length > 0 || leastPerformingLabels.length >0) {
-                    // Initialize Least Performing Stores Charts
-                    const leastPerformingBarCtx = document.getElementById('leastPerformingStoreBar').getContext('2d');
-                    const leastPerformingPieCtx = document.getElementById('leastPerformingStorePie').getContext('2d');
-                        BarChart(leastPerformingBarCtx, leastPerformingLabels, leastPerformingData, 'Least Performing Stores', barBgColor, barBorderColor);
-                        initPieChart(leastPerformingPieCtx, leastPerformingLabels, leastPerformingData, pieBgColor);
-                }
-
-
-                document.getElementById('RequestMonthReport').addEventListener('click', function () {
-                    const storeId = document.getElementById('storeMonthlySales').value;
-                    const monthDate = document.getElementById('monthDatePicker').value;
-
-                    if (!storeId || !monthDate) {
-                        alert('Please select both a store and a month.');
-                        return;
-                    }
-
-                    fetchMonthReport(storeId, monthDate);
-                });
-
-                document.getElementById("leastPerformingStore").addEventListener('click', function () {
-                    const target = document.getElementById("leastPerformingStoreTarget").value;
-                    const month = document.getElementById('monthInterval').value;
-
-                    fetchLeastPerformingStore(target, month);
-                });
-
-
-                document.getElementById('topSellingEmployee').addEventListener('change', function () {
-                    const storeId = this.value;
-                    console.log("store id need want to check for top employee" + storeId);
-
-                    fetch('SalesDemo', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                        body: new URLSearchParams({
-                            submit: '',
-                            storeId: storeId
-                        })
-                    })
-                            .then(response => response.json())
-                            .then(data => {
-                                const names = data;
-
-                            })
-                            .catch(error => console.error('Error fetching data:', error));
-                });
-
-                document.getElementById("topProductSeller").addEventListener('change', function () {
-                    const productId = document.getElementById('topProductSeller').value;
-                    alert('product Id ' + productId);
-
-                    getTopProductSeller(productId);
-                });
-
-                function getTopProductSeller(productId) {
-                    fetch('SalesDemo', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded'
-                        },
-                        body: new URLSearchParams({
-                            productId: productId,
-                            submit: 'getTopSellingEmployeeBasedOnProduct'
-                        })
-                    })
-                            .then(response => response.json())
-                            .then(data => {
-                                const tableBody = document.getElementById('productSellerDetails');
-                                tableBody.innerHTML = ''; // Clear previous results
-
-                                if (data && data.length > 0) {
-                                    data.forEach(item => {
-                                        const row = document.createElement('tr');
-                                        row.innerHTML = `
-                <td>${item.productName}</td>
-                <td>${item.tellerName}</td>
-                <td>${item.amountSold}</td>
-            `;
-                                        tableBody.appendChild(row);
-                                    });
-                                    document.getElementById('topSellingProduct').style.display = 'block';
-                                } else {
-                                    // Optionally handle the case where there are no results
-                                    document.getElementById('topSellingProduct').style.display = 'none';
-                                }
-                            })
-                            .catch(error => console.error('Error:', error));
-                }
-
-                function fetchMonthReport(storeId, monthDate) {
-                    fetch('SalesDemo', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded'
-                        },
-                        body: new URLSearchParams({
-                            storeId: storeId,
-                            date: monthDate,
-                            submit: 'getMonthReport'
-                        })
-                    })
-                            .then(response => response.json())
-                            .then(data => {
-                                const monthLabels = data.labels;
-                                const monthData = data.data;
-
-                                const barBgColor = 'rgba(75, 192, 192, 0.2)';
-                                const barBorderColor = 'rgba(75, 192, 192, 1)';
-                                const pieBgColor = ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)', 'rgba(255, 206, 86, 1)'];
-
-                                const barChartContainer = document.querySelector('#monthReportBar').parentElement.parentElement;
-                                const pieChartContainer = document.querySelector('#monthReportPie').parentElement.parentElement;
-
-                                if (monthBarChart) {
-                                    monthBarChart.destroy();
-                                }
-                                if (monthPieChart) {
-                                    monthPieChart.destroy();
-                                }
-
-
-                                // Create new charts
-                                monthBarChart = updateBarChart(monthBarCtx, monthLabels, monthData, 'Total Amount', barBgColor, barBorderColor);
-                                monthPieChart = updatePieChart(monthPieCtx, monthLabels, monthData, pieBgColor);
-                            })
-                            .catch(error => console.error('Error fetching month report:', error));
-                }
-                function fetchLeastPerformingStore(target, months) {
-                    alert('fetching least performing stores...');
-                    fetch('SalesDemo', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded'
-                        },
-                        body: new URLSearchParams({
-                            target: target,
-                            month: months,
-                            submit: 'getLeastPerformingStore'
-                        })
-                    })
-                            .then(response => response.json())
-                            .then(data => {
-                                const leastLabels = data.labels;
-                                const leastData = data.data;
-
-                                console.log("least labels" + leastLabels);
-                                if (leastBarChart) {
-                                    monthBarChart.destroy();
-                                }
-                                if (leastPieChart) {
-                                    monthPieChart.destroy();
-                                }
-
-                                updateBarChart(leastPerformingBarCtx, leastLabels, leastData, 'Least Performing Stores', barBgColor, barBorderColor);
-                                updatePieChart(leastPerformingPieCtx, leastLabels, leastData, pieBgColor);
-                            });
-                }
-
-            });
-
-            // Function to initialize a bar chart
-            function initBarChart(ctx, labels, data, label, bgColor, borderColor) {
-                return new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                                label: label,
-                                data: data,
-                                backgroundColor: bgColor,
-                                borderColor: borderColor,
-                                borderWidth: 1
-                            }]
-                    },
-                    options: {
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    callback: function (value) {
-                                        return value + '%';
-                                    }
-                                }
+                            if (!storeId || !monthDate) {
+                                alert('Please select both a store and a month.');
+                                return;
                             }
-                        }
-                    }
-                });
-            }
 
-            // Function to initialize a pie chart
-            function initPieChart(ctx, labels, data, bgColor) {
-                return new Chart(ctx, {
-                    type: 'pie',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                                data: data,
-                                backgroundColor: bgColor
-                            }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: {
-                                position: 'right'
-                            },
-                            tooltip: {
-                                callbacks: {
-                                    label: function (context) {
-                                        let label = context.label || '';
-                                        if (context.parsed !== null) {
-                                            label += ': ' + context.raw + '%';
+                            fetchMonthReport(storeId, monthDate);
+                        });
+
+                        document.getElementById("leastPerformingStore").addEventListener('click', function () {
+                            const target = document.getElementById("leastPerformingStoreTarget").value;
+                            const month = document.getElementById('monthInterval').value;
+
+                            fetchLeastPerformingStore(target, month);
+                        });
+
+
+                        document.getElementById('topSellingEmployee').addEventListener('change', function () {
+                            const storeId = this.value;
+                            console.log("store id need want to check for top employee" + storeId);
+
+                            fetch('SalesDemo', {
+                                method: 'POST',
+                                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                                body: new URLSearchParams({
+                                    submit: '',
+                                    storeId: storeId
+                                })
+                            })
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        const names = data;
+
+                                    })
+                                    .catch(error => console.error('Error fetching data:', error));
+                        });
+
+                        document.getElementById("topProductSeller").addEventListener('change', function () {
+                            const productId = document.getElementById('topProductSeller').value;
+                            alert('product Id ' + productId);
+
+                            getTopProductSeller(productId);
+                        });
+
+                        function getTopProductSeller(productId) {
+                            fetch('SalesDemo', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded'
+                                },
+                                body: new URLSearchParams({
+                                    productId: productId,
+                                    submit: 'getTopSellingEmployeeBasedOnProduct'
+                                })
+                            })
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        const tableBody = document.getElementById('productSellerDetails');
+                                        tableBody.innerHTML = ''; // Clear previous results
+
+                                        if (data && data.length > 0) {
+                                            data.forEach(item => {
+                                                const row = document.createElement('tr');
+                                                row.innerHTML = `
+                        <td>${item.productName}</td>
+                        <td>${item.tellerName}</td>
+                        <td>${item.amountSold}</td>
+                    `;
+                                                tableBody.appendChild(row);
+                                            });
+                                            document.getElementById('topSellingProduct').style.display = 'block';
+                                        } else {
+                                            // Optionally handle the case where there are no results
+                                            document.getElementById('topSellingProduct').style.display = 'none';
                                         }
-                                        return label;
+                                    })
+                                    .catch(error => console.error('Error:', error));
+                        }
+
+                        function fetchMonthReport(storeId, monthDate) {
+                            fetch('SalesDemo', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded'
+                                },
+                                body: new URLSearchParams({
+                                    storeId: storeId,
+                                    date: monthDate,
+                                    submit: 'getMonthReport'
+                                })
+                            })
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        const monthLabels = data.labels;
+                                        const monthData = data.data;
+
+                                        const barBgColor = 'rgba(75, 192, 192, 0.2)';
+                                        const barBorderColor = 'rgba(75, 192, 192, 1)';
+                                        const pieBgColor = ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)', 'rgba(255, 206, 86, 1)'];
+
+                                        const barChartContainer = document.querySelector('#monthReportBar').parentElement.parentElement;
+                                        const pieChartContainer = document.querySelector('#monthReportPie').parentElement.parentElement;
+
+                                        if (monthBarChart) {
+                                            monthBarChart.destroy();
+                                        }
+                                        if (monthPieChart) {
+                                            monthPieChart.destroy();
+                                        }
+
+
+                                        // Create new charts
+                                        monthBarChart = updateBarChart(monthBarCtx, monthLabels, monthData, 'Total Amount', barBgColor, barBorderColor);
+                                        monthPieChart = updatePieChart(monthPieCtx, monthLabels, monthData, pieBgColor);
+                                    })
+                                    .catch(error => console.error('Error fetching month report:', error));
+                        }
+                        function fetchLeastPerformingStore(target, months) {
+                            alert('fetching least performing stores...');
+                            fetch('SalesDemo', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded'
+                                },
+                                body: new URLSearchParams({
+                                    target: target,
+                                    month: months,
+                                    submit: 'getLeastPerformingStore'
+                                })
+                            })
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        const leastLabels = data.labels;
+                                        const leastData = data.data;
+
+                                        console.log("least labels" + leastLabels);
+                                        if (leastBarChart) {
+                                            monthBarChart.destroy();
+                                        }
+                                        if (leastPieChart) {
+                                            monthPieChart.destroy();
+                                        }
+
+                                        updateBarChart(leastPerformingBarCtx, leastLabels, leastData, 'Least Performing Stores', barBgColor, barBorderColor);
+                                        updatePieChart(leastPerformingPieCtx, leastLabels, leastData, pieBgColor);
+                                    });
+                        }
+
+                    });
+
+                    // Function to initialize a bar chart
+                    function initBarChart(ctx, labels, data, label, bgColor, borderColor) {
+                        return new Chart(ctx, {
+                            type: 'bar',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                        label: label,
+                                        data: data,
+                                        backgroundColor: bgColor,
+                                        borderColor: borderColor,
+                                        borderWidth: 1
+                                    }]
+                            },
+                            options: {
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        ticks: {
+                                            callback: function (value) {
+                                                return value + '%';
+                                            }
+                                        }
                                     }
                                 }
                             }
-                        }
+                        });
                     }
-                });
-            }
 
-            function BarChart(ctx, labels, data, label, bgColor, borderColor) {
-                return new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                                label: label,
-                                data: data,
-                                backgroundColor: bgColor,
-                                borderColor: borderColor,
-                                borderWidth: 1
-                            }]
-                    },
-                    options: {
-                        scales: {
-                            y: {
-                                beginAtZero: true
-
+                    // Function to initialize a pie chart
+                    function initPieChart(ctx, labels, data, bgColor) {
+                        return new Chart(ctx, {
+                            type: 'pie',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                        data: data,
+                                        backgroundColor: bgColor
+                                    }]
+                            },
+                            options: {
+                                responsive: true,
+                                plugins: {
+                                    legend: {
+                                        position: 'right'
+                                    },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function (context) {
+                                                let label = context.label || '';
+                                                if (context.parsed !== null) {
+                                                    label += ': ' + context.raw + '%';
+                                                }
+                                                return label;
+                                            }
+                                        }
+                                    }
+                                }
                             }
+                        });
+                    }
+
+                    function BarChart(ctx, labels, data, label, bgColor, borderColor) {
+                        return new Chart(ctx, {
+                            type: 'bar',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                        label: label,
+                                        data: data,
+                                        backgroundColor: bgColor,
+                                        borderColor: borderColor,
+                                        borderWidth: 1
+                                    }]
+                            },
+                            options: {
+                                scales: {
+                                    y: {
+                                        beginAtZero: true
+
+                                    }
+                                }
+                            }
+                        });
+                    }
+                    function updateBarChart(ctx, labels, data, label, bgColor, borderColor) {
+                        const chart = Chart.getChart(ctx);
+
+                        if (chart) {
+                            chart.data.labels = labels;
+                            chart.data.datasets[0].data = data;
+                            chart.data.datasets[0].backgroundColor = bgColor;
+                            chart.data.datasets[0].borderColor = borderColor;
+                            chart.update();
+                        } else {
+                            BarChart(ctx, labels, data, label, bgColor, borderColor);
                         }
                     }
-                });
-            }
-            function updateBarChart(ctx, labels, data, label, bgColor, borderColor) {
-                const chart = Chart.getChart(ctx);
 
-                if (chart) {
-                    chart.data.labels = labels;
-                    chart.data.datasets[0].data = data;
-                    chart.data.datasets[0].backgroundColor = bgColor;
-                    chart.data.datasets[0].borderColor = borderColor;
-                    chart.update();
-                } else {
-                    BarChart(ctx, labels, data, label, bgColor, borderColor);
-                }
-            }
+                    function updatePieChart(ctx, labels, data, bgColor) {
+                        const chart = Chart.getChart(ctx);
 
-            function updatePieChart(ctx, labels, data, bgColor) {
-                const chart = Chart.getChart(ctx);
+                        if (chart) {
+                            chart.data.labels = labels;
+                            chart.data.datasets[0].data = data;
+                            chart.data.datasets[0].backgroundColor = bgColor;
+                            chart.update();
+                        } else {
+                            initPieChart(ctx, labels, data, bgColor);
+                        }
+                    }
+                </script>
 
-                if (chart) {
-                    chart.data.labels = labels;
-                    chart.data.datasets[0].data = data;
-                    chart.data.datasets[0].backgroundColor = bgColor;
-                    chart.update();
-                } else {
-                    initPieChart(ctx, labels, data, bgColor);
-                }
-            }
-        </script>
+                <%}%>
 
 
-    </body>
-</html>
+
+
+                <% }
+                }%>
+                </body>
+                </html>

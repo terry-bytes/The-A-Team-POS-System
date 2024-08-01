@@ -63,11 +63,15 @@ and open the template in the editor.
 }
 
 body {
+
     background: #aecdf0;
 }
 
+
+
 .styled-button{
-    background-color: #3498db;
+    background-color: #3498db; 
+
     border: none; 
     color: white; 
     padding: 15px 20px; /* Some padding */
@@ -81,6 +85,7 @@ body {
     transition: background-color 0.3s;
 }
 
+
 #complete{
     background-color: #f48106;
 }
@@ -91,7 +96,7 @@ body {
 
 #lay{
     background-color: #6bf406;
-}
+
 
 .styled-input {
     width: 100%; 
@@ -141,6 +146,7 @@ body {
 .scanned-items h2 {
     color: #2980b9;
 }
+
 
 
 table {
@@ -215,6 +221,8 @@ th {
 .key:hover {
     background-color: #2980b9;
 }
+
+
 
 /* Adjust the layout for the QWERTY keys */
 .key:nth-child(n+13):nth-child(-n+22) {
