@@ -71,6 +71,7 @@
                             <h3><%=loggedInUser.getFirstName()%> <%=loggedInUser.getLastName()%></h3>
                         </div> 
 
+
                         <div class="logout">
 
                             <a href="EmployeeServlet?submit=logout">
@@ -330,6 +331,77 @@
         <audio id="beep-sound" src="beep.mp3" preload="auto"></audio>
 
         <script>
+            $(document).ready(function () {
+                // Function to validate the form
+                function validateForm() {
+                    let isValid = true;
+
+                    // Check if card details are visible and validate them
+                    if ($('#card-details').is(':visible')) {
+                        const cardNumber = $('#card_number').val().trim();
+                        const expiryDate = $('#expiry_date').val().trim();
+                        const cvv = $('#cvv').val().trim();
+
+                        if (cardNumber === '' || !/^\d{16}$/.test(cardNumber)) {
+                            alert('Please enter a valid 16-digit card number.');
+                            isValid = false;
+                        }
+
+                        if (expiryDate === '' || !/^\d{2}\/\d{2}$/.test(expiryDate)) {
+                            alert('Please enter a valid expiry date in MM/YY format.');
+                            isValid = false;
+                        }
+
+                        if (cvv === '' || !/^\d{3}$/.test(cvv)) {
+                            alert('Please enter a valid 3-digit CVV.');
+                            isValid = false;
+                        }
+                    }
+
+                    // Check if cash amount fields are visible and validate them
+                    if ($('#cash-amount').is(':visible') || $('#cash-card-amount').is(':visible')) {
+                        const cashAmount = parseFloat($('#cash_amount').val().trim() || $('#cash_amount2').val().trim() || 0);
+                        const cardAmount = parseFloat($('#card_amount2').val().trim() || 0);
+
+                        if (cashAmount <= 0) {
+                            alert('Cash amount cannot be zero or negative.');
+                            isValid = false;
+                        }
+
+                        if (cardAmount <= 0) {
+                            alert('Card amount cannot be zero or negative.');
+                            isValid = false;
+                        }
+
+                        if (cashAmount + cardAmount === 0) {
+                            alert('Total amount must be greater than zero.');
+                            isValid = false;
+                        }
+                    }
+
+                    return isValid;
+                }
+
+                // Function to select the payment method and show relevant fields
+                window.selectPaymentMethod = function (method) {
+                    $('#card-details').hide();
+                    $('#cash-amount').hide();
+                    $('#cash-card-amount').hide();
+
+                    if (method === 'card') {
+                        $('#card-details').show();
+                    } else if (method === 'cash') {
+                        $('#cash-amount').show();
+                    } else if (method === 'cardAndcash') {
+                        $('#cash-card-amount').show();
+                    }
+                };
+
+                // Bind the form validation function to the form submission
+                $('#product-form').submit(function () {
+                    return validateForm();
+                });
+            });
             function selectPaymentMethod(method) {
                 document.getElementById("payment-method").value = method;
 

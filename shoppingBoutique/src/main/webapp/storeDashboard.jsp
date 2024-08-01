@@ -11,6 +11,7 @@
         <title>Barcode Scanner</title>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/store.css" />
+          <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/report.css">
     </head>
     <body>
         <% Employee employee = (Employee) request.getSession(false).getAttribute("Employee");
@@ -93,7 +94,7 @@
                     <div class="input-submit">
                         <input name="submit" value="Submit_Store" hidden>
 
-                        <button class="submit-btn" id="submit">Add Employee</button>
+                        <button class="submit-btn" id="submit">Add Store</button>
 
                     </div>
                 </form>

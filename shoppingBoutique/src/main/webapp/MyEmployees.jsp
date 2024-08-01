@@ -19,33 +19,38 @@
         <% List<Employee> employees = (List<Employee>) request.getSession(false).getAttribute("MyEmployees");%>
         <jsp:include page="sidebar.jsp"/>
         <div class="menu-content">
-            
-            
+
+
+
             <div class="table-wrapper">
                 <h4>My Employees</h4>
                 <div>
                     <table class="fl-table">
-  <caption>My Employees</caption>
-  <thead>
-    <tr>
-      <th><!-- Intentionally Blank --></th>
-      <th>First Name</th>
-      <th>Last Name</th>
-      <th>Email</th>
-      <th>Employee Id</th>
-    <tr>
-  </thead>
-  <tbody>
-    <% for (Employee employee : employees){%>
-    <tr>
-        <td><%= employee.getFirstName() %></td>
-        <td><%= employee.getLastName() %></td>
-        <td><%= employee.getEmail() %></td>
-        <td><%= employee.getEmployees_id() %></td>
-    </tr>
-    <%}%>
-  </tbody>
-</table>
+                        <caption>My Employees</caption>
+                        <p> </p>
+                        <form action="addEmployee.jsp" method="get">
+                            <button type="submit" class="submit-btn">Add Employee</button>
+                        </form>
+                        <thead>
+                            <tr>
+                                <th><!-- Intentionally Blank --></th>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Email</th>
+                                <th>Employee Id</th>
+                            <tr>
+                        </thead>
+                        <tbody>
+                            <% for (Employee employee : employees) {%>
+                            <tr>
+                                <td><%= employee.getFirstName()%></td>
+                                <td><%= employee.getLastName()%></td>
+                                <td><%= employee.getEmail()%></td>
+                                <td><%= employee.getEmployees_id()%></td>
+                            </tr>
+                            <%}%>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
