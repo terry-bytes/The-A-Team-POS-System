@@ -56,10 +56,10 @@ public class IBTDAOIMPL implements  IBTDAO{
 
      
     @Override
-    public boolean sendIBTRequest(int product_ID, int store_ID, String store_name, int product_quantity, String customerName, String customerNumber, String customerEmail) {
+    public boolean sendIBTRequest(int product_ID, int store_ID, String store_name, int product_quantity, String customerName, String customerNumber, String customerEmail, int StoreID) {
         boolean success = false;
         try {
-            preparedStatement = connection.prepareStatement("INSERT INTO IBTRequest (store_ID, product_ID, requestFlag, requested_store, quantity, customer_name, customer_number, customer_email) VALUES (?,?,?,?,?,?,?,?)");
+            preparedStatement = connection.prepareStatement("INSERT INTO IBTRequest (store_ID, product_ID, requestFlag, requested_store, quantity, customer_name, customer_number, customer_email, ibt_requested) VALUES (?,?,?,?,?,?,?,?,?)");
             preparedStatement.setInt(1, store_ID);
             preparedStatement.setInt(2, product_ID);
             preparedStatement.setInt(3, 1);
@@ -68,6 +68,7 @@ public class IBTDAOIMPL implements  IBTDAO{
             preparedStatement.setString(6, customerName);
             preparedStatement.setString(7, customerNumber);
             preparedStatement.setString(8, customerEmail);
+            preparedStatement.setInt(9, StoreID);
             int rowsAffected = preparedStatement.executeUpdate();
         if (rowsAffected > 0) {
             success = true;
@@ -145,17 +146,32 @@ public class IBTDAOIMPL implements  IBTDAO{
     @Override
     public String retrieveCustomerNumber(int layawayID) {
         String customerNumber = null;
+        int receivingStoreID = 0;
         try {
-            preparedStatement = connection.prepareStatement("SELECT customer_number FROM ibtrequest WHERE request_ID = ?");
+            preparedStatement = connection.prepareStatement("SELECT customer_number, ibt_requested FROM ibtrequest WHERE request_ID = ?");
             preparedStatement.setInt(1, layawayID);
             resultSet = preparedStatement.executeQuery();
             if(resultSet.next()) {
                 customerNumber = resultSet.getString("customer_number");
+                receivingStoreID = resultSet.getInt("ibt_requested");
             }
         } catch (SQLException ex) {
             Logger.getLogger(IBTDAOIMPL.class.getName()).log(Level.SEVERE, null, ex);
         }
         return customerNumber;
+    }
+    
+    @Override
+    public int retrieveStoreID(int IBTID) {
+        int IBT_ID = 0;
+        try {
+        preparedStatement = connection.prepareStatement("SELECT ibt_requested FROM ibtrequest WHERE request_ID = ?");
+        preparedStatement.setInt(1, IBTID);
+        resultSet = preparedStatement.executeQuery();
+        } catch (SQLException ex) {
+            Logger.getLogger(IBTDAOIMPL.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return IBT_ID;
     }
     
     private void close(AutoCloseable... closeables) {

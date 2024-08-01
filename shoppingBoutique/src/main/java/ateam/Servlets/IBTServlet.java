@@ -156,7 +156,7 @@ public class IBTServlet extends HttpServlet {
         String customerName = request.getParameter("e_customer_name");
         String customerNumber = request.getParameter("e_customer_number");
         String customerEmail = request.getParameter("e_customer_email");
-        boolean success = ibtService.sendIBTRequest(product_id, store_id,store_name, product_quantity, customerName, customerNumber, customerEmail);
+        boolean success = ibtService.sendIBTRequest(product_id, store_id,store_name, product_quantity, customerName, customerNumber, customerEmail, store_id);
         if (success) {
         request.setAttribute("message", "IBT sent successfully");
     } else {

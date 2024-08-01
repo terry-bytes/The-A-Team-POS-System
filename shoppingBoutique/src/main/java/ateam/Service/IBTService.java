@@ -14,9 +14,10 @@ import java.util.List;
  */
 public interface IBTService {
      List<IBT> getAllProducts(int product_ID);
-     boolean sendIBTRequest(int product_ID, int store_ID, String store_name, int product_quantity, String customerName, String customerNumber, String customerEmail);
+     boolean sendIBTRequest(int product_ID, int store_ID, String store_name, int product_quantity, String customerName, String customerNumber, String customerEmail, int StoreID);
      List<IBT> receiveIBTRequest(int store_ID);
      boolean deleteRequestedIBT(int store_ID);
      boolean checkForIBTNotification(int store_ID);
      String retrieveCustomerNumber(int layawayID);
+     int retrieveStoreID(int IBTID);
 }
