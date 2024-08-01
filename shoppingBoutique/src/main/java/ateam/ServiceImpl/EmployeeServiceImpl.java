@@ -9,6 +9,7 @@ import ateam.Service.EmployeeService;
 
 
 import java.util.List;
+import java.util.Set;
 import org.mindrot.jbcrypt.BCrypt;
 
 public class EmployeeServiceImpl implements EmployeeService {
@@ -104,5 +105,10 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public boolean updatePasswordByEmail(String email, String newPassword) {
         return employeeDAO.updatePasswordByEmail(email, newPassword);
+    }
+
+    @Override
+    public Set<Employee> managersEmployee(int storeId) {
+        return employeeDAO.getEmployeeByStore(storeId);
     }
 }

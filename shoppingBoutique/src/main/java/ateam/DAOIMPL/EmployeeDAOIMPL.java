@@ -9,6 +9,8 @@ import ateam.BDconnection.Connect;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -268,6 +270,38 @@ public class EmployeeDAOIMPL implements EmployeeDAO {
                 }
             }
         }
+    }
+
+    @Override
+    public Set<Employee> getEmployeeByStore(int storeId) {
+         if (connection == null) {
+            return null;
+        }
+        Set<Employee> employees = new TreeSet<>();
+        String sql = "SELECT employee_ID, first_name, last_name, employees_id, employee_password, role, email"
+                + " FROM employees"
+                + " WHERE store_ID = ?";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, storeId);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                        Employee employee = new Employee();
+                        employee.setEmployee_ID(resultSet.getInt("employee_ID"));
+                        employee.setFirstName(resultSet.getString("first_name"));
+                        employee.setLastName(resultSet.getString("last_name"));
+                        employee.setStore_ID(storeId);
+                        employee.setEmployees_id(resultSet.getString("employees_id"));
+                        employee.setEmployeePassword(resultSet.getString("employee_password"));
+                        employee.setRole(Enum.valueOf(Role.class, resultSet.getString("role")));
+                        employee.setEmail(resultSet.getString("email"));
+                    
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(EmployeeDAOIMPL.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return employees;
     }
 
 }

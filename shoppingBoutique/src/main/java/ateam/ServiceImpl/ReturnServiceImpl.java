@@ -67,7 +67,7 @@ public class ReturnServiceImpl implements ReturnService {
             
 
             // Update the sales total amount
-            updateSaleTotalAmount(salesId, totalReturnAmount.negate());
+            updateSaleTotalAmount(salesId, totalReturnAmount);
 
             return totalReturnAmount;
         } else {
@@ -109,6 +109,7 @@ public class ReturnServiceImpl implements ReturnService {
     
     @Override
     public Sale getSaleById(int sales_ID) {
+        //String storeNam = storeServi.getStoreById
         return returnDao.getSaleById(sales_ID);
     }
 
@@ -124,7 +125,7 @@ public class ReturnServiceImpl implements ReturnService {
             
             if(saleDao.updateTotalAmount(sales_ID, newTotalAmount)){
                 success =true;
-                System.out.println("sale updated successfully");
+                System.out.println(success);
             }
         }
     }
@@ -182,9 +183,10 @@ public class ReturnServiceImpl implements ReturnService {
      return returnDao.getProductById(productId);
     }
     @Override
-    public int getProductIdBySKU(String productSKU) {
+    public SalesItem getSalesItemById(int salesItemId) {
         
-     return  returnDao.getProductIdBySKU(productSKU);
+        
+     return  returnDao.getSalesItemById(salesItemId);
     }
     @Override
     public List<SalesItem> getSalesItemsBySaleId(int salesId) {

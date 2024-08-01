@@ -13,6 +13,10 @@ import java.util.List;
  * @author Admin
  */
 public interface SaleItemsService {
+
     List<SalesItem> getSalesItemsByProductId(int productId);
+
     List<TopProductSellEmployee> getTotalSalesPerProduct();
+
+    List<SalesItem> getAllSalesItems();
 }

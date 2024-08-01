@@ -2,6 +2,7 @@ package ateam.DAO;
 
 import ateam.Models.Employee;
 import java.util.List;
+import java.util.Set;
 
 public interface EmployeeDAO {
 
@@ -17,5 +18,5 @@ public interface EmployeeDAO {
     Employee getEmployee(String employee_id);
     Employee findByEmail(String email);
     boolean updatePasswordByEmail(String email, String newPassword);
-    
+    Set<Employee> getEmployeeByStore(int storeId);
 }

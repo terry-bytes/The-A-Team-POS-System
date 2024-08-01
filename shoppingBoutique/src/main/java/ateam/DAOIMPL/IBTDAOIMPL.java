@@ -1,3 +1,4 @@
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -168,6 +169,9 @@ public class IBTDAOIMPL implements  IBTDAO{
         preparedStatement = connection.prepareStatement("SELECT ibt_requested FROM ibtrequest WHERE request_ID = ?");
         preparedStatement.setInt(1, IBTID);
         resultSet = preparedStatement.executeQuery();
+        if(resultSet.next()) {
+            IBT_ID = resultSet.getInt("ibt_requested");
+        }
         } catch (SQLException ex) {
             Logger.getLogger(IBTDAOIMPL.class.getName()).log(Level.SEVERE, null, ex);
         }

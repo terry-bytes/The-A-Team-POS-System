@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Layaway implements Serializable {
- private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
     private int layaway_ID; 
     private int customer_ID; 
     private int employee_ID; 

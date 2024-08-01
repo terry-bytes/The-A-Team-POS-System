@@ -1,3 +1,4 @@
+<%@page import="java.math.BigDecimal"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <!DOCTYPE html>
@@ -8,162 +9,121 @@
     <link rel="stylesheet" type="text/css" href="styles.css">
     <style>
     /* Basic reset for body */
-    body {
-        font-family: Arial, sans-serif;
-        line-height: 1.6;
-        margin: 0;
-        padding: 0;
-        background-color: #f4f4f4;
-    }
-
-    /* Container styles */
-    .container {
-        width: 80%;
-        margin: 0 auto;
-        background: #fff;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-
-    h1 {
-        color: #333;
-        text-align: center;
-        margin-bottom: 20px;
-    }
-
-    h2, h3 {
-        color: #444;
-        margin-top: 20px;
-        border-bottom: 2px solid #eee;
-        padding-bottom: 5px;
-    }
-
-    /* Form styles */
-    form {
-        margin-bottom: 20px;
-    }
-
-    label {
-        display: block;
-        margin: 10px 0 5px;
-        font-weight: bold;
-    }
-
-    
-    input[type="text"],
-    input[type="email"],
-    select {
-        width: 180px;
-        padding: 8px;
-        margin-bottom: 10px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        box-sizing: border-box;
-    }
-    
-    input[type="number"]{
-        width: 50px;
-        padding: 8px;
-        margin-bottom: 10px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        box-sizing: border-box;
-    }
-    button {
-        background-color: #007bff;
-        color: #fff;
-        border: none;
-        padding: 10px 15px;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 16px;
-        font-weight: bold;
-    }
-
-    button:hover {
-        background-color: #0056b3;
-    }
-
-    /* Table styles */
+    /* Modal styles */
+    /* Step 2: CSS Styling */
+     /* Table styles */
     table {
         width: 100%;
         border-collapse: collapse;
         margin: 20px 0;
     }
-
     th, td {
         padding: 10px;
         border: 1px solid #ddd;
         text-align: left;
     }
-
     th {
         background-color: #f4f4f4;
         color: #333;
     }
-
     tr:nth-child(even) {
         background-color: #f9f9f9;
     }
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1; 
+            left: 0; 
+            top: 0; 
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgb(0,0,0); 
+            background-color: rgba(0,0,0,0.4); 
+            padding-top: 60px; 
+        }
 
-    /* Modal styles */
-    .modal {
-        display: none; 
-        position: fixed; 
-        z-index: 1; 
-        padding-top: 60px; 
-        left: 0;
-        top: 0;
-        width: 100%; 
-        height: 100%; 
-        overflow: auto; 
-        background-color: rgba(0,0,0,0.5); 
-    }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto; 
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; 
+            max-width: 400px; 
+        }
 
-    .modal-content {
-        background-color: #fff;
-        margin: 5% auto; 
-        padding: 20px;
-        border: 1px solid #888;
-        width: 80%; 
-        border-radius: 8px;
-        box-shadow: 0 0 15px rgba(0,0,0,0.2);
-    }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
 
-    .close {
-        color: #aaa;
-        float: right;
-        font-size: 28px;
-        font-weight: bold;
-    }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
 
-    .close:hover,
-    .close:focus {
-        color: #000;
-        text-decoration: none;
-        cursor: pointer;
-    }
+        .modal-header,
+        .modal-footer {
+            padding: 10px;
+            background-color: #fefefe;
+            border-bottom: 1px solid #ddd;
+        }
 
+        .modal-footer {
+            border-top: 1px solid #ddd;
+            text-align: right;
+        }
+
+        .modal-body {
+            padding: 10px;
+        }
+
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            box-sizing: border-box;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #0098f7;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #ddd;
+        }
     /* Responsive design */
     @media (max-width: 768px) {
         .container {
             width: 95%;
         }
-
         .modal-content {
             width: 90%;
         }
     }
 
+
     </style>
 </head>
 <body>
+    <%
+        BigDecimal change =(BigDecimal)request.getSession(false).getAttribute("change");
+        BigDecimal remainingAmount =(BigDecimal)request.getSession(false).getAttribute("remainingAmount");
+        %>
+    
     <div class="container">
         <h1>Return Sale</h1>
 
         <!-- Retrieve Sale Section -->
-        <form action="ReturnServlet" method="post">
+        <form action="ReturnedServlet" method="post">
             <input type="hidden" name="submit" value="Retrieve-Sale">
             <label for="sales_ID">Enter Sales ID:</label>
             <input type="number" id="sales_ID" name="sales_ID" required>
@@ -179,11 +139,12 @@
             <p>Total Amount: ${sale.total_amount}</p>
             <p>Payment Method: ${sale.payment_method}</p>
             <p>Teller :${sale.employee_ID}</p>
-
+            <div>
             <h3>Items in Sale</h3>
             <table>
                 <thead>
                     <tr>
+                        <th>Sales Item ID</th>
                         <th>Sale ID</th>
                         <th>Product ID</th>
                         <th>Quantity</th>
@@ -194,6 +155,7 @@
                 <tbody>
                     <c:forEach var="item" items="${salesItems}">
                         <tr>
+                            <td>${item.sales_item_ID}</td>
                             <td>${item.sales_ID}</td>
                             <td>${item.product_ID}</td>
                             <td>${item.quantity}</td>
@@ -202,35 +164,59 @@
                     </c:forEach>
                 </tbody>
             </table>
-
+            <label class="total-price">Total :${sessionScope.remainingAmount}</label>
+                                
+            </div>
             <!-- Process Return Section -->
             <h3>Process Return</h3>
-            <form action="ReturnServlet" method="post">
+            <form action="ReturnedServlet" method="post">
                 <input type="hidden" name="submit" value="Process-Return">
-                <input type="hidden" name="sales_ID" value="${sale.sales_ID}">
-                <label for="product_SKU">Enter Product SKU to Return:</label>
-                <input type="text" id="product_SKU" name="product_SKU" required>
+               
+                <label for="">Enter Sales Item ID to Return:</label>
+                <input type="number" id="salesItemId" name="salesItemId" required>
                 <label for="quantity">Enter Quantity to Return:</label>
                 <input type="number" id="quantity" name="quantity" required>
                 <label for="email">Customer Email:</label>
                 <input type="email" id="email" name="email" required>
                 <label for="return_reason">Reason for Return:</label>
-                <select id="return_reason" name="return_reason" required>
-                    <option value="Defective">Damaged</option>
+                <select type ="text" id="return_reason" name="return_reason" required>
+                    <option value="Damaged">Damaged</option>
                     <option value="Wrong Item">Wrong Item/Size</option>
                     <option value="Other">Other</option>
                 </select>
-                <button type="submit">Process Return</button>
-            </form>
-        </c:if>
+                <br><br>
+                <button id="openModalBtn">Confirm Item Return</button>
 
-        <!-- Handle Customer Choice Section -->
-        <c:if test="${not empty remainingAmount}">
+                <div id="myModal" class="modal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <span class="close">&times;</span>
+                            <h2>Manager Authentication</h2>
+                        </div>
+                        <div class="modal-body">
+                            <label for="manager_password">Manager Password:</label>
+                            <input type="password" id="manager_password" name="manager_password">
+                        </div>
+                        <div class="modal-footer">
+                            <button id="submitBtn" ">OK</button>
+                        </div>
+                    </div>
+                </div>
+                <button  type="submit" >Process Return</button>
+            </form>
+            <label  class="total-price">Change :R${sessionScope.change}</label>
+                                 
+
+        </c:if>
+            
+            
+         <!-- Handle Customer Choice Section -->
+        <c:if test="${not empty change}">
             <h3>Handle Customer Choice</h3>
-            <form action="ReturnServlet" method="post">
+            <form action="ReturnedServlet" method="post">
                 <input type="hidden" name="submit" value="Handle-Customer-Choice">
-                <input type="hidden" name="sales_ID" value="${sale.sales_ID}">
-                <input type="hidden" name="remainingAmount" value="${remainingAmount}">
+               
+                <input type="hidden" name="change" value="${change}">
                 <label for="customer_choice">Customer Choice:</label>
                 <select id="customer_choice" name="customer_choice" required>
                     <option value="Select-New-Item">Select New Item</option>
@@ -238,15 +224,16 @@
                 </select>
                 <button type="submit">Submit Choice</button>
             </form>
+                
         </c:if>
 
         <!-- Confirm Product Selection Section -->
         <c:if test="${not empty availableProducts}">
             <h3>Select a New Product</h3>
-            <form action="ReturnServlet" method="post">
+            <form action="ReturnedServlet" method="post">
                 <input type="hidden" name="submit" value="Confirm-Product-Selection">
-                <input type="hidden" name="sales_ID" value="${sale.sales_ID}">
-                <input type="hidden" name="remainingAmount" value="${remainingAmount}">
+                
+                <input type="hidden" name="change" value="${change}">
                 <label for="selectedProduct">Select Product:</label>
                 <select id="selectedProduct" name="selectedProduct" required>
                     <c:forEach var="product" items="${availableProducts}">
@@ -258,6 +245,9 @@
         </c:if>
     </div>
 
+                
+ 
+
     <!-- Modal Structure -->
     <div id="messageModal" class="modal">
         <div class="modal-content">
@@ -266,32 +256,57 @@
         </div>
     </div>
 
-    <script>
-        // Get the modal
-        var modal = document.getElementById("messageModal");
-
-        // Get the <span> element that closes the modal
+     <script>
+        // Modal functionality
+        var modal = document.getElementById("myModal");
+        var btn = document.getElementById("openModalBtn");
         var span = document.getElementsByClassName("close")[0];
+        var submitBtn = document.getElementById("submitBtn");
 
-        // When the user clicks on <span> (x), close the modal
+        btn.onclick = function() {
+            modal.style.display = "block";
+        }
+
         span.onclick = function() {
             modal.style.display = "none";
         }
 
-        // When the user clicks anywhere outside of the modal, close it
         window.onclick = function(event) {
             if (event.target == modal) {
                 modal.style.display = "none";
             }
         }
 
-        // Function to show modal with a message
-        function showModal(message) {
-            document.getElementById("modalMessage").innerText = message;
-            modal.style.display = "block";
+        submitBtn.onclick = function() {
+            var password = document.getElementById("manager_password").value;
+            if (password) {
+                document.getElementById("returnForm").submit();
+            } else {
+                alert("Please enter the manager's password.");
+            }
+        }
+    </script>
+
+    <script>
+        // Handle modals for messages
+        var messageModal = document.getElementById("messageModal");
+        var messageSpan = document.getElementsByClassName("close")[1];
+
+        messageSpan.onclick = function() {
+            messageModal.style.display = "none";
         }
 
-        // Display message in modal if available
+        window.onclick = function(event) {
+            if (event.target == messageModal) {
+                messageModal.style.display = "none";
+            }
+        }
+
+        function showModal(message) {
+            document.getElementById("modalMessage").innerText = message;
+            messageModal.style.display = "block";
+        }
+
         <c:if test="${not empty message}">
             showModal("${message}");
         </c:if>
@@ -300,5 +315,7 @@
             showModal("${errorMessage}");
         </c:if>
     </script>
+    
+
 </body>
 </html>

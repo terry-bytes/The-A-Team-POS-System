@@ -123,6 +123,10 @@ public class IBTServlet extends HttpServlet {
                 case "Send SMS":
                     handleRetrievingCustomerNumber(request, response);
                     break;
+                    
+                case"Validate Store":
+                    handleRetrievingStoreID(request, response);
+                    break;
             }
         }
     }
@@ -229,5 +233,12 @@ public class IBTServlet extends HttpServlet {
         SmsSender.sendSms("+27631821265", message);
 
         System.out.println("CUSTOMER NUMBER " + customerNumber);
+    }
+    
+    private void handleRetrievingStoreID(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        int IBTRequestID = Integer.parseInt(request.getParameter("ibtNumber"));
+        int retrievedStoreID = ibtService.retrieveStoreID(IBTRequestID);
+        request.setAttribute("retrievedStoreID", retrievedStoreID);
+        request.getRequestDispatcher("tellerDashboard.jsp").forward(request, response);
     }
 }

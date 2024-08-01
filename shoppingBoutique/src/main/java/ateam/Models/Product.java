@@ -23,7 +23,7 @@ public class Product implements Serializable {
     private String size;
     private String color;
 
-    @Override
+@Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

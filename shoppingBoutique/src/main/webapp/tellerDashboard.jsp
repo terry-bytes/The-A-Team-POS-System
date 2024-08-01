@@ -15,6 +15,152 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
         
+        
+        
+       <style>
+    /* The Popup Background */
+    .popup {
+        display: none; /* Hidden by default */
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.5); /* Black w/ opacity */
+    }
+
+    /* Popup Content */
+    .popup-content {
+        background-color: #ffffff;
+        margin: 10% auto; /* Center the popup */
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        width: 80%;
+        max-width: 500px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Close Button */
+    .close {
+        color: #888;
+        float: right;
+        font-size: 1.5em;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: #000;
+        text-decoration: none;
+    }
+
+    /* Heading */
+    .popup-content h2 {
+        margin-top: 0;
+        color: #333;
+        font-size: 1.6em;
+    }
+
+    /* Form Elements */
+    label {
+        display: block;
+        margin-bottom: 8px;
+        color: #555;
+        font-weight: bold;
+    }
+
+    input[type="text"] {
+        width: calc(100% - 20px);
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1em;
+    }
+
+    /* Store Info */
+    .store-info {
+        margin-bottom: 20px;
+    }
+
+    .store-info label {
+        font-weight: normal;
+    }
+
+    /* Button Group */
+    .button-group {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    /* Buttons */
+    .btn {
+        padding: 10px 15px;
+        border: none;
+        border-radius: 4px;
+        color: #fff;
+        font-size: 1em;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    .btn-secondary {
+        background-color: #28a745;
+    }
+
+    .btn-secondary:hover {
+        background-color: #218838;
+    }
+</style>
+
+        
+        <!-- Add styles for popups -->
+    <style>
+    .popup {
+        display: none; /* Hidden by default */
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+    .popup-content {
+        background-color: #fefefe;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+    }
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+    .close:hover,
+    .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+    </style>
+        
          <style>
         /* Popup Form Styles */
         .popup {
@@ -400,6 +546,7 @@
                                                 <button type="submit" name="submit" value="Remove-Item">Remove</button>
                                             </form>
                                         </td>
+
                                     </tr>
                                 </c:forEach>
                             </table>
@@ -413,7 +560,8 @@
 
             <div class="payment-section">
                 <div class="manual-entry-section">
-                    <form id="product-form" action="ProductServlet" method="post">
+                    <form id="product-form" action="ProductServlet" method="post" onsubmit="return validateForm()">
+                        <input type="hidden" id="payment-method" name="payment_method" value="">
                         <div class="manual-entry">
                             <input type="text" id="manual-sku" name="input-field" placeholder="Enter SKU manually">
                             <button type="submit" name="submit" value="Add-Item" class="green-arrow-button">OK</button>
@@ -449,12 +597,12 @@
                         </div>
                         <div id="cash-card-amount" style="display:none;">
                             <div>
-                                <label for="cash_amount">Cash Amount:</label>
-                                <input type="text" id="cash_amount" name="cash_amount">
+                                <label for="cash_amount2">Cash Amount:</label>
+                                <input type="text" id="cash_amount2" name="cash_amount2">
                             </div>
                             <div>
-                                <label for="card_amount">Card Amount:</label>
-                                <input type="text" id="card_amount" name="card_amount">
+                                <label for="card_amount2">Card Amount:</label>
+                                <input type="text" id="card_amount2" name="card_amount2">
                             </div>
                         </div>
                         <p>   </p>
@@ -515,9 +663,10 @@
                     </div>
 
                     <div class="transaction-buttons">
-                        <form action="ReturnItemServlet" method="post">
-                            <button type="submit" name ="submit" value ="return">
-                                <img src="Icons/11419687_return_icon.png" alt="Return Item" class="icon">
+
+                        <form action="ReturnServlet" method="post">
+                            <button type="submit" name="submit" value="return" title ="Return Item">
+                                <img src="https://th.bing.com/th/id/OIP.-YCUILzwkqhEWv0dTnBCxgHaHa?w=800&h=800&rs=1&pid=ImgDetMain" alt="Return Item" class="icon"> <!-- Custom icon -->
                             </button>
                         </form>
                         <form action="LayawayDashboard.jsp" method="post">
@@ -551,6 +700,9 @@
                 </div>
 
 
+                
+
+
             </div>
         </div>
                         
@@ -559,23 +711,37 @@
         <div class="popup-content">
             <span class="close" id="closePopup">&times;</span>
             <h2>Enter IBT ID Number</h2>
-            <form id="ibtForm">
+            <form id="ibtForm" action="IBTServlet" method="post">
                 <label for="ibtNumber">IBT ID:</label>
-                <input type="text" id="ibtNumber" name="ibtNumber" required>
-                <label>Store ID: </label><label></label>
+                <input type="text" id="ibtNumber" name="ibtNumber" >
+                <label>Store ID of Sent IBT: </label><label id="storeID"><%= request.getAttribute("retrievedStoreID")%></label>
                 <label></label><label></label>
                 <label></label><label></label>
-                <input type="submit" value="Submit">
+                <input type="submit" value="Validate Store" name="IBT_switch"> 
             </form>
+                <input type="submit" value="Process Payment to store: <%= request.getAttribute("retrievedStoreID")%>">
         </div>
+    </div>
+                
+                <!-- Success Popup -->
+    <div id="successPopup" class="popup">
+    <div class="popup-content">
+        <span class="close" id="closeSuccessPopup">&times;</span>
+        <h2>Payment Successful</h2>
+        <p>Your payment has been processed successfully to store: <%= request.getAttribute("retrievedStoreID")%></p>
+    </div>
     </div>
          
          <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Get the popup and button elements
             var popup = document.getElementById("popupForm");
+           
             var btn = document.getElementById("openPopupButton");
             var close = document.getElementById("closePopup");
+            
+            
+
 
             // When the user clicks the button, open the popup
             btn.onclick = function() {
@@ -586,14 +752,15 @@
             close.onclick = function() {
                 popup.style.display = "none";
             };
-
+            
             // When the user clicks anywhere outside of the popup, close it
             window.onclick = function(event) {
                 if (event.target === popup) {
                     popup.style.display = "none";
                 }
             };
-        });
+         
+    });
     </script>
 
         <video id="barcode-scanner" autoplay></video>
@@ -601,9 +768,9 @@
 
         <script>
             function selectPaymentMethod(method) {
-                document.getElementById('payment-method').value = method;
-            }
-            function selectPaymentMethod(method) {
+                document.getElementById("payment-method").value = method;
+
+                // Hide or show payment details based on method
                 document.getElementById("card-details").style.display = "none";
                 document.getElementById("cash-card-amount").style.display = "none";
                 document.getElementById("cash-amount").style.display = "none";
@@ -616,6 +783,47 @@
                     document.getElementById("cash-amount").style.display = "block";
                 }
             }
+
+            function validateForm() {
+                var paymentMethod = document.getElementById("payment-method").value;
+
+                if (paymentMethod === 'card' || paymentMethod === 'cardAndcash') {
+                    var cardNumber = document.getElementById("card_number").value;
+                    var expiryDate = document.getElementById("expiry_date").value;
+                    var cvv = document.getElementById("cvv").value;
+
+                    if (!cardNumber || !expiryDate || !cvv) {
+                        alert("Please fill in all card details.");
+                        return false;
+                    }
+                }
+
+                if (paymentMethod === 'cash' || paymentMethod === 'cardAndcash') {
+                    var cashAmount = document.getElementById("cash_amount").value;
+
+                    if (!cashAmount || isNaN(cashAmount) || parseFloat(cashAmount) <= 0) {
+                        alert("Please enter a valid cash amount.");
+                        return false;
+                    }
+                }
+
+                if (paymentMethod === 'cardAndcash') {
+                    var cardAmount2 = document.getElementById("card_amount2").value;
+                    var cashAmount2 = document.getElementById("cash_amount2").value;
+
+                    if (!cardAmount2 || isNaN(cardAmount2) || parseFloat(cardAmount2) <= 0) {
+                        alert("Please enter a valid card amount.");
+                        return false;
+                    }
+                     if (!cashAmount2 || isNaN(cashAmount2) || parseFloat(cashAmount2) <= 0) {
+                        alert("Please enter a valid cash amount.");
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
 
             function redirectToAnotherPage() {
                 // Redirect to another JSP page
@@ -833,6 +1041,53 @@
                 });
             }
         </script>
+        
+        <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get the popup elements
+        var popup = document.getElementById("popupForm");
+        var successPopup = document.getElementById("successPopup");
+        var btn = document.querySelector('input[value^="Process Payment"]'); // Selects the "Process Payment" button
+        var closePopup = document.getElementById("closePopup");
+        var closeSuccessPopup = document.getElementById("closeSuccessPopup");
+
+        // Function to open the success popup
+        function showSuccessPopup() {
+            successPopup.style.display = "block";
+        }
+
+        // When the user clicks the "Process Payment" button, show the success popup
+        btn.onclick = function(event) {
+            event.preventDefault(); // Prevent form submission for demonstration purposes
+            showSuccessPopup();
+        };
+
+        // When the user clicks on <span> (x) in success popup, close the success popup
+        closeSuccessPopup.onclick = function() {
+            successPopup.style.display = "none";
+        };
+
+        // When the user clicks on <span> (x) in the main popup, close the main popup
+        closePopup.onclick = function() {
+            popup.style.display = "none";
+        };
+
+        // When the user clicks anywhere outside of the success popup, close it
+        window.onclick = function(event) {
+            if (event.target === successPopup) {
+                successPopup.style.display = "none";
+            }
+        };
+
+        // When the user clicks anywhere outside of the main popup, close it
+        window.onclick = function(event) {
+            if (event.target === popup) {
+                popup.style.display = "none";
+            }
+        };
+    });
+</script>
+
 
         <div class="popup-overlay" id="layawayPopup">
             <div class="popup-content">
