@@ -41,5 +41,5 @@ public interface EmployeeService {
 
     boolean updatePasswordByEmail(String email, String newPassword);
     
-    Set<Employee> managersEmployee(int storeId);
+    List<Employee> managersEmployee(int storeId);
 }

@@ -476,8 +476,7 @@ public class Reports {
         
         Map<Integer, BigDecimal> totalInventoryMap = reportDao.getTotalInventoryValuePerStore(startDate, endDate);
         Map<Integer, BigDecimal> totalAmountSalesMap = reportDao.getTotalSalesAmountPerStore(startDate, endDate);
-        System.out.println("totalInventory: "+ totalInventoryMap.size());
-        System.out.println("totalSale: "+ totalAmountSalesMap.size());
+
         return totalAmountSalesMap.entrySet().stream()
             .filter(entry -> totalInventoryMap.containsKey(entry.getKey()) && totalInventoryMap.get(entry.getKey()).compareTo(BigDecimal.ZERO) > 0)
             .filter(entry -> {
@@ -494,26 +493,24 @@ public class Reports {
     
     public Map<String, BigDecimal> getTodaysReportForAllStores() {
     List<Sale> sales = reportDao.getTodaysSales();
+        System.out.println(sales.size());
     
-    if (sales == null || sales.isEmpty()) {
-        return Collections.emptyMap(); // Return an empty map instead of null
-    }
     return sales.stream()
-        .map(sale -> {
-            Store store = storeService.getStoreById(sale.getStore_ID());
-            return new AbstractMap.SimpleEntry<>(
-                store != null ? store.getStore_name() : "Unknown Store", // Handle potential null store
-                sale.getTotal_amount()
-            );
-        })
-        .filter(entry -> entry.getKey() != null) // Ensure store name is not null
-        .collect(Collectors.groupingBy(
-            Map.Entry::getKey,
-            Collectors.mapping(
-                Map.Entry::getValue,
-                Collectors.reducing(BigDecimal.ZERO, BigDecimal::add)
-            )
-        ));
+            .map(sale -> {
+                Store store = storeService.getStoreById(sale.getStore_ID());
+                return new AbstractMap.SimpleEntry<>(
+                    store != null ? store.getStore_name() : "Unknown Store", // Handle potential null store
+                    sale.getTotal_amount() != null ? sale.getTotal_amount() : BigDecimal.ZERO // Handle potential null amount
+                );
+            })
+            .filter(entry -> entry.getKey() != null) // Ensure store name is not null
+            .collect(Collectors.groupingBy(
+                Map.Entry::getKey,
+                Collectors.mapping(
+                    Map.Entry::getValue,
+                    Collectors.reducing(BigDecimal.ZERO, BigDecimal::add)
+                )
+            ));
     }
 
     public TopSellingEmployeeDTO getTopSellingEmployeeForProduct(int productId){

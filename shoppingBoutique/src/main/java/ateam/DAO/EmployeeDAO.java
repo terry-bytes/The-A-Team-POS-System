@@ -18,5 +18,5 @@ public interface EmployeeDAO {
     Employee getEmployee(String employee_id);
     Employee findByEmail(String email);
     boolean updatePasswordByEmail(String email, String newPassword);
-    Set<Employee> getEmployeeByStore(int storeId);
+    List<Employee> getEmployeeByStore(int storeId);
 }

@@ -36,12 +36,6 @@
                     <i class='bx bx-chevron-right toggle'></i>
                 </header>
                 
-                <li class="nav-link">
-                    <a href="#">
-                        <i class='bx bx-home-alt icon' ></i>
-                        <span class="text nav-text">Dashboard</span>
-                    </a>
-                </li>
                 
                 <li class="nav-link">
                     <a href="SalesDemo?submit=getReports">
@@ -65,12 +59,6 @@
                     </a>
                 </li>
                 
-                <li class="nav-link">
-                    <a href="#">
-                        <i class='bx bx-bell icon'></i>
-                        <span class="text nav-text">Notifications</span>
-                    </a>
-                </li>
                 <li "class="nav-link">
                      <a href="IBTMainDashboard.jsp">
                      <i class='bx bx-store icon' ></i>

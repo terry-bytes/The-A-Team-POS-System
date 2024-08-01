@@ -6,10 +6,12 @@ import ateam.Exception.EmployeeNotFoundException;
 import ateam.Exception.InvalidPasswordException;
 import ateam.Models.Employee;
 import ateam.Service.EmployeeService;
+import java.util.Comparator;
 
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.mindrot.jbcrypt.BCrypt;
 
 public class EmployeeServiceImpl implements EmployeeService {
@@ -108,7 +110,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public Set<Employee> managersEmployee(int storeId) {
-        return employeeDAO.getEmployeeByStore(storeId);
+    public List<Employee> managersEmployee(int storeId) {
+        return employeeDAO.getEmployeeByStore(storeId).stream()
+                .sorted(Comparator.comparing(Employee::getFirstName))
+                .collect(Collectors.toList());
     }
 }
