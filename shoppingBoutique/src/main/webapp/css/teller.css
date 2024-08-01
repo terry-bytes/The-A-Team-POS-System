@@ -64,11 +64,14 @@ and open the template in the editor.
 
 body {
 
-    background-image: linear-gradient(to right, #277af6, #0098f7, #48b2ef, #85c7e5, #bfd9e0);
+    background: #aecdf0;
 }
+
+
 
 .styled-button{
     background-color: #3498db; 
+
     border: none; 
     color: white; 
     padding: 15px 20px; /* Some padding */
@@ -82,18 +85,28 @@ body {
     transition: background-color 0.3s;
 }
 
-.styled-button:hover{
-    background: #2980b9;
+
+#complete{
+    background-color: #f48106;
 }
+
+#IBT{
+    background-color: #ff0000;
+}
+
+#lay{
+    background-color: #6bf406;
+
 
 .styled-input {
     width: 100%; 
     padding: 12px 20px; 
     margin: 8px 0;
-    border: 2px solid #ccc; 
+    border: 2px solid #630467; 
     border-radius: 4px; 
     font-size: 16px; 
     transition: border-color 0.3s; 
+    background: rgba(254, 254, 254, 0.5);
 }
 
 .styled-input:focus {
@@ -133,7 +146,11 @@ body {
 .scanned-items h2 {
     color: #2980b9;
 }
+
+
+
 table {
+    background: #fff;
     width: 100%;
     border-collapse: collapse;
 }
@@ -162,7 +179,7 @@ th {
 }
 
 .manual-entry-section {
-    background: #f9f9f9;
+    background: rgba(254, 254, 254, 0.3);
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
@@ -189,7 +206,7 @@ th {
 
 .key {
     padding: 10px;
-    background-color: #f0f0f0;
+    background-color: #3498db;
     border: 1px solid #ccc;
     text-align: center;
     cursor: pointer;
@@ -198,12 +215,14 @@ th {
 }
 
 .key.big-key {
-    grid-column: span 2; /* Make the Shift and Backspace keys wider */
+    grid-column: span 3; /* Make the Shift and Backspace keys wider */
 }
 
 .key:hover {
-    background-color: #e0e0e0;
+    background-color: #2980b9;
 }
+
+
 
 /* Adjust the layout for the QWERTY keys */
 .key:nth-child(n+13):nth-child(-n+22) {

@@ -66,14 +66,11 @@
                         <img src="images.jpeg" alt="User Avatar">
                         <div class="user">
                             <%
-                                Employee loggedInUser = (Employee) session.getAttribute("Employee");
-                                if (loggedInUser != null) {
-                                    out.print(loggedInUser.getFirstName() + " " + loggedInUser.getLastName());
-                                } else {
-                                    out.print("Username");
-                                }
-                            %>
-                        </div>
+
+                                Employee loggedInUser = (Employee) session.getAttribute("Employee");%>
+                                <h3><%=loggedInUser.getFirstName()%> <%=loggedInUser.getLastName()%></h3>
+                        </div> 
+
                         <div class="logout">
                             
                                 <a href="EmployeeServlet?submit=logout">
@@ -187,9 +184,11 @@
                         <p>   </p>
                         <div class="submit-btns">
                             <input type="hidden" id="scanned-items-count" name="scannedItemsCount" value="<c:out value='${fn:length(scannedItems)}'/>">
-                            <button class="styled-button" type="submit" name="submit" value="Complete-Sale">Complete Sale</button>
-                            <input class="styled-button" type="submit" value="Process Layaway" onclick="openPopup()">
-                            <input class="styled-button" type="button" value="Process IBT" id="openPopupButton">
+
+                            <button class="styled-button" id="complete" type="submit" name="submit" value="Complete-Sale">Complete Sale</button>
+                            <input class="styled-button" id="lay" type="submit" value="Process Layaway" onclick="openPopup()">
+                            <input class="styled-button" id="IBT" type="button" value="Process IBT" id="openPopupButton">
+
                         </div>
                     </form>
                     <p>   </p>

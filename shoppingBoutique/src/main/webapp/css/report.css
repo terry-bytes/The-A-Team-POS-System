@@ -145,6 +145,32 @@ body{
 .fl-table tr:nth-child(even) {
     background: #F8F8F8;
 }
+.table1 {
+    background-color: white;
+    border: 1px solid blue;
+    padding: 10px;
+}
+
+.table1 table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table1 th, .table1 td {
+    border: 1px solid blue;
+    padding: 8px;
+    text-align: left;
+}
+
+.table1 th {
+    background-color: #f2f2f2;
+}
+
+.table1 tr:hover {
+    background-color: #e0f7fa;
+}
+
+
 
 /* Responsive */
 
