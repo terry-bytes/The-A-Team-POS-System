@@ -89,6 +89,8 @@ public class SalesDemo extends HttpServlet {
         List<TopProductDTO> topProduct = reports.top40SellingProducts();
         List<Product> products = productService.getAllItems();
         
+        System.out.println("Todays sales"+ todaysSales.size());
+        
         request.getSession(false).setAttribute("Products", products);
         request.getSession(false).setAttribute("top40SellingProducts", topProduct);
         request.getSession(false).setAttribute("Today'sReport", todaysSales);
@@ -209,6 +211,7 @@ public class SalesDemo extends HttpServlet {
 
         // Convert the list to JSON
         ObjectMapper mapper = new ObjectMapper();
+        
         String jsonResponse = mapper.writeValueAsString(topEmp);
 
         // Send the response back to the client

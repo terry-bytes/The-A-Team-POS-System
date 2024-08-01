@@ -176,6 +176,7 @@
                         <h4>Top Selling Employee</h4>
                         <label>Select a store</label>
                         <select id="topSellingEmployee">
+                            <option >Select Store</option>
                             <% for (Store store : stores) {%>
                             <option value="<%= store.getStore_ID()%>"><%= store.getStore_name()%></option>
                             <% } %>
@@ -366,10 +367,10 @@
                 let monthPieChart = null;
                 let leastBarChart = null;
                 let leastPieChart = null;
-                console.log(topSellingEmployees);
-                console.log(topSellingEmpData);
-                console.log("Sales Labels:", leastPerformingLabels);
-console.log("Sales Data:", salesData);
+                let topEmpBarChart = null;
+                let topEmpPieChart = null;
+                
+               
                 // Colors
                 const barBgColor = 'rgba(54, 162, 235, 0.2)';
                 const barBorderColor = 'rgba(54, 162, 235, 1)';
@@ -386,29 +387,26 @@ console.log("Sales Data:", salesData);
                 initBarChart(salesCtx, salesLabels, salesData, 'Sales', barBgColor, barBorderColor);
                 initPieChart(salesPieCtx, salesLabels, salesData, pieBgColor);
 
-                if (!monthLabels || !monthData) {
+                
                     // Initialize month report charts
                     const monthBarCtx = document.getElementById('monthReportBar').getContext('2d');
                     const monthPieCtx = document.getElementById('monthReportPie').getContext('2d');
                     BarChart(monthBarCtx, monthLabels, monthData, 'Total Amount', barBgColor, barBorderColor);
                     initPieChart(monthPieCtx, monthLabels, monthData, pieBgColor);
-                }
+                
 
-                if (topSellingEmployees.length > 0 && topSellingEmpData.length > 0) {
                     // Initialize topSelling employee charts
                     const topSellingEmpBarCtx = document.getElementById('topSellingEmpReportBar').getContext('2d');
                     const topSellingEmpPieCtx = document.getElementById('topSellingEmpReportPie').getContext('2d');
                     BarChart(topSellingEmpBarCtx, topSellingEmployees, topSellingEmpData, 'Top Employee', barBgColor, barBorderColor);
                     initPieChart(topSellingEmpPieCtx, topSellingEmployees, topSellingEmpData, pieBgColor);
-                }
 
-                if (leastPerformingData.length > 0 || leastPerformingLabels.length >0) {
                     // Initialize Least Performing Stores Charts
                     const leastPerformingBarCtx = document.getElementById('leastPerformingStoreBar').getContext('2d');
                     const leastPerformingPieCtx = document.getElementById('leastPerformingStorePie').getContext('2d');
                         BarChart(leastPerformingBarCtx, leastPerformingLabels, leastPerformingData, 'Least Performing Stores', barBgColor, barBorderColor);
                         initPieChart(leastPerformingPieCtx, leastPerformingLabels, leastPerformingData, pieBgColor);
-                }
+                
 
 
                 document.getElementById('RequestMonthReport').addEventListener('click', function () {
@@ -433,20 +431,22 @@ console.log("Sales Data:", salesData);
 
                 document.getElementById('topSellingEmployee').addEventListener('change', function () {
                     const storeId = this.value;
-                    alert("store id need want to check for top employee" + storeId);
 
                     fetch('SalesDemo', {
                         method: 'POST',
                         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
                         body: new URLSearchParams({
-                            submit: '',
+                            submit: 'topEmpByStore',
                             storeId: storeId
                         })
                     })
                             .then(response => response.json())
                             .then(data => {
-                                const names = data;
-
+                                const names = data.labels;
+                                const topData = data.data;
+                                
+                                topEmpBarChart = updateBarChart(topSellingEmpBarCtx, names, topData, 'Top Selling Employee', barBgColor, barBorderColor);
+                                topEmpPieChart = updatePieChart(topSellingEmpPieCtx, names, topData, 'Top Selling Employee', pieBgColor);
                             })
                             .catch(error => console.error('Error fetching data:', error));
                 });
@@ -473,7 +473,7 @@ console.log("Sales Data:", salesData);
                             .then(data => {
                                 const tableBody = document.getElementById('productSellerDetails');
                                 tableBody.innerHTML = ''; // Clear previous results
-
+                                alert("top product seller"+ data.productName);
                                 if (data && data.length > 0) {
                                     data.forEach(item => {
                                         const row = document.createElement('tr');
@@ -510,6 +510,7 @@ console.log("Sales Data:", salesData);
                                 const monthLabels = data.labels;
                                 const monthData = data.data;
 
+                                
                                 const barBgColor = 'rgba(75, 192, 192, 0.2)';
                                 const barBorderColor = 'rgba(75, 192, 192, 1)';
                                 const pieBgColor = ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)', 'rgba(255, 206, 86, 1)'];
@@ -550,6 +551,7 @@ console.log("Sales Data:", salesData);
                                 const leastData = data.data;
 
                                 console.log("least labels" + leastLabels);
+                                console.log("leastData"+ leastData);
                                 if (leastBarChart) {
                                     monthBarChart.destroy();
                                 }
@@ -557,8 +559,8 @@ console.log("Sales Data:", salesData);
                                     monthPieChart.destroy();
                                 }
 
-                                updateBarChart(leastPerformingBarCtx, leastLabels, leastData, 'Least Performing Stores', barBgColor, barBorderColor);
-                                updatePieChart(leastPerformingPieCtx, leastLabels, leastData, pieBgColor);
+                                leastBarChart = updateBarChart(leastPerformingBarCtx, leastLabels, leastData, 'Least Performing Stores', barBgColor, barBorderColor);
+                                leastPieChart = updatePieChart(leastPerformingPieCtx, leastLabels, leastData, pieBgColor);
                             });
                 }
 

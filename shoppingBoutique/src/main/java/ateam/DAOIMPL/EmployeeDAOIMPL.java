@@ -277,6 +277,7 @@ public class EmployeeDAOIMPL implements EmployeeDAO {
          if (connection == null) {
             return null;
         }
+         System.out.println("store id: "+ storeId);
         List<Employee> employees = new ArrayList<>();
         String sql = "SELECT employee_ID, first_name, last_name, employees_id, employee_password, role, email"
                 + " FROM employees"
