@@ -277,7 +277,7 @@ public class ProductServlet extends HttpServlet {
 
                             emailService.sendSaleReceipt(customerEmail, salespersonName, saleTime, scannedItems, totalAmountWithoutVAT, vatAmount, change, newSale.getPayment_method(), cashPaid, cardPaid);
 
-                            SmsSender.sendSms("+27631821265", saleTime);
+                            SmsSender.sendSms("", saleTime);
 
                             scannedItems.clear();
 
