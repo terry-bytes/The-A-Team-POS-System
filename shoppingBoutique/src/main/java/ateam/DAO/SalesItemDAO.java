@@ -14,6 +14,7 @@ public interface SalesItemDAO {
     
     List<SalesItem> getAllSalesItemByProductId(int productId);
     List<TopProductSellEmployee> getTopTotalSalesPerEmployees();
+    public List<SalesItem> getAllSalesItems();
 
 }
 

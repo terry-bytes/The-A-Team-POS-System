@@ -15,14 +15,15 @@ import java.util.List;
  *
  * @author Admin
  */
-public class SaleItemServiceImpl implements SaleItemsService{
+public class SaleItemServiceImpl implements SaleItemsService {
+
     private final SalesItemDAO salesItemDao;
-    
-    public SaleItemServiceImpl(){
+
+    public SaleItemServiceImpl() {
         this(new SalesItemDAOIMPL());
     }
-    
-    public SaleItemServiceImpl(SalesItemDAO salesItemDao){
+
+    public SaleItemServiceImpl(SalesItemDAO salesItemDao) {
         this.salesItemDao = salesItemDao;
     }
 
@@ -35,4 +36,10 @@ public class SaleItemServiceImpl implements SaleItemsService{
     public List<TopProductSellEmployee> getTotalSalesPerProduct() {
         return salesItemDao.getTopTotalSalesPerEmployees();
     }
+
+    @Override
+    public List<SalesItem> getAllSalesItems() {
+        return salesItemDao.getAllSalesItems(); // Calls the DAO method to fetch all sales items
+    }
+
 }

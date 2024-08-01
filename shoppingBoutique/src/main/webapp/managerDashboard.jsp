@@ -58,6 +58,8 @@
             int start = (currentPage - 1) * pageSize;
             int end = Math.min(start + pageSize, totalRows);
 
+            StringBuilder monthDate = new StringBuilder();
+            StringBuilder monthData = new StringBuilder();
             StringBuilder employeeNames = new StringBuilder();
             StringBuilder soldData = new StringBuilder();
             StringBuilder leastStoreLabels = new StringBuilder();
@@ -65,12 +67,10 @@
             StringBuilder todaysLabels = new StringBuilder();
             StringBuilder todaysData = new StringBuilder();
             StringBuilder labels = new StringBuilder();
-            StringBuilder data = new StringBuilder();
-            StringBuilder monthDate = new StringBuilder();
-            StringBuilder monthData = new StringBuilder();
-
+                    StringBuilder data = new StringBuilder();
             if (employee != null) {
                 if (getTopAchievingStores != null && !getTopAchievingStores.isEmpty()) {
+                    
 
                     for (Map.Entry<String, StorePerfomanceInSales> entry : getTopAchievingStores.entrySet()) {
 
@@ -94,11 +94,15 @@
                 <form action="DownloadReportPDF" method="get">
                     <button type="submit" class="submit-btn">Download PDF</button>
                 </form>
+                <form action="SalesDemo" method="post">
+                    <input type="hidden" name="submit" value="downloadReport">
+                    <button type="submit">Download Sales Items Report</button>
+                </form>
 
                 <!------------------- Top Achieving Store ---------------------->
                 <div class="report">
                     <div class="two">
-                        <h4>Top Achieving Store <%= topSellingEmployees.size()%></h4>
+                        <h4>Top Achieving Store</h4>
                         <div class="input-submit">
                             <input name="submit" value="download" hidden>
                             <button class="submit-btn" id="submit">Download</button>
@@ -115,11 +119,11 @@
                 </div>
 
                 <% if (monthReport != null && !monthReport.isEmpty()) {
+                        
 
                         for (Map.Entry<String, BigDecimal> entry : monthReport.entrySet()) {
                             monthDate.append("'").append(entry.getKey()).append("',");
                             monthData.append(entry.getValue()).append(",");
-                            System.out.println("month date: " + monthDate);
                         }
 
                         if (monthData.length() > 0) {
@@ -160,14 +164,12 @@
                         </div>
                     </div>
                 </div>
-                        <%}%>
 
                 <%if (topSellingEmployees != null && !topSellingEmployees.isEmpty()) {
 
                         for (Map.Entry<String, Integer> entry : topSellingEmployees.entrySet()) {
                             employeeNames.append("'").append(entry.getKey()).append("',");
                             soldData.append(entry.getValue()).append(",");
-                            
                         }
 
                 %>
@@ -202,8 +204,7 @@
                         for (Map.Entry<String, BigDecimal> entry : leastPerformingStores.entrySet()) {
                             leastStoreLabels.append("'").append(entry.getKey()).append("',");
                             leastStoreData.append(entry.getValue()).append(",");
-            }
-                %>
+            }%>
 
                 <div class="report">
                     <div class="two">
@@ -338,10 +339,6 @@
                     </div>
                     <%}%>
                 </div>
-            </div>
-        </div>
-        
-
 
 
 
@@ -589,96 +586,102 @@
                                         return value + '%';
                                     }
                                 }
+
                             }
                         }
                     }
                 });
             }
 
-            // Function to initialize a pie chart
-            function initPieChart(ctx, labels, data, bgColor) {
-                return new Chart(ctx, {
-                    type: 'pie',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                                data: data,
-                                backgroundColor: bgColor
-                            }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: {
-                                position: 'right'
+                    // Function to initialize a pie chart
+                    function initPieChart(ctx, labels, data, bgColor) {
+                        return new Chart(ctx, {
+                            type: 'pie',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                        data: data,
+                                        backgroundColor: bgColor
+                                    }]
                             },
-                            tooltip: {
-                                callbacks: {
-                                    label: function (context) {
-                                        let label = context.label || '';
-                                        if (context.parsed !== null) {
-                                            label += ': ' + context.raw + '%';
+                            options: {
+                                responsive: true,
+                                plugins: {
+                                    legend: {
+                                        position: 'right'
+                                    },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function (context) {
+                                                let label = context.label || '';
+                                                if (context.parsed !== null) {
+                                                    label += ': ' + context.raw + '%';
+                                                }
+                                                return label;
+                                            }
                                         }
-                                        return label;
                                     }
                                 }
                             }
-                        }
+                        });
                     }
-                });
-            }
 
-            function BarChart(ctx, labels, data, label, bgColor, borderColor) {
-                return new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                                label: label,
-                                data: data,
-                                backgroundColor: bgColor,
-                                borderColor: borderColor,
-                                borderWidth: 1
-                            }]
-                    },
-                    options: {
-                        scales: {
-                            y: {
-                                beginAtZero: true
+                    function BarChart(ctx, labels, data, label, bgColor, borderColor) {
+                        return new Chart(ctx, {
+                            type: 'bar',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                        label: label,
+                                        data: data,
+                                        backgroundColor: bgColor,
+                                        borderColor: borderColor,
+                                        borderWidth: 1
+                                    }]
+                            },
+                            options: {
+                                scales: {
+                                    y: {
+                                        beginAtZero: true
 
+                                    }
+                                }
                             }
+                        });
+                    }
+                    function updateBarChart(ctx, labels, data, label, bgColor, borderColor) {
+                        const chart = Chart.getChart(ctx);
+
+                        if (chart) {
+                            chart.data.labels = labels;
+                            chart.data.datasets[0].data = data;
+                            chart.data.datasets[0].backgroundColor = bgColor;
+                            chart.data.datasets[0].borderColor = borderColor;
+                            chart.update();
+                        } else {
+                            BarChart(ctx, labels, data, label, bgColor, borderColor);
                         }
                     }
-                });
-            }
-            function updateBarChart(ctx, labels, data, label, bgColor, borderColor) {
-                const chart = Chart.getChart(ctx);
 
-                if (chart) {
-                    chart.data.labels = labels;
-                    chart.data.datasets[0].data = data;
-                    chart.data.datasets[0].backgroundColor = bgColor;
-                    chart.data.datasets[0].borderColor = borderColor;
-                    chart.update();
-                } else {
-                    BarChart(ctx, labels, data, label, bgColor, borderColor);
-                }
-            }
+                    function updatePieChart(ctx, labels, data, bgColor) {
+                        const chart = Chart.getChart(ctx);
 
-            function updatePieChart(ctx, labels, data, bgColor) {
-                const chart = Chart.getChart(ctx);
+                        if (chart) {
+                            chart.data.labels = labels;
+                            chart.data.datasets[0].data = data;
+                            chart.data.datasets[0].backgroundColor = bgColor;
+                            chart.update();
+                        } else {
+                            initPieChart(ctx, labels, data, bgColor);
+                        }
+                    }
+                </script>
 
-                if (chart) {
-                    chart.data.labels = labels;
-                    chart.data.datasets[0].data = data;
-                    chart.data.datasets[0].backgroundColor = bgColor;
-                    chart.update();
-                } else {
-                    initPieChart(ctx, labels, data, bgColor);
-                }
-            }
-        </script>
+                <%}%>
 
 
-    </body>
-</html>
+
+
+               
+                </body>
+                </html>

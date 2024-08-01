@@ -106,7 +106,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public void sendSaleReceipt(String toEmail, String salespersonName, String saleTime, List<Product> items, BigDecimal totalAmountWithVAT, BigDecimal vatAmount, BigDecimal change, String paymentMethod,BigDecimal cashPaid,BigDecimal cardPaid) {
+    public void sendSaleReceipt(String toEmail, String salespersonName, String saleTime, List<Product> items, BigDecimal totalAmountWithVAT, BigDecimal vatAmount, BigDecimal change, String paymentMethod, BigDecimal cashPaid, BigDecimal cardPaid) {
         final String from = "ramovhatp@gmail.com";
         final String password = "xaed clmt qpis ctvf";
         Properties props = new Properties();
@@ -165,6 +165,10 @@ public class EmailServiceImpl implements EmailService {
             table.setWidthPercentage(100);
             table.setSpacingBefore(10f);
             table.setSpacingAfter(10f);
+
+            // Set column widths (adjust as needed for SKU column width)
+            float[] columnWidths = {2f, 2.5f, 1f, 1f, 1f, 2f}; // Increased width for SKU column
+            table.setWidths(columnWidths);
 
             // Table headers
             PdfPCell cell = new PdfPCell(new Phrase("Product Name", headerFont));
@@ -233,9 +237,10 @@ public class EmailServiceImpl implements EmailService {
             message.setContent(multipart);
 
             Transport.send(message);
-            System.out.println("Sale receipt sent successfully to " + toEmail);
 
-        } catch (DocumentException | IOException | MessagingException e) {
+            System.out.println("Sale receipt email sent successfully to " + toEmail);
+
+        } catch (MessagingException | IOException | DocumentException e) {
             e.printStackTrace();
         }
     }
