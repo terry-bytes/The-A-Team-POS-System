@@ -52,32 +52,23 @@ public class ReturnDaoImpl implements ReturnDao{
         }
     }
     @Override
-    public void insertReturn(Return returnRecord) {
-        try (Connection conn = new Connect().connectToDB(); PreparedStatement stmt = conn.prepareStatement("INSERT INTO returns (sales_ID, product_ID, quantity, return_date, email,date) VALUES (?, ?, ?, ?,?,?)")) {
-            stmt.setInt(1, returnRecord.getSales_ID());
-            stmt.setInt(2, returnRecord.getProduct_ID());
-            stmt.setInt(3, returnRecord.getQuantity());
-            stmt.setTimestamp(4, returnRecord.getReturn_date());
-            stmt.setString(5, returnRecord.getEmail());
-            stmt.setString(6, returnRecord.getReason());
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-        }
+public void insertReturn(Return returnRecord) {
+    try (Connection conn = new Connect().connectToDB(); 
+         PreparedStatement stmt = conn.prepareStatement("INSERT INTO returns (sales_ID, product_ID, quantity, return_date, email, reason) VALUES (?, ?, ?, ?, ?, ?)")) {
+        stmt.setInt(1, returnRecord.getSales_ID());
+        stmt.setInt(2, returnRecord.getProduct_ID());
+        stmt.setInt(3, returnRecord.getQuantity());
+        stmt.setTimestamp(4, returnRecord.getReturn_date());
+        stmt.setString(5, returnRecord.getEmail());
+        stmt.setString(6, returnRecord.getReason());
+
+        System.out.println("Executing query: " + stmt.toString());
+        stmt.executeUpdate();
+    } catch (SQLException e) {
+        e.printStackTrace(); // Print the stack trace to understand the error
     }
-    
-     private void logReturn(Sale sale, Product product, int quantity,String email, String reason) {
-        // Implement the logic to log the return
-        ReturnDao returnDAO = new ReturnDaoImpl();
-        Return returnRecord = new Return();
-        returnRecord.setSales_ID(sale.getSales_ID());
-        returnRecord.setProduct_ID(product.getProduct_ID());
-        returnRecord.setQuantity(quantity);
-        returnRecord.setReturn_date(new Timestamp(System.currentTimeMillis()));
-        returnRecord.setEmail(email);
-        returnRecord.setReason(reason);
-        
-        returnDAO.insertReturn(returnRecord);
-    }
+}
+
     @Override
     public Sale getSaleById(int saleId) {
         Sale sale = null;
@@ -118,6 +109,28 @@ public class ReturnDaoImpl implements ReturnDao{
         return salesItems;
     }
 
+    @Override
+    public SalesItem getSalesItemById(int saleItemId) {
+        SalesItem item = new SalesItem();
+        try (Connection conn = new Connect().connectToDB(); PreparedStatement stmt = conn.prepareStatement("SELECT * FROM sales_items WHERE sales_ID = ?")) {
+            stmt.setInt(1, saleItemId);
+            ResultSet rs = stmt.executeQuery();
+            
+            while (rs.next()) {
+                
+                item.setSales_item_ID(rs.getInt("sales_item_ID"));
+                item.setSales_ID(rs.getInt("sales_ID"));
+                item.setProduct_ID(rs.getInt("product_ID"));
+                item.setQuantity(rs.getInt("quantity"));
+                item.setUnit_price(rs.getBigDecimal("unit_price"));
+                
+            }
+        } catch (SQLException e) {
+        }
+       
+        return item;
+    }
+    
     @Override
     public BigDecimal getUnitPrice(int salesId, int productId) {
             BigDecimal unitPrice = null;
@@ -229,7 +242,7 @@ public class ReturnDaoImpl implements ReturnDao{
     }
 
     
-    @Override
+    
     public int  getProductIdBySKU(String productSKU) {
         
         Product product = null;

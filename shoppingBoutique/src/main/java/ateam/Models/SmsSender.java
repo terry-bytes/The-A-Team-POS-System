@@ -19,15 +19,19 @@ public class SmsSender {
     }
 
     public static void sendSms(String toPhoneNumber, String messageBody) {
+        // Optionally, you can include the senderName in the messageBody
+        //String fullMessageBody = String.format(toPhoneNumber, messageBody, senderData);
+        
         Message message = Message.creator(
                 new PhoneNumber(toPhoneNumber),
                 new PhoneNumber(TWILIO_PHONE_NUMBER),
-                messageBody)
+                messageBody
+                )
                 .create();
 
         System.out.println("SMS sent successfully. SID: " + message.getSid());
     }
     public static void main(String[] args) {
-        sendSms("+27631821265", "the A team , collect your order");
+        //sendSms("+27631821265", "the A team , Anakie testing");
     }
 }

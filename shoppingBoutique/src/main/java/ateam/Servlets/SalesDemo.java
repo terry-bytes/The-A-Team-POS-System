@@ -89,6 +89,14 @@ public class SalesDemo extends HttpServlet {
         List<TopProductDTO> topProduct = reports.top40SellingProducts();
         List<Product> products = productService.getAllItems();
         
+        System.out.println("MonthReport: "+generateMonthReportForStore.size());
+        System.out.println("Stores: "+stores.size());
+        System.out.println("Topselling employees: "+topSellingEmployees.size());
+        System.out.println("Least performing Stores: "+leastPerformingStore.size());
+        System.out.println("Todays sales: "+todaysSales.size());
+        System.out.println("Top Products: "+ topProduct.size());
+        System.out.println("products: "+ products);
+        
         request.getSession(false).setAttribute("Products", products);
         request.getSession(false).setAttribute("top40SellingProducts", topProduct);
         request.getSession(false).setAttribute("Today'sReport", todaysSales);

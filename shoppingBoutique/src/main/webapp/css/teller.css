@@ -19,10 +19,15 @@ and open the template in the editor.
 .payment-section {
     flex: 1;
 }
+.payment-icons{
+    display: flex;
+    width: 100%;
+    justify-content: space-around
+}
 .payment-icons img {
     width: 50px;
     cursor: pointer;
-    margin: 5px;
+    margin-left: 15px;
 }
 .payment-icons img:hover {
     transform: scale(1.1);
@@ -58,10 +63,45 @@ and open the template in the editor.
 }
 
 body {
-    font-family: 'Open Sans', sans-serif;
+    /* font-family: 'Open Sans', sans-serif;*/
     color: #333;
-    background-color: #d9e2da;
+    background-color: #f0f0f0;
 }
+
+.styled-button{
+    background-color: #3498db; 
+    border: none; 
+    color: white; 
+    padding: 15px 20px; /* Some padding */
+    text-align: center; /* Centered text */
+    text-decoration: none; /* Remove underline */
+    display: inline-block; /* Make the button inline */
+    font-size: 16px; /* Increase font size */
+    margin: 4px 2px; /* Some margin */
+    cursor: pointer; /* Pointer/hand icon */
+    border-radius: 5px; /* Rounded corners */
+    transition: background-color 0.3s;
+}
+
+.styled-button:hover{
+    background: #2980b9;
+}
+
+.styled-input {
+    width: 100%; 
+    padding: 12px 20px; 
+    margin: 8px 0;
+    border: 2px solid #ccc; 
+    border-radius: 4px; 
+    font-size: 16px; 
+    transition: border-color 0.3s; 
+}
+
+.styled-input:focus {
+    border-color: #3498db; 
+    outline: none; 
+}
+
 .container {
     display: flex;
     padding: 20px;
@@ -109,6 +149,19 @@ th {
     margin-top: 20px;
     font-size: 1.2em;
 }
+.manual-entry {
+    display: flex;
+    align-items: center;
+}
+
+.manual-entry input {
+    margin-right: 10px;
+}
+
+.manual-entry .green-arrow-button {
+    margin-right: 10px;
+}
+
 .manual-entry-section {
     background: #f9f9f9;
     padding: 20px;
@@ -123,39 +176,50 @@ th {
     border-radius: 4px;
 }
 .keyboard {
-    display: flex;
-    justify-content: flex-start; /* Aligns the keyboard to the left */
+    /*display: flex;
+    justify-content: flex-start; /* Aligns the keyboard to the left 
     align-items: center;
-    margin-left: 5px;
+    margin-left: 5px;*/
 }
 
 .keyboard-wrapper {
-    display: flex;
-    flex-wrap: wrap;
-    width: 300px; /* adjust width as needed */
-    gap: 5px; /* space between keys */
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    background-color: #3498db;
+    display: grid;
+    grid-template-columns: repeat(12, 1fr); /* 12 columns for numbers and special characters */
+    gap: 5px; /* Space between keys */
 }
 
 .key {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 50px; /* adjust width as needed */
-    height: 30px; /* adjust height as needed */
+    padding: 10px;
+    background-color: #f0f0f0;
     border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #3498db;
+    text-align: center;
     cursor: pointer;
+    border-radius: 4px;
     user-select: none;
 }
 
-.big-key {
-    width: 100%; /* makes the backspace key span the width */
+.key.big-key {
+    grid-column: span 2; /* Make the Shift and Backspace keys wider */
 }
+
+.key:hover {
+    background-color: #e0e0e0;
+}
+
+/* Adjust the layout for the QWERTY keys */
+.key:nth-child(n+13):nth-child(-n+22) {
+    grid-column: span 1;
+}
+
+.key:nth-child(n+23):nth-child(-n+31) {
+    grid-column: span 1;
+}
+
+.key:nth-child(n+32):nth-child(-n+39) {
+    grid-column: span 1;
+}
+
+
 
 .manual-entry {
     display: flex;
@@ -163,41 +227,34 @@ th {
     margin-bottom: 10px;
 }
 .transaction-buttons {
-    display: grid; /* Use grid layout */
-    grid-template-columns: repeat(2, 1fr); /* 2 columns, each taking up an equal fraction of available space */
-    gap: 5px; /* Space between buttons */
-    padding: 5px; /* Padding inside the container */
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    background-color: #f5f5f5;
-    width: 268px; /* Adjusted width to make the container smaller */
-    max-width: 50%; /* Ensures the container doesn't overflow */
-    box-sizing: border-box; /* Ensures padding and border are included in width */
-    position: absolute; /* Positions the container absolutely */
-    right: 60px; /* Positions the container 10px from the right edge */
-    top: 250px; /* Positions the container 10px from the top edge */
+    display: flex;
+    justify-content: space-between; 
+    
+    flex-wrap: wrap;
+    gap: 20px; /* Adjust the spacing between buttons as needed */
+}
+
+.transaction-buttons form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .transaction-buttons button {
-    display: flex;
-    justify-content: center; /* Center the button content */
-    align-items: center;
-    width: 100%; /* Makes the button take the full width of the grid cell */
-    padding: 5px; /* Padding inside the buttons */
+    background: none;
     border: none;
-    border-radius: 5px;
-    background-color: #fff;
+    padding: 0;
     cursor: pointer;
-    transition: background-color 0.3s;
 }
 
-.transaction-buttons button:hover {
-    background-color: #e0e0e0; /* Change background on hover */
-}
-
-.transaction-buttons img.icon {
-    max-width: 100%; /* Ensures the icon fits within the button */
+.transaction-buttons .icon {
+    width: 50px; /* Adjust the size as needed */
     height: auto;
+}
+
+.transaction-buttons label {
+    margin-top: 5px; /* Adjust the spacing as needed */
+    text-align: center;
 }
 
 
@@ -222,14 +279,29 @@ th {
 }
 .user-info {
     display: flex;
-    align-items: center;
-    margin-bottom: 20px;
+    flex-direction: row;
+
 }
+
 .user-info img {
-    width: 40px;
-    height: 40px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     margin-right: 10px;
+}
+
+
+
+.user-details {
+    display: flex;
+    align-items: center;
+}
+
+
+
+.logout {
+    list-style: none;
+    right: 10px;
 }
 
 /* Popup Overlay */
@@ -308,4 +380,52 @@ th {
 
 .popup-content button[type="submit"]:hover {
     background-color: #2980b9;
+}
+
+
+.payment-method {
+    margin-top: 20px;
+}
+
+.payment-method div {
+    margin-bottom: 15px;
+}
+
+.flex {
+    display: flex;
+    justify-content: space-between;
+}
+
+.flex .inputBox {
+    flex: 1;
+    margin-right: 10px;
+}
+
+.flex .inputBox:last-child {
+    margin-right: 0;
+}
+
+.payment-method label {
+    display: block;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+.payment-method input {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #ccc; 
+    border-radius: 4px; 
+    transition: border-color .3s;
+}
+
+.payment-method input:focus{
+    border-color: #3498db; 
+    outline: none;
+}
+
+.submit-btns{
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
 }

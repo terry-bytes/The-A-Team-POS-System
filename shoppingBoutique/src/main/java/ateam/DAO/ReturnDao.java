@@ -25,7 +25,7 @@ public interface ReturnDao {
     List<Product> getProductsByPrice(BigDecimal price);
     
     Product getProductById(int productId);
-    int getProductIdBySKU(String productSKU);
+    SalesItem getSalesItemById(int saleItemId);
     
     void insertReturn(Return returnRecord);
     

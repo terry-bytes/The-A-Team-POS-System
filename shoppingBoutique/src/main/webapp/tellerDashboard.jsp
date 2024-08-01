@@ -14,8 +14,10 @@
         <!-- Include jQuery library -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+
+        <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/teller.css">
-        
+
     </head>
 
     <body>
@@ -24,17 +26,27 @@
 
         <div class="container">
             <div class="left-section">
-                <div class="user-info">
-                    <img src="images.jpeg" alt="User Avatar">
-                    <div>
-                        <%
-                            Employee loggedInUser = (Employee) session.getAttribute("Employee");
-                            if (loggedInUser != null) {
-                                out.print(loggedInUser.getFirstName() + " " + loggedInUser.getLastName());
-                            } else {
-                                out.print("Username");
-                            }
-                        %>
+                <div class="user-info ">
+                    <div class="user-details">
+                        <img src="images.jpeg" alt="User Avatar">
+                        <div class="user">
+                            <%
+                                Employee loggedInUser = (Employee) session.getAttribute("Employee");
+                                if (loggedInUser != null) {
+                                    out.print(loggedInUser.getFirstName() + " " + loggedInUser.getLastName());
+                                } else {
+                                    out.print("Username");
+                                }
+                            %>
+                        </div>
+                        <div class="logout">
+                            
+                                <a href="EmployeeServlet?submit=logout">
+                                    <i class='bx bx-log-out icon' ></i>
+                                    <span class="text nav-text">Logout</span>
+                                </a>
+                            
+                        </div>
                     </div>
                 </div>
 
@@ -69,6 +81,7 @@
                                                 <button type="submit" name="submit" value="Remove-Item">Remove</button>
                                             </form>
                                         </td>
+
                                     </tr>
                                 </c:forEach>
                             </table>
@@ -82,10 +95,11 @@
 
             <div class="payment-section">
                 <div class="manual-entry-section">
-                    <form id="product-form" action="ProductServlet" method="post">
+                    <form id="product-form" action="ProductServlet" method="post" onsubmit="return validateForm()">
+                        <input type="hidden" id="payment-method" name="payment_method" value="">
                         <div class="manual-entry">
-                            <input type="text" id="manual-sku" name="input-field" placeholder="Enter SKU manually">
-                            <button type="submit" name="submit" value="Add-Item" class="green-arrow-button">OK</button>
+                            <input class="styled-input" type="text" id="manual-sku" name="input-field" placeholder="Enter SKU manually">
+                            <button type="submit" name="submit" value="Add-Item" class="styled-button">OK</button>
                             <button type="submit" name="submit" value="auto-submit" id="auto-submit" style="display: none"></button>
                         </div>
                         <div class="payment-icons">
@@ -96,47 +110,95 @@
                         <p>   </p>
 
 
-                        <div id="card-details" style="display:none;">
+                        <div class="payment-method" id="card-details" style="display:none;">
                             <div>
                                 <label for="card_number">Card Number:</label>
-                                <input type="text" id="card_number" name="card_number">
+                                <input type="text" id="card_number" name="card_number" placeholder="Card Number">
                             </div>
-                            <div>
-                                <label for="expiry_date">Expiry Date:</label>
-                                <input type="text" id="expiry_date" name="expiry_date">
-                            </div>
-                            <div>
-                                <label for="cvv">CVV:</label>
-                                <input type="text" id="cvv" name="cvv">
-                            </div>
-                        </div>
-                        <div id="cash-amount" style="display:none;">
-                            <div>
-                                <label for="cash_amount">Cash Amount:</label>
-                                <input type="text" id="cash_amount" name="cash_amount">
+                            <div class="flex">
+                                <div class="inputBox">
+                                    <label for="expiry_date">Expiry Date:</label>
+                                    <input type="text" id="expiry_date" name="expiry_date" placeholder="Expity Date">
+                                </div>
+                                <div class="inputBox">
+                                    <label for="cvv">CVV:</label>
+                                    <input type="text" id="cvv" name="cvv" placeholder="CVV">
+                                </div>
                             </div>
                         </div>
-                        <div id="cash-card-amount" style="display:none;">
+                        <div class="payment-method" id="cash-amount" style="display:none;">
                             <div>
                                 <label for="cash_amount">Cash Amount:</label>
-                                <input type="text" id="cash_amount" name="cash_amount">
+                                <input type="text" id="cash_amount" name="cash_amount" placeholder="Cash Amount">
                             </div>
-                            <div>
-                                <label for="card_amount">Card Amount:</label>
-                                <input type="text" id="card_amount" name="card_amount">
+                        </div>
+                        <div class="payment-method" id="cash-card-amount" style="display:none;">
+                            <div class="flex">
+                                <div class="inputBox">
+                                    <label for="cash_amount2">Cash Amount:</label>
+                                    <input type="text" id="cash_amount2" name="cash_amount2" placeholder="Cash Amount">
+                                </div>
+                                <div class="inputBox">
+                                    <label for="card_amount2">Card Amount:</label>
+                                    <input type="text" id="card_amount2" name="card_amount2" placeholder="Card Amount">
+                                </div>
                             </div>
                         </div>
                         <p>   </p>
                         <div>
                             <label for="customer_email">Customer Email:</label>
-                            <input type="email" id="customer_email" name="customer_email" placeholder="Enter customer email" >
+                            <input class="styled-input" type="email" id="customer_email" name="customer_email" placeholder="Enter customer email" >
                         </div>
                         <p>   </p>
-                        <input type="hidden" id="scanned-items-count" name="scannedItemsCount" value="<c:out value='${fn:length(scannedItems)}'/>">
-                        <button type="submit" name="submit" value="Complete-Sale">Complete Sale</button>
-                        <input type="submit" value="Process Layaway" onclick="openPopup()">
+                        <div class="submit-btns">
+                            <input type="hidden" id="scanned-items-count" name="scannedItemsCount" value="<c:out value='${fn:length(scannedItems)}'/>">
+                            <button class="styled-button" type="submit" name="submit" value="Complete-Sale">Complete Sale</button>
+                            <input class="styled-button" type="submit" value="Process Layaway" onclick="openPopup()">
+                            <input class="styled-button" type="button" value="Process IBT" id="openPopupButton">
+                        </div>
                     </form>
                     <p>   </p>
+                    
+                    <div class="transaction-buttons">
+
+                        <form action="ReturnServlet" method="post">
+                            <button type="submit" name="submit" value="return" title ="Return Item">
+                                <img src="https://th.bing.com/th/id/OIP.-YCUILzwkqhEWv0dTnBCxgHaHa?w=800&h=800&rs=1&pid=ImgDetMain" alt="Return Item" class="icon"> 
+                            </button>
+                            <label>Return Item</label>
+                        </form>
+                        <form action="LayawayDashboard.jsp" method="post"  class="layaway-form">
+                            <button type="submit" onclick="redirectToAnotherPage()" title="Lay Away">
+                                <img src="Icons/172576_box_icon.png" alt="Lay Away" class="icon">
+                            </button>
+                            <label>Lay Away</label>
+                        </form>
+                        <form action="VoidSaleServlet" method="post">
+                            <button type="submit" title="Void Sale">
+                                <img src="Icons/8140875_pos_void_ticket_cancal_cinema_icon.png" alt="Void Sale" class="icon">
+                            </button>
+                            <label>Void Sale</label>
+                        </form>
+                        <form action="Search.jsp" method="post">
+                            <button type="submit" title="Search Item">
+                                <img src="Icons/211818_search_icon.png" alt="Search Item" class="icon">
+                            </button>
+                            <label>Search Items</label>
+                        </form>
+                        <form action="ViewReportsServlet" method="post">
+                            <button type="submit" title="View Reports">
+                                <img src="https://static.vecteezy.com/system/resources/previews/024/607/383/non_2x/data-analysis-icon-profit-graph-illustration-sign-data-science-symbol-or-logo-vector.jpg" alt="View Reports" class="icon">
+                            </button>
+                            <label>View Reports</label>
+                        </form>
+                        <form action="ProductServlet" method="post">
+                            <button type="submit" name="submit" value="Inventory" title="Inventory Management">
+                                <img src="https://static.vecteezy.com/system/resources/previews/015/890/404/non_2x/checklist-parcel-icon-outline-delivery-box-vector.jpg" alt="Inventory Management" class="icon">
+                            </button>
+                            <label>Inventory Management</label>
+                        </form>
+                    </div>
+                    
                     <div class="keyboard">
                         <div class="keyboard-wrapper">
                             <div class="key" onclick="appendToInput('1')">1</div>
@@ -151,7 +213,7 @@
                             <div class="key" onclick="appendToInput('0')">0</div>
                             <div class="key" onclick="appendToInput('-')">-</div>
                             <div class="key" onclick="appendToInput('.')">.</div>
-                            <div class="key" onclick="appendToInput('@')">@</div>
+                            
                             <div class="key" onclick="appendToInput('q')">q</div>
                             <div class="key" onclick="appendToInput('w')">w</div>
                             <div class="key" onclick="appendToInput('e')">e</div>
@@ -178,58 +240,70 @@
                             <div class="key" onclick="appendToInput('b')">b</div>
                             <div class="key" onclick="appendToInput('n')">n</div>
                             <div class="key" onclick="appendToInput('m')">m</div>
+                            <div class="key" onclick="appendToInput('@')">@</div> 
                             <div class="key big-key" onclick="backspace()">&#9003; Backspace</div>
                         </div>
                     </div>
 
-                    <div class="transaction-buttons">
-                        <form action="ReturnItemServlet" method="post">
-                            <button type="submit" name ="submit" value ="return">
-                                <img src="Icons/11419687_return_icon.png" alt="Return Item" class="icon">
-                            </button>
-                        </form>
-                        <form action="LayawayDashboard.jsp" method="post">
-                            <button type="submit" onclick="redirectToAnotherPage()" title="Lay Away">
-                                <img src="Icons/172576_box_icon.png" alt="Lay Away" class="icon">
-                            </button>
-                        </form>
-                        <form action="VoidSaleServlet" method="post">
-                            <button type="submit" title="Void Sale">
-                                <img src="Icons/8140875_pos_void_ticket_cancal_cinema_icon.png" alt="Void Sale" class="icon">
-                            </button>
-                        </form>
-                        <form action="Search.jsp" method="post">
-                            <button type="submit" title="Search Item">
-                                <img src="Icons/211818_search_icon.png" alt="Search Item" class="icon">
-                            </button>
-                        </form>
-                        <form action="ViewReportsServlet" method="post">
-                            <button type="submit" title="View Reports">
-                                <img src="https://static.vecteezy.com/system/resources/previews/024/607/383/non_2x/data-analysis-icon-profit-graph-illustration-sign-data-science-symbol-or-logo-vector.jpg" alt="View Reports" class="icon">
-                            </button>
-                        </form>
-                        <form action="ProductServlet" method="post">
-                            <button type="submit" name="submit" value="Inventory" title="Inventory Management">
-                                <img src="https://static.vecteezy.com/system/resources/previews/015/890/404/non_2x/checklist-parcel-icon-outline-delivery-box-vector.jpg" alt="Inventory Management" class="icon">
-                            </button>
-                        </form>
-                    </div>
-
-
                 </div>
+
+
+                
 
 
             </div>
         </div>
+                        
+    <!-- The Popup Form -->
+    <div id="popupForm" class="popup">
+        <div class="popup-content">
+            <span class="close" id="closePopup">&times;</span>
+            <h2>Enter IBT ID Number</h2>
+            <form id="ibtForm">
+                <label for="ibtNumber">IBT ID:</label>
+                <input type="text" id="ibtNumber" name="ibtNumber" required>
+                <label>Store ID: </label><label></label>
+                <label></label><label></label>
+                <label></label><label></label>
+                <input type="submit" value="Submit">
+            </form>
+        </div>
+    </div>
+         
+         <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get the popup and button elements
+            var popup = document.getElementById("popupForm");
+            var btn = document.getElementById("openPopupButton");
+            var close = document.getElementById("closePopup");
+
+            // When the user clicks the button, open the popup
+            btn.onclick = function() {
+                popup.style.display = "block";
+            };
+
+            // When the user clicks on <span> (x), close the popup
+            close.onclick = function() {
+                popup.style.display = "none";
+            };
+
+            // When the user clicks anywhere outside of the popup, close it
+            window.onclick = function(event) {
+                if (event.target === popup) {
+                    popup.style.display = "none";
+                }
+            };
+        });
+    </script>
 
         <video id="barcode-scanner" autoplay></video>
         <audio id="beep-sound" src="beep.mp3" preload="auto"></audio>
 
         <script>
             function selectPaymentMethod(method) {
-                document.getElementById('payment-method').value = method;
-            }
-            function selectPaymentMethod(method) {
+                document.getElementById("payment-method").value = method;
+
+                // Hide or show payment details based on method
                 document.getElementById("card-details").style.display = "none";
                 document.getElementById("cash-card-amount").style.display = "none";
                 document.getElementById("cash-amount").style.display = "none";
@@ -242,6 +316,47 @@
                     document.getElementById("cash-amount").style.display = "block";
                 }
             }
+
+            function validateForm() {
+                var paymentMethod = document.getElementById("payment-method").value;
+
+                if (paymentMethod === 'card' || paymentMethod === 'cardAndcash') {
+                    var cardNumber = document.getElementById("card_number").value;
+                    var expiryDate = document.getElementById("expiry_date").value;
+                    var cvv = document.getElementById("cvv").value;
+
+                    if (!cardNumber || !expiryDate || !cvv) {
+                        alert("Please fill in all card details.");
+                        return false;
+                    }
+                }
+
+                if (paymentMethod === 'cash' || paymentMethod === 'cardAndcash') {
+                    var cashAmount = document.getElementById("cash_amount").value;
+
+                    if (!cashAmount || isNaN(cashAmount) || parseFloat(cashAmount) <= 0) {
+                        alert("Please enter a valid cash amount.");
+                        return false;
+                    }
+                }
+
+                if (paymentMethod === 'cardAndcash') {
+                    var cardAmount2 = document.getElementById("card_amount2").value;
+                    var cashAmount2 = document.getElementById("cash_amount2").value;
+
+                    if (!cardAmount2 || isNaN(cardAmount2) || parseFloat(cardAmount2) <= 0) {
+                        alert("Please enter a valid card amount.");
+                        return false;
+                    }
+                     if (!cashAmount2 || isNaN(cashAmount2) || parseFloat(cashAmount2) <= 0) {
+                        alert("Please enter a valid cash amount.");
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
 
             function redirectToAnotherPage() {
                 // Redirect to another JSP page

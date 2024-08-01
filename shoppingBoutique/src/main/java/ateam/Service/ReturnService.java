@@ -27,7 +27,7 @@ public interface ReturnService {
     List<Product> getProductsByPrice(BigDecimal price);
     void addSalesItem(SalesItem sales);
     Product getProductById(int productId);
-    int getProductIdBySKU(String productSKU);
+    SalesItem getSalesItemById(int salesItemId);
     List<SalesItem> getSalesItemsBySaleId(int salesId);
     
 }

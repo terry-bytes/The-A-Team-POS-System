@@ -86,7 +86,7 @@ public class IBTDAOIMPL implements  IBTDAO{
     public List<IBT> receiveIBTRequest(int store_ID) {
         List<IBT> Stores = new ArrayList();
         try {
-            preparedStatement = connection.prepareStatement("SELECT request_ID, store_ID, product_id, requested_store, quantity FROM IBTRequest WHERE store_ID = ?");
+            preparedStatement = connection.prepareStatement("SELECT request_ID, store_ID, product_id, requested_store, quantity FROM IBTRequest WHERE store_ID = ? AND requestFlag = 1");
             preparedStatement.setInt(1, store_ID);
             resultSet = preparedStatement.executeQuery();
             while(resultSet.next()) {
@@ -110,7 +110,7 @@ public class IBTDAOIMPL implements  IBTDAO{
     public boolean deleteRequestedIBT(int store_ID) {
         boolean success = false;
         try {
-            preparedStatement = connection.prepareStatement("DELETE FROM IBTRequest WHERE store_ID = ?");
+            preparedStatement = connection.prepareStatement("UPDATE ibtrequest SET requestFlag = 0 WHERE store_ID = ?");
             preparedStatement.setInt(1, store_ID);
              preparedStatement.execute();
             int rowsAffected = preparedStatement.executeUpdate();
@@ -143,14 +143,14 @@ public class IBTDAOIMPL implements  IBTDAO{
 }
     
     @Override
-    public int retrieveCustomerNumber(int layawayID) {
-        int customerNumber = 0;
+    public String retrieveCustomerNumber(int layawayID) {
+        String customerNumber = null;
         try {
             preparedStatement = connection.prepareStatement("SELECT customer_number FROM ibtrequest WHERE request_ID = ?");
             preparedStatement.setInt(1, layawayID);
             resultSet = preparedStatement.executeQuery();
             if(resultSet.next()) {
-                customerNumber = resultSet.getInt("customer_number");
+                customerNumber = resultSet.getString("customer_number");
             }
         } catch (SQLException ex) {
             Logger.getLogger(IBTDAOIMPL.class.getName()).log(Level.SEVERE, null, ex);

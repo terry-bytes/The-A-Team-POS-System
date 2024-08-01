@@ -98,6 +98,63 @@
     </script>
 
     <style>
+     
+         /* General Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        h1 {
+            color: #0056b3;
+            font-size: 2em;
+            margin-top: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        /* Form Styles */
+        form {
+            margin: 20px;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        input[type="submit"], input[type="button"] {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 10px;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        input[type="submit"]:hover, input[type="button"]:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+
+        input[type="submit"]:active, input[type="button"]:active {
+            background-color: #003d7a;
+            transform: scale(1);
+        }
+        
+        
     /* CSS style for red dot */
     .notification-red::after {
     content: '';

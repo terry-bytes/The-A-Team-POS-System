@@ -36,6 +36,7 @@ public class SalesItemDAOIMPL implements SalesItemDAO {
                 " GROUP BY" +
                 " p.product_ID, p.product_name, e.first_name";
 
+
     @Override
     public void saveSalesItem(SalesItem salesItem) {
         
@@ -57,6 +58,36 @@ public class SalesItemDAOIMPL implements SalesItemDAO {
             Logger.getLogger(SalesItemDAOIMPL.class.getName()).log(Level.SEVERE, null, ex);
         } 
     }
+
+    
+    
+    @Override
+    public boolean decreaseItem(int quantity,int salesItemId){
+        
+        boolean success = false;
+        String sql = "Update sales_items set quantity = quantity -? where sales_item_ID=?";
+        
+        try(
+                Connection conn = new Connect().connectToDB();
+                PreparedStatement prs = conn.prepareStatement(sql);
+                
+                ){
+            
+            prs.setInt(1, quantity);
+            prs.setInt(2,salesItemId);
+            
+            if(prs.executeUpdate()>0){
+                success = true;
+            }
+            
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(SalesItemDAOIMPL.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return success;
+    }
+
+
 
 
     @Override
@@ -109,4 +140,5 @@ public class SalesItemDAOIMPL implements SalesItemDAO {
         return topProductSellemployees;
     }
 }
+
 
