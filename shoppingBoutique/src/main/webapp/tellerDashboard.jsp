@@ -19,39 +19,39 @@
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/teller.css">
         <style>
             /* Popup Form Styles */
-        .popup {
-            display: none; /* Hidden by default */
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.4); /* Black with opacity */
-        }
+            .popup {
+                display: none; /* Hidden by default */
+                position: fixed;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                overflow: auto;
+                background-color: rgba(0,0,0,0.4); /* Black with opacity */
+            }
 
-        .popup-content {
-            background-color: #fefefe;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 500px;
-        }
+            .popup-content {
+                background-color: #fefefe;
+                margin: 15% auto;
+                padding: 20px;
+                border: 1px solid #888;
+                width: 80%;
+                max-width: 500px;
+            }
 
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
+            .close {
+                color: #aaa;
+                float: right;
+                font-size: 28px;
+                font-weight: bold;
+            }
 
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
+            .close:hover,
+            .close:focus {
+                color: black;
+                text-decoration: none;
+                cursor: pointer;
+            }
         </style>
     </head>
 
@@ -68,16 +68,16 @@
                             <%
 
                                 Employee loggedInUser = (Employee) session.getAttribute("Employee");%>
-                                <h3><%=loggedInUser.getFirstName()%> <%=loggedInUser.getLastName()%></h3>
+                            <h3><%=loggedInUser.getFirstName()%> <%=loggedInUser.getLastName()%></h3>
                         </div> 
 
                         <div class="logout">
-                            
-                                <a href="EmployeeServlet?submit=logout">
-                                    <i class='bx bx-log-out icon' ></i>
-                                    <span class="text nav-text">Logout</span>
-                                </a>
-                            
+
+                            <a href="EmployeeServlet?submit=logout">
+                                <i class='bx bx-log-out icon' ></i>
+                                <span class="text nav-text">Logout</span>
+                            </a>
+
                         </div>
                     </div>
                 </div>
@@ -192,7 +192,7 @@
                         </div>
                     </form>
                     <p>   </p>
-                    
+
                     <div class="transaction-buttons">
 
                         <form action="ReturnServlet" method="post">
@@ -219,20 +219,16 @@
                             </button>
                             <label>Search Items</label>
                         </form>
-                        <form action="ViewReportsServlet" method="post">
-                            <button type="submit" title="View Reports">
-                                <img src="https://static.vecteezy.com/system/resources/previews/024/607/383/non_2x/data-analysis-icon-profit-graph-illustration-sign-data-science-symbol-or-logo-vector.jpg" alt="View Reports" class="icon">
-                            </button>
-                            <label>View Reports</label>
-                        </form>
                         <form action="ProductServlet" method="post">
                             <button type="submit" name="submit" value="Inventory" title="Inventory Management">
                                 <img src="https://static.vecteezy.com/system/resources/previews/015/890/404/non_2x/checklist-parcel-icon-outline-delivery-box-vector.jpg" alt="Inventory Management" class="icon">
                             </button>
-                            <label>Inventory Management</label>
+                            <label>Inventory </label>
                         </form>
+
                     </div>
-                    
+                    <p>   </p>
+
                     <div class="keyboard">
                         <div class="keyboard-wrapper">
                             <div class="key" onclick="appendToInput('1')">1</div>
@@ -247,7 +243,7 @@
                             <div class="key" onclick="appendToInput('0')">0</div>
                             <div class="key" onclick="appendToInput('-')">-</div>
                             <div class="key" onclick="appendToInput('.')">.</div>
-                            
+
                             <div class="key" onclick="appendToInput('q')">q</div>
                             <div class="key" onclick="appendToInput('w')">w</div>
                             <div class="key" onclick="appendToInput('e')">e</div>
@@ -275,60 +271,60 @@
                             <div class="key" onclick="appendToInput('n')">n</div>
                             <div class="key" onclick="appendToInput('m')">m</div>
                             <div class="key" onclick="appendToInput('@')">@</div> 
-                            <div class="key big-key" onclick="backspace()">&#9003; Backspace</div>
+                            <div class="key big-key" onclick="backspace()">&#9003;</div>
                         </div>
                     </div>
 
                 </div>
 
 
-                
+
 
 
             </div>
         </div>
-                        
-    <!-- The Popup Form -->
-    <div id="popupForm" class="popup">
-        <div class="popup-content">
-            <span class="close" id="closePopup">&times;</span>
-            <h2>Enter IBT ID Number</h2>
-            <form id="ibtForm">
-                <label for="ibtNumber">IBT ID:</label>
-                <input type="text" id="ibtNumber" name="ibtNumber" required>
-                <label>Store ID: </label><label></label>
-                <label></label><label></label>
-                <label></label><label></label>
-                <input type="submit" value="Submit">
-            </form>
+
+        <!-- The Popup Form -->
+        <div id="popupForm" class="popup">
+            <div class="popup-content">
+                <span class="close" id="closePopup">&times;</span>
+                <h2>Enter IBT ID Number</h2>
+                <form id="ibtForm">
+                    <label for="ibtNumber">IBT ID:</label>
+                    <input type="text" id="ibtNumber" name="ibtNumber" required>
+                    <label>Store ID: </label><label></label>
+                    <label></label><label></label>
+                    <label></label><label></label>
+                    <input type="submit" value="Submit">
+                </form>
+            </div>
         </div>
-    </div>
-         
-         <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Get the popup and button elements
-            var popup = document.getElementById("popupForm");
-            var btn = document.getElementById("openPopupButton");
-            var close = document.getElementById("closePopup");
 
-            // When the user clicks the button, open the popup
-            btn.onclick = function() {
-                popup.style.display = "block";
-            };
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                // Get the popup and button elements
+                var popup = document.getElementById("popupForm");
+                var btn = document.getElementById("openPopupButton");
+                var close = document.getElementById("closePopup");
 
-            // When the user clicks on <span> (x), close the popup
-            close.onclick = function() {
-                popup.style.display = "none";
-            };
+                // When the user clicks the button, open the popup
+                btn.onclick = function () {
+                    popup.style.display = "block";
+                };
 
-            // When the user clicks anywhere outside of the popup, close it
-            window.onclick = function(event) {
-                if (event.target === popup) {
+                // When the user clicks on <span> (x), close the popup
+                close.onclick = function () {
                     popup.style.display = "none";
-                }
-            };
-        });
-    </script>
+                };
+
+                // When the user clicks anywhere outside of the popup, close it
+                window.onclick = function (event) {
+                    if (event.target === popup) {
+                        popup.style.display = "none";
+                    }
+                };
+            });
+        </script>
 
         <video id="barcode-scanner" autoplay></video>
         <audio id="beep-sound" src="beep.mp3" preload="auto"></audio>
@@ -346,6 +342,7 @@
                     document.getElementById("card-details").style.display = "block";
                 } else if (method === 'cardAndcash') {
                     document.getElementById("cash-card-amount").style.display = "block";
+                    document.getElementById('card-details').style.display = 'block';
                 } else if (method === 'cash') {
                     document.getElementById("cash-amount").style.display = "block";
                 }
@@ -382,7 +379,7 @@
                         alert("Please enter a valid card amount.");
                         return false;
                     }
-                     if (!cashAmount2 || isNaN(cashAmount2) || parseFloat(cashAmount2) <= 0) {
+                    if (!cashAmount2 || isNaN(cashAmount2) || parseFloat(cashAmount2) <= 0) {
                         alert("Please enter a valid cash amount.");
                         return false;
                     }
