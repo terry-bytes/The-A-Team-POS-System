@@ -1,3 +1,4 @@
+<%@page import="ateam.Models.Employee"%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
@@ -75,6 +76,10 @@
         </style>
     </head>
     <body>
+        <% Employee employee = (Employee) request.getSession(false).getAttribute("Employee");
+            if (employee != null){
+                %>
+            
         <div class="container">
             <h2>Confirm Item Removal</h2>
 
@@ -87,5 +92,6 @@
             </form>
             <a href="tellerDashboard.jsp">Cancel</a>
         </div>
+                <%} else {%> <jsp:include page="unauthorized.jsp"></jsp:include> <%}%>
     </body>
 </html>

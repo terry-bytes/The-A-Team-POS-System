@@ -4,6 +4,7 @@
     Author     : T440
 --%>
 
+<%@page import="java.util.List"%>
 <%@page import="java.util.Set"%>
 <%@page import="ateam.Models.Employee"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -15,7 +16,7 @@
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/report.css">
     </head>
     <body>
-        <% Set<Employee> employees = (Set<Employee>) request.getSession(false).getAttribute("MyEmployees");%>
+        <% List<Employee> employees = (List<Employee>) request.getSession(false).getAttribute("MyEmployees");%>
         <jsp:include page="sidebar.jsp"/>
         <div class="menu-content">
             

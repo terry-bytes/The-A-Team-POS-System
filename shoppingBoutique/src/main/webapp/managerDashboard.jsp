@@ -433,7 +433,7 @@ console.log("Sales Data:", salesData);
 
                 document.getElementById('topSellingEmployee').addEventListener('change', function () {
                     const storeId = this.value;
-                    console.log("store id need want to check for top employee" + storeId);
+                    alert("store id need want to check for top employee" + storeId);
 
                     fetch('SalesDemo', {
                         method: 'POST',
