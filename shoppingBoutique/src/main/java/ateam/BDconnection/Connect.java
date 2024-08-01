@@ -14,7 +14,6 @@ public class Connect {
 
     public Connect() {
     }
-    private static final String URL = "jdbc:mysql://localhost:3306/carolsboutique?useSSL=false";
     private static final String USER = "root";
 
 
