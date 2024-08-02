@@ -28,7 +28,7 @@
         <div class="left-main">
             <div class="header">
                 <h4>Employees for <%= store.getStore_name()%></h4>
-                <a href="#">Add Employee</a>
+                <a href="EmployeeServlet?submit=getAddEmployee">Add Employee</a>
             </div>
                 
                     <table id="customers">
@@ -38,6 +38,7 @@
       <th>Last Name</th>
       <th>Email</th>
       <th>Employee Id</th>
+      <th>Action</th>
     <tr>
 
     <% for (Employee emp : employees){%>
@@ -46,6 +47,10 @@
         <td><%= emp.getLastName() %></td>
         <td><%= emp.getEmail() %></td>
         <td><%= emp.getEmployees_id() %></td>
+        <td>
+            <a href="#">Update</a>
+            <a href="#">Remove</a>
+        </td>
     </tr>
     <%}%>
 

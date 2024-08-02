@@ -5,6 +5,7 @@
  */
 package ateam.Service;
 
+import ateam.Exception.DuplicateStoreException;
 import ateam.Models.Store;
 import java.util.List;
 
@@ -13,7 +14,7 @@ import java.util.List;
  * @author carme
  */
 public interface StoreService {
-     boolean addStore(Store store);
+     boolean addStore(Store store) throws DuplicateStoreException;
 
     Store getStoreById(int store_ID);
 
