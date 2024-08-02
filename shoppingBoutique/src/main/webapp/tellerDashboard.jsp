@@ -14,6 +14,9 @@
         <!-- Include jQuery library -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+        <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/teller.css">
+
         
         
         
@@ -161,8 +164,16 @@
     }
     </style>
         
-         <style>
-        /* Popup Form Styles */
+     
+    
+    
+        
+
+
+        
+        <style>
+            /* Popup Form Styles */
+
         .popup {
             display: none; /* Hidden by default */
             position: fixed;
@@ -196,302 +207,6 @@
             text-decoration: none;
             cursor: pointer;
         }
-    </style>
-
-        <style>
-            .payment-section {
-                flex: 1;
-            }
-            .payment-icons img {
-                width: 50px;
-                cursor: pointer;
-                margin: 5px;
-            }
-            .payment-icons img:hover {
-                transform: scale(1.1);
-            }
-            .green-arrow-button {
-                background-color: #19a1e0; /* Green background */
-                color: white; /* White text color */
-                border: none; /* Remove border */
-                padding: 10px 20px; /* Adjust padding */
-                font-size: 1em; /* Font size */
-                cursor: pointer; /* Pointer cursor */
-                border-radius: 7px; /* Rounded corners */
-                position: relative; /* For positioning the arrow */
-                display: inline-block; /* Make sure it behaves like a button */
-            }
-
-            .green-arrow-button::after {
-                content: ""; /* No text */
-                position: absolute; /* Position the arrow */
-                top: 50%; /* Center vertically */
-                right: 10px; /* Position from the right */
-                width: 10; /* Zero width */
-                height: 10; /* Zero height */
-                border-top: 10px solid transparent; /* Top part of the arrow */
-                border-bottom: 10px solid transparent; /* Bottom part of the arrow */
-                border-left: 10px solid #fff; /* Arrow color */
-                transform: translateY(-50%); /* Center arrow vertically */
-            }
-            .big-key {
-                flex: 2; /* Makes the key wider */
-                font-size: 1.4em; /* Larger text */
-                padding: 20px; /* Larger padding */
-            }
-
-            body {
-                font-family: 'Open Sans', sans-serif;
-                color: #333;
-                background-color: #d9e2da;
-            }
-            .container {
-                display: flex;
-                padding: 20px;
-            }
-            .scanned-items {
-                flex: 1;
-                margin-right: 20px;
-            }
-            .payment-section {
-                flex: 1;
-            }
-            .my-header {
-                background: #f0f0f0;
-                padding: 15px;
-                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            }
-            .my-nav ul {
-                list-style: none;
-                padding: 0;
-                margin: 0;
-            }
-            .my-nav li {
-                display: inline;
-                margin-right: 20px;
-            }
-            .my-nav a {
-                text-decoration: none;
-                color: #333;
-            }
-            .scanned-items h2 {
-                color: #2980b9;
-            }
-            table {
-                width: 100%;
-                border-collapse: collapse;
-            }
-            th, td {
-                border: 1px solid #ddd;
-                padding: 10px;
-            }
-            th {
-                background: #f5f5f5;
-            }
-            .total-price {
-                margin-top: 20px;
-                font-size: 1.2em;
-            }
-            .manual-entry-section {
-                background: #f9f9f9;
-                padding: 20px;
-                border-radius: 8px;
-                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            }
-            #manual-sku {
-                width: 100%;
-                padding: 10px;
-                margin-bottom: 10px;
-                border: 1px solid #ddd;
-                border-radius: 4px;
-            }
-            .keyboard {
-                display: flex;
-                justify-content: flex-start; /* Aligns the keyboard to the left */
-                align-items: center;
-                margin-left: 5px;
-            }
-
-            .keyboard-wrapper {
-                display: flex;
-                flex-wrap: wrap;
-                width: 300px; /* adjust width as needed */
-                gap: 5px; /* space between keys */
-                padding: 10px;
-                border: 1px solid #ccc;
-                border-radius: 10px;
-                background-color: #3498db;
-            }
-
-            .key {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                width: 50px; /* adjust width as needed */
-                height: 30px; /* adjust height as needed */
-                border: 1px solid #ccc;
-                border-radius: 5px;
-                background-color: #3498db;
-                cursor: pointer;
-                user-select: none;
-            }
-
-            .big-key {
-                width: 100%; /* makes the backspace key span the width */
-            }
-
-            .manual-entry {
-                display: flex;
-                align-items: center;
-                margin-bottom: 10px;
-            }
-            .transaction-buttons {
-                display: grid; /* Use grid layout */
-                grid-template-columns: repeat(2, 1fr); /* 2 columns, each taking up an equal fraction of available space */
-                gap: 5px; /* Space between buttons */
-                padding: 5px; /* Padding inside the container */
-                border: 1px solid #ccc;
-                border-radius: 10px;
-                background-color: #f5f5f5;
-                width: 268px; /* Adjusted width to make the container smaller */
-                max-width: 50%; /* Ensures the container doesn't overflow */
-                box-sizing: border-box; /* Ensures padding and border are included in width */
-                position: absolute; /* Positions the container absolutely */
-                right: 60px; /* Positions the container 10px from the right edge */
-                top: 250px; /* Positions the container 10px from the top edge */
-            }
-
-            .transaction-buttons button {
-                display: flex;
-                justify-content: center; /* Center the button content */
-                align-items: center;
-                width: 100%; /* Makes the button take the full width of the grid cell */
-                padding: 5px; /* Padding inside the buttons */
-                border: none;
-                border-radius: 5px;
-                background-color: #fff;
-                cursor: pointer;
-                transition: background-color 0.3s;
-            }
-
-            .transaction-buttons button:hover {
-                background-color: #e0e0e0; /* Change background on hover */
-            }
-
-            .transaction-buttons img.icon {
-                max-width: 100%; /* Ensures the icon fits within the button */
-                height: auto;
-            }
-
-
-
-
-
-            #barcode-scanner {
-
-            }
-            .right-section {
-                flex: 1;
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
-            }
-            .left-section {
-                flex: 1;
-                padding-right: 20px;
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
-            }
-            .user-info {
-                display: flex;
-                align-items: center;
-                margin-bottom: 20px;
-            }
-            .user-info img {
-                width: 40px;
-                height: 40px;
-                border-radius: 50%;
-                margin-right: 10px;
-            }
-
-            /* Popup Overlay */
-            .popup-overlay {
-                display: none;
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background-color: rgba(0,0,0,0.5);
-                z-index: 1000;
-            }
-
-            .popup-content {
-                position: relative;
-                background-color: #fff;
-                border: 1px solid #333;
-                width: 50%; /* Adjust width as needed */
-                margin: 10% auto;
-                padding: 20px;
-                border-radius: 8px;
-                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            }
-
-            .popup-close {
-                position: absolute;
-                top: 10px;
-                right: 10px;
-                cursor: pointer;
-                font-size: 20px;
-                color: #aaa;
-            }
-
-            .popup-close:hover {
-                color: #333;
-            }
-
-            .popup-content h2 {
-                margin-bottom: 20px;
-                color: #333;
-            }
-
-            .popup-content form {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .popup-content label {
-                font-weight: bold;
-                margin-bottom: 10px;
-            }
-
-            .popup-content input[type="text"],
-            .popup-content input[type="email"] {
-                width: 100%;
-                padding: 10px;
-                margin-bottom: 15px;
-                border: 1px solid #ccc;
-                border-radius: 4px;
-                font-size: 1em;
-                box-sizing: border-box;
-            }
-
-            .popup-content button[type="submit"] {
-                background-color: #3498db;
-                color: white;
-                border: none;
-                padding: 10px 20px;
-                margin-top: 15px;
-                cursor: pointer;
-                border-radius: 4px;
-                font-size: 1em;
-            }
-
-            .popup-content button[type="submit"]:hover {
-                background-color: #2980b9;
-            }
         </style>
     </head>
 
@@ -501,17 +216,24 @@
 
         <div class="container">
             <div class="left-section">
-                <div class="user-info">
-                    <img src="images.jpeg" alt="User Avatar">
-                    <div>
-                        <%
-                            Employee loggedInUser = (Employee) session.getAttribute("Employee");
-                            if (loggedInUser != null) {
-                                out.print(loggedInUser.getFirstName() + " " + loggedInUser.getLastName());
-                            } else {
-                                out.print("Username");
-                            }
-                        %>
+                <div class="user-info ">
+                    <div class="user-details">
+                        <img src="images.jpeg" alt="User Avatar">
+                        <div class="user">
+                            <%
+
+                                Employee loggedInUser = (Employee) session.getAttribute("Employee");%>
+                                <h3><%=loggedInUser.getFirstName()%> <%=loggedInUser.getLastName()%></h3>
+                        </div> 
+
+                        <div class="logout">
+                            
+                                <a href="EmployeeServlet?submit=logout">
+                                    <i class='bx bx-log-out icon' ></i>
+                                    <span class="text nav-text">Logout</span>
+                                </a>
+                            
+                        </div>
                     </div>
                 </div>
 
@@ -563,8 +285,8 @@
                     <form id="product-form" action="ProductServlet" method="post" onsubmit="return validateForm()">
                         <input type="hidden" id="payment-method" name="payment_method" value="">
                         <div class="manual-entry">
-                            <input type="text" id="manual-sku" name="input-field" placeholder="Enter SKU manually">
-                            <button type="submit" name="submit" value="Add-Item" class="green-arrow-button">OK</button>
+                            <input class="styled-input" type="text" id="manual-sku" name="input-field" placeholder="Enter SKU manually">
+                            <button type="submit" name="submit" value="Add-Item" class="styled-button">OK</button>
                             <button type="submit" name="submit" value="auto-submit" id="auto-submit" style="display: none"></button>
                         </div>
                         <div class="payment-icons">
@@ -575,48 +297,97 @@
                         <p>   </p>
 
 
-                        <div id="card-details" style="display:none;">
+                        <div class="payment-method" id="card-details" style="display:none;">
                             <div>
                                 <label for="card_number">Card Number:</label>
-                                <input type="text" id="card_number" name="card_number">
+                                <input type="text" id="card_number" name="card_number" placeholder="Card Number">
                             </div>
-                            <div>
-                                <label for="expiry_date">Expiry Date:</label>
-                                <input type="text" id="expiry_date" name="expiry_date">
-                            </div>
-                            <div>
-                                <label for="cvv">CVV:</label>
-                                <input type="text" id="cvv" name="cvv">
+                            <div class="flex">
+                                <div class="inputBox">
+                                    <label for="expiry_date">Expiry Date:</label>
+                                    <input type="text" id="expiry_date" name="expiry_date" placeholder="Expity Date">
+                                </div>
+                                <div class="inputBox">
+                                    <label for="cvv">CVV:</label>
+                                    <input type="text" id="cvv" name="cvv" placeholder="CVV">
+                                </div>
                             </div>
                         </div>
-                        <div id="cash-amount" style="display:none;">
+                        <div class="payment-method" id="cash-amount" style="display:none;">
                             <div>
                                 <label for="cash_amount">Cash Amount:</label>
-                                <input type="text" id="cash_amount" name="cash_amount">
+                                <input type="text" id="cash_amount" name="cash_amount" placeholder="Cash Amount">
                             </div>
                         </div>
-                        <div id="cash-card-amount" style="display:none;">
-                            <div>
-                                <label for="cash_amount2">Cash Amount:</label>
-                                <input type="text" id="cash_amount2" name="cash_amount2">
-                            </div>
-                            <div>
-                                <label for="card_amount2">Card Amount:</label>
-                                <input type="text" id="card_amount2" name="card_amount2">
+                        <div class="payment-method" id="cash-card-amount" style="display:none;">
+                            <div class="flex">
+                                <div class="inputBox">
+                                    <label for="cash_amount2">Cash Amount:</label>
+                                    <input type="text" id="cash_amount2" name="cash_amount2" placeholder="Cash Amount">
+                                </div>
+                                <div class="inputBox">
+                                    <label for="card_amount2">Card Amount:</label>
+                                    <input type="text" id="card_amount2" name="card_amount2" placeholder="Card Amount">
+                                </div>
                             </div>
                         </div>
                         <p>   </p>
                         <div>
                             <label for="customer_email">Customer Email:</label>
-                            <input type="email" id="customer_email" name="customer_email" placeholder="Enter customer email" >
+                            <input class="styled-input" type="email" id="customer_email" name="customer_email" placeholder="Enter customer email" >
                         </div>
                         <p>   </p>
-                        <input type="hidden" id="scanned-items-count" name="scannedItemsCount" value="<c:out value='${fn:length(scannedItems)}'/>">
-                        <button type="submit" name="submit" value="Complete-Sale">Complete Sale</button>
-                        <input type="submit" value="Process Layaway" onclick="openPopup()">
-                        <input type="button" value="Process IBT" id="openPopupButton">
+                        <div class="submit-btns">
+                            <input type="hidden" id="scanned-items-count" name="scannedItemsCount" value="<c:out value='${fn:length(scannedItems)}'/>">
+
+                            <button class="styled-button" id="complete" type="submit" name="submit" value="Complete-Sale">Complete Sale</button>
+                            <input class="styled-button" id="lay" type="submit" value="Process Layaway" onclick="openPopup()">
+                            <input class="styled-button" id="IBT" type="button" value="Process IBT" id="openPopupButton">
+
+                        </div>
                     </form>
                     <p>   </p>
+                    
+                    <div class="transaction-buttons">
+
+                        <form action="ReturnServlet" method="post">
+                            <button type="submit" name="submit" value="return" title ="Return Item">
+                                <img src="https://th.bing.com/th/id/OIP.-YCUILzwkqhEWv0dTnBCxgHaHa?w=800&h=800&rs=1&pid=ImgDetMain" alt="Return Item" class="icon"> 
+                            </button>
+                            <label>Return Item</label>
+                        </form>
+                        <form action="LayawayDashboard.jsp" method="post"  class="layaway-form">
+                            <button type="submit" onclick="redirectToAnotherPage()" title="Lay Away">
+                                <img src="Icons/172576_box_icon.png" alt="Lay Away" class="icon">
+                            </button>
+                            <label>Lay Away</label>
+                        </form>
+                        <form action="VoidSaleServlet" method="post">
+                            <button type="submit" title="Void Sale">
+                                <img src="Icons/8140875_pos_void_ticket_cancal_cinema_icon.png" alt="Void Sale" class="icon">
+                            </button>
+                            <label>Void Sale</label>
+                        </form>
+                        <form action="Search.jsp" method="post">
+                            <button type="submit" title="Search Item">
+                                <img src="Icons/211818_search_icon.png" alt="Search Item" class="icon">
+                            </button>
+                            <label>Search Items</label>
+                        </form>
+                        <form action="ViewReportsServlet" method="post">
+                            <button type="submit" title="View Reports">
+                                <img src="https://static.vecteezy.com/system/resources/previews/024/607/383/non_2x/data-analysis-icon-profit-graph-illustration-sign-data-science-symbol-or-logo-vector.jpg" alt="View Reports" class="icon">
+                            </button>
+                            <label>View Reports</label>
+                        </form>
+                        <form action="ProductServlet" method="post">
+                            <button type="submit" name="submit" value="Inventory" title="Inventory Management">
+                                <img src="https://static.vecteezy.com/system/resources/previews/015/890/404/non_2x/checklist-parcel-icon-outline-delivery-box-vector.jpg" alt="Inventory Management" class="icon">
+                            </button>
+                            <label>Inventory Management</label>
+                        </form>
+                    </div>
+                    
                     <div class="keyboard">
                         <div class="keyboard-wrapper">
                             <div class="key" onclick="appendToInput('1')">1</div>
@@ -631,7 +402,7 @@
                             <div class="key" onclick="appendToInput('0')">0</div>
                             <div class="key" onclick="appendToInput('-')">-</div>
                             <div class="key" onclick="appendToInput('.')">.</div>
-                            <div class="key" onclick="appendToInput('@')">@</div>
+                            
                             <div class="key" onclick="appendToInput('q')">q</div>
                             <div class="key" onclick="appendToInput('w')">w</div>
                             <div class="key" onclick="appendToInput('e')">e</div>
@@ -658,44 +429,10 @@
                             <div class="key" onclick="appendToInput('b')">b</div>
                             <div class="key" onclick="appendToInput('n')">n</div>
                             <div class="key" onclick="appendToInput('m')">m</div>
+                            <div class="key" onclick="appendToInput('@')">@</div> 
                             <div class="key big-key" onclick="backspace()">&#9003; Backspace</div>
                         </div>
                     </div>
-
-                    <div class="transaction-buttons">
-
-                        <form action="ReturnServlet" method="post">
-                            <button type="submit" name="submit" value="return" title ="Return Item">
-                                <img src="https://th.bing.com/th/id/OIP.-YCUILzwkqhEWv0dTnBCxgHaHa?w=800&h=800&rs=1&pid=ImgDetMain" alt="Return Item" class="icon"> <!-- Custom icon -->
-                            </button>
-                        </form>
-                        <form action="LayawayDashboard.jsp" method="post">
-                            <button type="submit" onclick="redirectToAnotherPage()" title="Lay Away">
-                                <img src="Icons/172576_box_icon.png" alt="Lay Away" class="icon">
-                            </button>
-                        </form>
-                        <form action="VoidSaleServlet" method="post">
-                            <button type="submit" title="Void Sale">
-                                <img src="Icons/8140875_pos_void_ticket_cancal_cinema_icon.png" alt="Void Sale" class="icon">
-                            </button>
-                        </form>
-                        <form action="Search.jsp" method="post">
-                            <button type="submit" title="Search Item">
-                                <img src="Icons/211818_search_icon.png" alt="Search Item" class="icon">
-                            </button>
-                        </form>
-                        <form action="ViewReportsServlet" method="post">
-                            <button type="submit" title="View Reports">
-                                <img src="https://static.vecteezy.com/system/resources/previews/024/607/383/non_2x/data-analysis-icon-profit-graph-illustration-sign-data-science-symbol-or-logo-vector.jpg" alt="View Reports" class="icon">
-                            </button>
-                        </form>
-                        <form action="ProductServlet" method="post">
-                            <button type="submit" name="submit" value="Inventory" title="Inventory Management">
-                                <img src="https://static.vecteezy.com/system/resources/previews/015/890/404/non_2x/checklist-parcel-icon-outline-delivery-box-vector.jpg" alt="Inventory Management" class="icon">
-                            </button>
-                        </form>
-                    </div>
-
 
                 </div>
 
@@ -758,8 +495,7 @@
                 if (event.target === popup) {
                     popup.style.display = "none";
                 }
-            };
-         
+            };  
     });
     </script>
 

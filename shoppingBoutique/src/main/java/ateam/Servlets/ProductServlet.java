@@ -56,9 +56,7 @@ public class ProductServlet extends HttpServlet {
     private Connect dbConnect = new Connect();
     private InventoryService inventoryService = new InventoryServiceImpl();
 
-
     private static final double VAT_RATE = 0.15;
-
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -269,15 +267,13 @@ public class ProductServlet extends HttpServlet {
 
                             inventoryService.processSale(newSalesID);
 
-
                             String salespersonName = loggedInUser.getFirstName() + " " + loggedInUser.getLastName();
                             String saleTime = newSale.getSales_date().toString();
                             String customerEmail = request.getParameter("customer_email");
 
-
                             emailService.sendSaleReceipt(customerEmail, salespersonName, saleTime, scannedItems, totalAmountWithoutVAT, vatAmount, change, newSale.getPayment_method(), cashPaid, cardPaid);
 
-                            SmsSender.sendSms("+27631821265", saleTime);
+                            SmsSender.sendSms("add number", "Thank you for SHOPPING with us! 😊 Please check your email (" + customerEmail + ") for your RECEIPT.");
 
                             scannedItems.clear();
 
