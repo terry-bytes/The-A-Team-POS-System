@@ -18,6 +18,8 @@ public interface EmailService {
     void sendMail(Email email);
 
     void sendPasswordResetMail(String email, String otp);
+    
+    void VoucherEmail(String to,BigDecimal change,int voucher);
 
     void sendSaleReceipt(String toEmail, String salespersonName, String saleTime, List<Product> items, BigDecimal totalAmountWithVAT, BigDecimal vatAmount, BigDecimal change, String paymentMethod,BigDecimal cashPaid,BigDecimal cardPaid);
 }

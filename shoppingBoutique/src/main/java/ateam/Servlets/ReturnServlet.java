@@ -102,13 +102,5 @@ public class ReturnServlet extends HttpServlet {
         response.sendRedirect("returnSale.jsp");
     }
     
-//    private double calculateTotalPrice(List<SalesItem> scannedItems) {
-//        BigDecimal totalPrice = BigDecimal.ZERO;
-//        for (SalesItem  item : scannedItems) {
-//            BigDecimal itemPrice = item.getUnit_price();
-//            int quantity = item.getQuantity();
-//            totalPrice += itemPrice.multiply(quantity);
-//        }
-//        return totalPrice;
-//    }
+  
 }

@@ -3,7 +3,6 @@ import ateam.DAO.SaleDAO;
 import ateam.DAO.SalesItemDAO;
 import ateam.DAOIMPL.SaleDAOIMPL;
 import ateam.DAOIMPL.SalesItemDAOIMPL;
-import ateam.Models.Employee;
 import ateam.Models.Product;
 import ateam.Models.Return;
 import ateam.Models.Sale;
@@ -18,7 +17,6 @@ import ateam.ServiceImpl.ReturnServiceImpl;
 import ateam.ServiceImpl.TheReturn;
 import ateam.Services.impl.InventoryServiceImpl;
 import ateam.Servlets.ProductServlet;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -32,8 +30,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.mindrot.jbcrypt.BCrypt;
@@ -54,27 +52,48 @@ public class ReturnedServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("submit");
         HttpSession session = request.getSession();
+        BigDecimal change = (BigDecimal) request.getSession(false).getAttribute("change");
+
+        switch (action) {
+    case "Retrieve-Sale":
+        retrieveSale(request, response, session);
+        break;
+    case "Process-Return":
+        processReturn(request, response, session);
+        break;
+    case "Complete Return":
+        request.setAttribute("message", "Refund the customer R" + change);
+        try {
+            request.getRequestDispatcher("tellerDashboard.jsp").forward(request, response);
+        } catch (ServletException ex) {
+            Logger.getLogger(ReturnedServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        break;
+    case "Select New Item":
+        TheReturn th = new TheReturn();
+        EmailService emailServ = new EmailServiceImpl();
+
+        Random random = new Random();
+        int voucher = 0;
+        String email = (String) request.getAttribute("email");
+
+        for (int i = 0; i < 10; i++) {
+            voucher = random.nextInt(100);
+            System.out.println(voucher);
+        }
+
+        request.getSession(false).setAttribute("voucher", voucher);
+        th.addVoucher(voucher, change);
+        emailServ.VoucherEmail(email, change, voucher);
 
         try {
-            switch (action) {
-
-                case "Retrieve-Sale":
-                    retrieveSale(request, response, session);
-                    break;
-                case "Process-Return":
-                    processReturn(request, response, session);
-                    break;
-                case "Handle-Customer-Choice":
-                    handleCustomerChoice(request, response, session);
-                    break;
-                default:
-                    System.out.println("wrong selection");
-                    break;
-            }
-        } catch (IOException e) {
-            session.setAttribute("message", "Error: " + e.getMessage());
-            response.sendRedirect("returnSale.jsp");
+            request.getRequestDispatcher("voucher.jsp").forward(request, response);
+        } catch (ServletException ex) {
+            Logger.getLogger(ReturnedServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
+        break;
+}
+
     }
 
     private void retrieveSale(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws IOException {
@@ -87,25 +106,23 @@ public class ReturnedServlet extends HttpServlet {
         if (sale != null) {
             session.setAttribute("sale", sale);
             session.setAttribute("salesItems", salesItems);
+            session.setAttribute("message", "Sale has been successfully retrieved");
         } else {
             session.setAttribute("message", "Sale not found for ID: " + salesId);
         }
         response.sendRedirect("returnSale.jsp");
     }
 
-    private void processReturn(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws IOException {
+    private void processReturn(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws IOException, ServletException {
         int salesId = (int) request.getSession(false).getAttribute("salesId");
         int salesItemId = Integer.parseInt(request.getParameter("salesItemId"));
         TheReturn ret = new TheReturn();
-        String managerPassword = request.getParameter("manager_password");
+
         SalesItem sales = ret.getSalesItemById(salesItemId);
-        System.out.println("output " + sales);
         BigDecimal getPrice = sales.getUnit_price();
-        System.out.println("getPrice "+getPrice);
-        List<Product> availableProducts =ret.getProductsByPrice(getPrice);
-        request.getSession(false).setAttribute("availableProducts",availableProducts);
-            
-        
+        List<Product> availableProducts = ret.getProductsByPrice(getPrice);
+        request.getSession(false).setAttribute("availableProducts", availableProducts);
+
         int productId = sales.getProduct_ID();
         request.getSession(false).setAttribute("productId", productId);
 
@@ -121,66 +138,51 @@ public class ReturnedServlet extends HttpServlet {
         returns.setReturn_date(new Timestamp(System.currentTimeMillis())); // Ensure return_date is set
         returns.setEmail(email);
         returns.setReason(reason);
-        Employee loggedInUser = (Employee) session.getAttribute("Employee");
+
         if (!(quantity < sales.getQuantity()) || (sales.getQuantity() != 0)) {
-//            
-            if ( verifyManagerPassword(loggedInUser.getStore_ID(), managerPassword)) {
+            ret.addReturn(returns);
+            boolean decrease = ret.decreaseItems(quantity, salesItemId);
+            ret.updateProductQuantity(productId, quantity);
 
-                ret.addReturn(returns);
-                boolean decrease = ret.decreaseItems(quantity, salesItemId);
+            Sale ss = (Sale) request.getSession(false).getAttribute("sale");
+            ss = ret.getSaleById(salesId);
+            BigDecimal totalSale = ss.getTotal_amount();
 
-                ret.updateProductQuantity(productId, quantity);
+            BigDecimal remainingAmount = ret.updateSaleTotalAmount(salesId, getPrice, quantity, totalSale);
+            request.getSession(false).setAttribute("remainingAmount", remainingAmount);
 
-                System.out.println("Added the return record to the database " + decrease);
-                Sale ss = (Sale) request.getSession(false).getAttribute("sale");
-                ss = ret.getSaleById(salesId);
-                System.out.println("sale :" + ss);
-                BigDecimal totalSale = ss.getTotal_amount();
-                System.out.println("total :" + totalSale);
-
-                BigDecimal remainingAmount = ret.updateSaleTotalAmount(salesId, getPrice, quantity, totalSale);
-                System.out.println("Update total remaining " + remainingAmount);
-                
-                request.getSession(false).setAttribute("remainingAmount", remainingAmount);
-
-                BigDecimal intAsBigDecimal = BigDecimal.valueOf(quantity);
-                BigDecimal change = getPrice.multiply(intAsBigDecimal);
-                System.out.println("The change is R" + change);
-                session.setAttribute("change", change);
-
-            }
-
+            BigDecimal intAsBigDecimal = BigDecimal.valueOf(quantity);
+            BigDecimal change = getPrice.multiply(intAsBigDecimal);
+            session.setAttribute("change", change);
+            session.setAttribute("message", "Item has been successfully returned");
+            response.sendRedirect("returnSale.jsp");
         } else {
-            System.out.println("Error, Item already returned");
             request.setAttribute("message", "Error, Item already returned");
-            try {
-                request.getRequestDispatcher("returnSale.jsp").forward(request, response);
-            } catch (ServletException ex) {
-                Logger.getLogger(ReturnedServlet.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-
-        response.sendRedirect("returnSale.jsp");
-
-    }
-
-    private void handleCustomerChoice(HttpServletRequest request, HttpServletResponse response, HttpSession session)throws IOException{
-        int salesId = (int) request.getSession(false).getAttribute("salesId");
-        int productId = Integer.parseInt(request.getParameter("selectedProduct"));
-        BigDecimal change = (BigDecimal)request.getSession(false).getAttribute("change");
-        String customerChoice = request.getParameter("customer_choice");
-        TheReturn ret = new TheReturn();
-        if(ret.handleCustomerOptions(salesId,change, customerChoice,productId)){
-        
-        request.setAttribute("message","Return has been successfully completed");
-        response.sendRedirect("returnSale.jsp");
+            request.getRequestDispatcher("returnSale.jsp").forward(request, response);
         }
     }
 
-           
-           
+//    private void completeReturn(HttpServletRequest request, HttpServletResponse response, BigDecimal change) throws ServletException, IOException {
+//        request.setAttribute("message", "Refund the customer R" + change);
+//        request.getRequestDispatcher("tellerDashboard.jsp").forward(request, response);
+//    }
+//
+//    private void selectNewItem(HttpServletRequest request, HttpServletResponse response, BigDecimal change) throws ServletException, IOException {
+//        TheReturn th = new TheReturn();
+//        EmailService emailServ = new EmailServiceImpl();
+//
+//        Random random = new Random();
+//        int voucher = random.nextInt(100);
+//
+//        String email = (String) request.getAttribute("email");
+//        request.getSession(false).setAttribute("voucher", voucher);
+//        th.addVoucher(voucher, change);
+//        emailServ.VoucherEmail(email, change, voucher);
+//
+//        request.getRequestDispatcher("voucher.jsp").forward(request, response);
+//    }
 
-        private boolean verifyManagerPassword(int storeID, String password) {
+    private boolean verifyManagerPassword(int storeID, String password) {
         Logger.getLogger(ProductServlet.class.getName()).log(Level.INFO, "Verifying manager password for store ID: " + storeID);
         String hashedPassword = getManagerHashedPassword(storeID);
         Logger.getLogger(ProductServlet.class.getName()).log(Level.INFO, "Manager hashed password retrieved: " + hashedPassword);
@@ -189,7 +191,8 @@ public class ReturnedServlet extends HttpServlet {
         Logger.getLogger(ProductServlet.class.getName()).log(Level.INFO, "Password verification result: " + result);
         return result;
     }
-         private String getManagerHashedPassword(int storeID) {
+
+    private String getManagerHashedPassword(int storeID) {
         String hashedPassword = null;
         try (Connection conn = dbConnect.connectToDB(); PreparedStatement stmt = conn.prepareStatement("SELECT employee_password FROM employees WHERE store_ID = ? AND role = 'Manager'")) {
             stmt.setInt(1, storeID);
@@ -203,9 +206,4 @@ public class ReturnedServlet extends HttpServlet {
         }
         return hashedPassword;
     }
-
-        
-    
-   
-
-    }
+}

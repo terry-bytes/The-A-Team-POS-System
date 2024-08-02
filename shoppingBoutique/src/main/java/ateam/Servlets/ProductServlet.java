@@ -266,6 +266,7 @@ public class ProductServlet extends HttpServlet {
                             }
 
                             inventoryService.processSale(newSalesID);
+                            
 
                             String salespersonName = loggedInUser.getFirstName() + " " + loggedInUser.getLastName();
                             String saleTime = newSale.getSales_date().toString();

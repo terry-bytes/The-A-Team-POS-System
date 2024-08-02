@@ -155,7 +155,7 @@
                 <tbody>
                     <c:forEach var="item" items="${salesItems}">
                         <tr>
-                            <td>${item.sales_item_ID}</td>
+                            <td>${item.sales_item_ID}</td> 
                             <td>${item.sales_ID}</td>
                             <td>${item.product_ID}</td>
                             <td>${item.quantity}</td>
@@ -164,8 +164,10 @@
                     </c:forEach>
                 </tbody>
             </table>
-            <label class="total-price">Total :${sessionScope.remainingAmount}</label>
-                                
+            <br><br>
+            <label class="total-price">Total :${sessionScope.remainingAmount}</label><br>
+            <label  class="total-price">Change :R${sessionScope.change}</label>
+            <br><br>                   
             </div>
             <!-- Process Return Section -->
             <h3>Process Return</h3>
@@ -185,69 +187,35 @@
                     <option value="Other">Other</option>
                 </select>
                 <br><br>
-                <button id="openModalBtn">Confirm Item Return</button>
-
-                <div id="myModal" class="modal">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <span class="close">&times;</span>
-                            <h2>Manager Authentication</h2>
-                        </div>
-                        <div class="modal-body">
-                            <label for="manager_password">Manager Password:</label>
-                            <input type="password" id="manager_password" name="manager_password">
-                        </div>
-                        <div class="modal-footer">
-                            <button id="submitBtn" ">OK</button>
-                        </div>
-                    </div>
-                </div>
-                <button  type="submit" >Process Return</button>
-            </form>
-            <label  class="total-price">Change :R${sessionScope.change}</label>
-                                 
-
-        </c:if>
-            
-            
-         <!-- Handle Customer Choice Section -->
-        <c:if test="${not empty change}">
-            <h3>Handle Customer Choice</h3>
-            <form action="ReturnedServlet" method="post">
-                <input type="hidden" name="submit" value="Handle-Customer-Choice">
+                
                
-                <input type="hidden" name="change" value="${change}">
-                <label for="customer_choice">Customer Choice:</label>
-                <select id="customer_choice" name="customer_choice" required>
-                    <option value="Select-New-Item">Select New Item</option>
-                    <option value="Receive-Change">Receive Change</option>
-                </select>
-                <button type="submit">Submit Choice</button>
-            </form>
                 
-        </c:if>
+                <button  type="submit"  >Confirm</button>
+                
+                <br><br>
+            
+                       
+                 
+            </form>
+            </c:if>
+            <br>
+            
+           <form action="ReturnedServlet" method="post">
+    <input type="hidden" name="submit" value="Complete Return">
+    <button type="submit">Refund Customer</button>
+</form>
 
-        <!-- Confirm Product Selection Section -->
-        <c:if test="${not empty availableProducts}">
-            <h3>Select a New Product</h3>
-            <form action="ReturnedServlet" method="post">
-                <input type="hidden" name="submit" value="Confirm-Product-Selection">
+<form action="ReturnedServlet" method="post">
+    <input type="hidden" name="submit" value="Select New Item">
+    <button type="submit">Pick New Item</button>
+</form>
+
                 
-                <input type="hidden" name="change" value="${change}">
-                <label for="selectedProduct">Select Product:</label>
-                <select id="selectedProduct" name="selectedProduct" required>
-                    <c:forEach var="product" items="${availableProducts}">
-                        <option value="${product.product_ID}">${product.product_name} - ${product.product_price}</option>
-                    </c:forEach>
-                </select>
-                <button type="submit">Confirm Selection</button>
-            </form>
-        </c:if>
+        
     </div>
 
                 
- 
-
+        
     <!-- Modal Structure -->
     <div id="messageModal" class="modal">
         <div class="modal-content">
@@ -256,36 +224,8 @@
         </div>
     </div>
 
-     <script>
-        // Modal functionality
-        var modal = document.getElementById("myModal");
-        var btn = document.getElementById("openModalBtn");
-        var span = document.getElementsByClassName("close")[0];
-        var submitBtn = document.getElementById("submitBtn");
-
-        btn.onclick = function() {
-            modal.style.display = "block";
-        }
-
-        span.onclick = function() {
-            modal.style.display = "none";
-        }
-
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
-        }
-
-        submitBtn.onclick = function() {
-            var password = document.getElementById("manager_password").value;
-            if (password) {
-                document.getElementById("returnForm").submit();
-            } else {
-                alert("Please enter the manager's password.");
-            }
-        }
-    </script>
+     
+        
 
     <script>
         // Handle modals for messages

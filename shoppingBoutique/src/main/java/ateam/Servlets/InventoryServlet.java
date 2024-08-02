@@ -45,7 +45,8 @@ public class InventoryServlet extends HttpServlet {
             // Check if the list is not empty and get the first product's ID
             if (!getList.isEmpty()) {
             productId = getList.get(0).getProduct_ID();
-}
+}  
+
             int productID = productId;
             int additionalStock = Integer.parseInt(request.getParameter("additionalStock"));
             int storeId = ((Employee) request.getSession(false).getAttribute("Employee")).getStore_ID();
