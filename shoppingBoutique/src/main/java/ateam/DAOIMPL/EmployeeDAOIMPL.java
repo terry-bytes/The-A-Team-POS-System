@@ -273,11 +273,12 @@ public class EmployeeDAOIMPL implements EmployeeDAO {
     }
 
     @Override
-    public Set<Employee> getEmployeeByStore(int storeId) {
+    public List<Employee> getEmployeeByStore(int storeId) {
          if (connection == null) {
             return null;
         }
-        Set<Employee> employees = new TreeSet<>();
+         System.out.println("store id: "+ storeId);
+        List<Employee> employees = new ArrayList<>();
         String sql = "SELECT employee_ID, first_name, last_name, employees_id, employee_password, role, email"
                 + " FROM employees"
                 + " WHERE store_ID = ?";
@@ -301,6 +302,7 @@ public class EmployeeDAOIMPL implements EmployeeDAO {
         } catch (SQLException ex) {
             Logger.getLogger(EmployeeDAOIMPL.class.getName()).log(Level.SEVERE, null, ex);
         }
+        System.out.println(employees.size());
         return employees;
     }
 

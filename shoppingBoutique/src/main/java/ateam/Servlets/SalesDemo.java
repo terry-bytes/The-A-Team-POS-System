@@ -195,6 +195,7 @@ public class SalesDemo extends HttpServlet {
 
         // Convert the list to JSON
         ObjectMapper mapper = new ObjectMapper();
+        
         String jsonResponse = mapper.writeValueAsString(topEmp);
 
         // Send the response back to the client

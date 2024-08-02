@@ -58,16 +58,18 @@
             int start = (currentPage - 1) * pageSize;
             int end = Math.min(start + pageSize, totalRows);
 
+            StringBuilder monthDate = new StringBuilder();
+            StringBuilder monthData = new StringBuilder();
             StringBuilder employeeNames = new StringBuilder();
             StringBuilder soldData = new StringBuilder();
             StringBuilder leastStoreLabels = new StringBuilder();
             StringBuilder leastStoreData = new StringBuilder();
             StringBuilder todaysLabels = new StringBuilder();
             StringBuilder todaysData = new StringBuilder();
+            StringBuilder labels = new StringBuilder();
+            StringBuilder data = new StringBuilder();
             if (employee != null) {
                 if (getTopAchievingStores != null && !getTopAchievingStores.isEmpty()) {
-                    StringBuilder labels = new StringBuilder();
-                    StringBuilder data = new StringBuilder();
 
                     for (Map.Entry<String, StorePerfomanceInSales> entry : getTopAchievingStores.entrySet()) {
 
@@ -116,8 +118,6 @@
                 </div>
 
                 <% if (monthReport != null && !monthReport.isEmpty()) {
-                        StringBuilder monthDate = new StringBuilder();
-                        StringBuilder monthData = new StringBuilder();
 
                         for (Map.Entry<String, BigDecimal> entry : monthReport.entrySet()) {
                             monthDate.append("'").append(entry.getKey()).append("',");
@@ -176,6 +176,7 @@
                         <h4>Top Selling Employee</h4>
                         <label>Select a store</label>
                         <select id="topSellingEmployee">
+                            <option >Select Store</option>
                             <% for (Store store : stores) {%>
                             <option value="<%= store.getStore_ID()%>"><%= store.getStore_name()%></option>
                             <% } %>
@@ -201,7 +202,7 @@
                         for (Map.Entry<String, BigDecimal> entry : leastPerformingStores.entrySet()) {
                             leastStoreLabels.append("'").append(entry.getKey()).append("',");
                             leastStoreData.append(entry.getValue()).append(",");
-            }%>
+                        }%>
 
                 <div class="report">
                     <div class="two">
@@ -337,24 +338,34 @@
                     <%}%>
                 </div>
 
+
+
+                <% }
+            }%>
                 <script>
                     document.addEventListener('DOMContentLoaded', () => {
+                        console.log("Screen loaded successfully...");
+                        console.log("Employee name " + [<%= employeeNames.toString()%>]);
                         // Data from server-side (replace with actual data from JSP)
-                        const salesLabels = [<%= labels.toString()%>]; // Replace with actual labels
-                        const salesData = [<%= data.toString()%>]; // Replace with actual data
+                        const salesLabels = [<%= labels.toString()%>];
+                        const salesData = [<%= data.toString()%>];
                         const monthLabels = [<%= monthDate.toString()%>]; // Replace with actual month labels
                         const monthData = [<%= monthData.toString()%>]; // Replace with actual month data
                         const topSellingEmployees = [<%= employeeNames.toString()%>];
                         const topSellingEmpData = [<%= soldData.toString()%>];
                         const todaysReportLabels = [<%= todaysLabels.toString()%>];
                         const todaysReportData = [<%= todaysData.toString()%>];
+                        const leastPerformingLabels = [<%= leastStoreLabels.toString()%>];
+                        const leastPerformingData = [<%= leastStoreData.toString()%>];
 
                         let monthBarChart = null;
                         let monthPieChart = null;
                         let leastBarChart = null;
                         let leastPieChart = null;
-                        console.log(topSellingEmployees);
-                        console.log(topSellingEmpData);
+                        let topEmpBarChart = null;
+                        let topEmpPieChart = null;
+
+
                         // Colors
                         const barBgColor = 'rgba(54, 162, 235, 0.2)';
                         const barBorderColor = 'rgba(54, 162, 235, 1)';
@@ -371,11 +382,13 @@
                         initBarChart(salesCtx, salesLabels, salesData, 'Sales', barBgColor, barBorderColor);
                         initPieChart(salesPieCtx, salesLabels, salesData, pieBgColor);
 
+
                         // Initialize month report charts
                         const monthBarCtx = document.getElementById('monthReportBar').getContext('2d');
                         const monthPieCtx = document.getElementById('monthReportPie').getContext('2d');
                         BarChart(monthBarCtx, monthLabels, monthData, 'Total Amount', barBgColor, barBorderColor);
                         initPieChart(monthPieCtx, monthLabels, monthData, pieBgColor);
+
 
                         // Initialize topSelling employee charts
                         const topSellingEmpBarCtx = document.getElementById('topSellingEmpReportBar').getContext('2d');
@@ -386,8 +399,8 @@
                         // Initialize Least Performing Stores Charts
                         const leastPerformingBarCtx = document.getElementById('leastPerformingStoreBar').getContext('2d');
                         const leastPerformingPieCtx = document.getElementById('leastPerformingStorePie').getContext('2d');
-                        BarChart(leastPerformingBarCtx, [<%= leastStoreLabels.toString()%>], [<%= leastStoreData.toString()%>], 'Least Performing Stores', barBgColor, barBorderColor);
-                        initPieChart(leastPerformingPieCtx, [<%= leastStoreLabels.toString()%>], [<%= leastStoreData.toString()%>], pieBgColor);
+                        BarChart(leastPerformingBarCtx, leastPerformingLabels, leastPerformingData, 'Least Performing Stores', barBgColor, barBorderColor);
+                        initPieChart(leastPerformingPieCtx, leastPerformingLabels, leastPerformingData, pieBgColor);
 
 
 
@@ -413,20 +426,22 @@
 
                         document.getElementById('topSellingEmployee').addEventListener('change', function () {
                             const storeId = this.value;
-                            console.log("store id need want to check for top employee" + storeId);
 
                             fetch('SalesDemo', {
                                 method: 'POST',
                                 headers: {'Content-Type': 'application/x-www-form-urlencoded'},
                                 body: new URLSearchParams({
-                                    submit: '',
+                                    submit: 'topEmpByStore',
                                     storeId: storeId
                                 })
                             })
                                     .then(response => response.json())
                                     .then(data => {
-                                        const names = data;
+                                        const names = data.labels;
+                                        const topData = data.data;
 
+                                        topEmpBarChart = updateBarChart(topSellingEmpBarCtx, names, topData, 'Top Selling Employee', barBgColor, barBorderColor);
+                                        topEmpPieChart = updatePieChart(topSellingEmpPieCtx, names, topData, 'Top Selling Employee', pieBgColor);
                                     })
                                     .catch(error => console.error('Error fetching data:', error));
                         });
@@ -453,7 +468,7 @@
                                     .then(data => {
                                         const tableBody = document.getElementById('productSellerDetails');
                                         tableBody.innerHTML = ''; // Clear previous results
-
+                                        alert("top product seller" + data.productName);
                                         if (data && data.length > 0) {
                                             data.forEach(item => {
                                                 const row = document.createElement('tr');
@@ -489,6 +504,7 @@
                                     .then(data => {
                                         const monthLabels = data.labels;
                                         const monthData = data.data;
+
 
                                         const barBgColor = 'rgba(75, 192, 192, 0.2)';
                                         const barBorderColor = 'rgba(75, 192, 192, 1)';
@@ -530,6 +546,7 @@
                                         const leastData = data.data;
 
                                         console.log("least labels" + leastLabels);
+                                        console.log("leastData" + leastData);
                                         if (leastBarChart) {
                                             monthBarChart.destroy();
                                         }
@@ -537,8 +554,8 @@
                                             monthPieChart.destroy();
                                         }
 
-                                        updateBarChart(leastPerformingBarCtx, leastLabels, leastData, 'Least Performing Stores', barBgColor, barBorderColor);
-                                        updatePieChart(leastPerformingPieCtx, leastLabels, leastData, pieBgColor);
+                                        leastBarChart = updateBarChart(leastPerformingBarCtx, leastLabels, leastData, 'Least Performing Stores', barBgColor, barBorderColor);
+                                        leastPieChart = updatePieChart(leastPerformingPieCtx, leastLabels, leastData, pieBgColor);
                                     });
                         }
 
@@ -567,6 +584,7 @@
                                                 return value + '%';
                                             }
                                         }
+
                                     }
                                 }
                             }
@@ -662,7 +680,6 @@
 
 
 
-                <% }
-                }%>
+
                 </body>
                 </html>

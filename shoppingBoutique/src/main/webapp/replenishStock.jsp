@@ -236,8 +236,9 @@
     <form action="InventoryServlet" method="post">
         <label for="barcode">Barcode (SKU-Size-Color):</label>
         <input type="text" id="barcode" name="barcode" required>
-        <label for="employeeId">Employee ID:</label>
-        <input type="number" id="employeeId" name="employeeId" value="<%=employee.getEmployee_ID()%>" readonly>
+        <label for="employeeId">Employee Name:</label>
+        <input type="number" id="employeeId" name="employeeId" value="<%=employee.getEmployee_ID()%>" hidden>
+        <p><%=employee.getFirstName() %> <%=employee.getLastName()%></p>
         <label for="additionalStock">Additional Stock:</label>
         <input type="number" id="additionalStock" name="additionalStock" required>
         <label for="storeId">Store ID:</label>

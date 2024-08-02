@@ -118,6 +118,7 @@ public class EmployeeServlet extends HttpServlet {
                 break;
             case "myEmployees":
                 handleGetMyEmployee(request, response);
+                break;
             case "logout":
               
 
@@ -346,7 +347,7 @@ public class EmployeeServlet extends HttpServlet {
     
     private void handleGetMyEmployee(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
         Employee manager = (Employee) request.getSession(false).getAttribute("Employee");
-        Set<Employee> myEmployees = employeeService.managersEmployee(manager.getStore_ID());
+        List<Employee> myEmployees = employeeService.managersEmployee(manager.getStore_ID());
         
         request.getSession(false).setAttribute("MyEmployees", myEmployees);
         request.getRequestDispatcher("MyEmployees.jsp").forward(request, response);

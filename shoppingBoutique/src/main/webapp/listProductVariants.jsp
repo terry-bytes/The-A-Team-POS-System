@@ -1,3 +1,4 @@
+<%@page import="ateam.Models.Employee"%>
 <%@ page import="java.util.List" %>
 <%@ page import="ateam.Models.ProductVariants" %>
 
@@ -11,6 +12,9 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <% Employee employee = (Employee) request.getSession(false).getAttribute("Employee"); 
+        if (employee != null){
+    %>
     <h1>Search Product Variants</h1>
 
     <form action="productVariants" method="get">
@@ -58,5 +62,7 @@
             <%    } %>
         </tbody>
     </table>
+            <%} else {%> <jsp:include page="unauthorized.jsp"></jsp:include> <%}%>
+    
 </body>
 </html>
