@@ -9,6 +9,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Add Employee</title>
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/log.css">
+          <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/report.css">
         <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     </head>
     <body>

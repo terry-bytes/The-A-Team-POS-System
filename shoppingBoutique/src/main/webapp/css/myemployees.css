@@ -1,0 +1,52 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 02 Aug 2024, 13:35:28
+    Author     : T440
+*/
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body{
+    background-image: linear-gradient(to right, #277af6, #0098f7, #48b2ef, #85c7e5, #bfd9e0);
+}
+
+section{
+    display: flex;
+}
+
+.left-main{
+    margin-left: 300px;
+}
+#customers {
+  border-collapse: collapse;
+  width: 100%;
+  border: 1px solid #fff;
+  border-radius: 10px;
+}
+
+#customers td, #customers th {
+  border-bottom: 1px solid rgba(254, 254, 254, 0.5);
+  padding: 8px;
+}
+
+#customers tr:nth-child(even){background: rgba(254, 254, 254, 0.5);}
+
+#customers tr:hover {background: rgba(254, 254, 254, 0.3);}
+
+#customers th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+
+  color: white;
+
+}
