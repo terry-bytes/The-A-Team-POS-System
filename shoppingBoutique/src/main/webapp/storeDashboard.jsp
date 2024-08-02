@@ -93,7 +93,7 @@
                     <div class="input-submit">
                         <input name="submit" value="Submit_Store" hidden>
 
-                        <button class="submit-btn" id="submit">Add Employee</button>
+                        <button class="submit-btn" id="submit">Add Store</button>
 
                     </div>
                 </form>

@@ -111,7 +111,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public List<Employee> managersEmployee(int storeId) {
-        return employeeDAO.getEmployeeByStore(storeId).stream()
+        return employeeDAO.getAllEmployees().stream()
+                .filter(employee -> employee.getStore_ID() == storeId)
                 .sorted(Comparator.comparing(Employee::getFirstName))
                 .collect(Collectors.toList());
     }

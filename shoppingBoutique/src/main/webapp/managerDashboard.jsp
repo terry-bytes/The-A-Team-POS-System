@@ -450,7 +450,7 @@
 
                 document.getElementById("topProductSeller").addEventListener('change', function () {
                     const productId = document.getElementById('topProductSeller').value;
-                    alert('product Id ' + productId);
+                    
 
                     getTopProductSeller(productId);
                 });
@@ -470,14 +470,14 @@
                             .then(data => {
                                 const tableBody = document.getElementById('productSellerDetails');
                                 tableBody.innerHTML = ''; // Clear previous results
-                                alert("top product seller"+ data.productName);
+                                
                                 if (data && data.length > 0) {
                                     data.forEach(item => {
                                         const row = document.createElement('tr');
                                         row.innerHTML = `
-                <td>${item.productName}</td>
-                <td>${item.tellerName}</td>
-                <td>${item.amountSold}</td>
+                <td>${item.getProductName}</td>
+                <td>${item.getTellerName}</td>
+                <td>${item.getAmountSold}</td>
             `;
                                         tableBody.appendChild(row);
                                     });
