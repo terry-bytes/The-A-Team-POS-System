@@ -7,6 +7,7 @@ package ateam.Servlets;
 
 import ateam.BDconnection.Connect;
 import ateam.DAOIMPL.StoreDAOIMPL;
+import ateam.Exception.DuplicateStoreException;
 import ateam.Models.Store;
 import ateam.Service.StoreService;
 import ateam.ServiceImpl.StoreServiceImpl;
@@ -95,15 +96,26 @@ public class StoreServlet extends HttpServlet {
         store.setStore_address(request.getParameter("storeAddress"));
         store.setStore_city(request.getParameter("storeCity"));
         store.setStore_province(request.getParameter("storeProvince"));
-        store.setStore_zipcode(Integer.parseInt(request.getParameter("storeZipcode")));
+        try{
+            store.setStore_zipcode(Integer.parseInt(request.getParameter("storeZipcode")));
+        }catch(NumberFormatException num){
+            request.setAttribute("message", "Zip Code must be a number");
+            request.getRequestDispatcher("storeDashboard.jsp").forward(request, response);
+        }
         store.setStore_phone(request.getParameter("storePhone"));
         store.setStore_email(request.getParameter("storeEmailAddress"));
-        boolean success = storeService.addStore(store);
-        if (success) {
-        request.setAttribute("message", "Store added successfully");
-    } else {
-        request.setAttribute("message", "Failed to add store");
-    }
+        boolean success;
+        try {
+            success = storeService.addStore(store);
+            if (success) {
+                request.setAttribute("message", "Store added successfully");
+            } else {
+                request.setAttribute("message", "Failed to add store");
+            }
+        } catch (DuplicateStoreException ex) {
+            request.setAttribute("message", ex.getMessage());
+        }
+        
         request.getRequestDispatcher("storeDashboard.jsp").forward(request, response);
     }
     
