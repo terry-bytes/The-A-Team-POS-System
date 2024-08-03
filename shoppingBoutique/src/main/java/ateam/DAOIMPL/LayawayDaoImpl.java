@@ -54,7 +54,7 @@ public class LayawayDaoImpl implements LayawayDAO{
     @Override
     public boolean addNewLayaway(Layaway layaway) {
         if(connection != null) {
-            String sql = "INSERT INTO new_layaway(producT_SKU, product_name, product_price, start_date, expiry_date, product_ID, employee_ID, customer_email, customer_name, customer_number, layaway_status, product_quantity) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO new_layaway(product_SKU, product_name, product_price, start_date, expiry_date, product_ID, employee_ID, customer_email, customer_name, customer_number, layaway_status, product_quantity) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             try(PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
                 preparedStatement.setString(1, layaway.getProductSKU());
                 preparedStatement.setString(2, layaway.getProductName());

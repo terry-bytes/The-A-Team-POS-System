@@ -105,7 +105,9 @@
     </style>
     </head>
     <body>
+        <a href='IBTMainDashboard.jsp'>
         <h1>IBT Receive Dashboard</h1>
+        </a>
         <form action="IBTServlet" method="post">
             <h2>IBT Requests needed for approval</h2>
             
@@ -124,6 +126,7 @@
             <p>Quantity requested: <%= i.getQuantity() %></p>
             
             <input type="submit" value="Approve" name="IBT_switch">
+            <input type="submit" value="Decline" name="IBT_switch">
             <input type="hidden" value="<%= i.getProductID() %>" name="product_id">
             <input type="hidden" value="<%= i.getStoreID() %>" name="store_id"> 
         </div>

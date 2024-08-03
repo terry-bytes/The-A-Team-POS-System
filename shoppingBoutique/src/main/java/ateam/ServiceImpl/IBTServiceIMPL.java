@@ -38,8 +38,8 @@ public class IBTServiceIMPL implements IBTService{
     }
 
     @Override
-    public boolean deleteRequestedIBT(int store_ID) {
-        return ibtDAO.deleteRequestedIBT(store_ID);
+    public boolean ApproveRequestedIBT(int store_ID) {
+        return ibtDAO.ApproveRequestedIBT(store_ID);
     }
 
     @Override
@@ -55,5 +55,10 @@ public class IBTServiceIMPL implements IBTService{
     @Override
     public int retrieveStoreID(int IBTID) {
         return ibtDAO.retrieveStoreID(IBTID);
+    }
+
+    @Override
+    public boolean declineIBTRequest(int storeID) {
+        return ibtDAO.declineIBTRequest(storeID);
     }
 }

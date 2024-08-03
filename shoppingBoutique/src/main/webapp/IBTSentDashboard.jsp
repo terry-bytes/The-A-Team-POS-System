@@ -15,9 +15,26 @@
                 inputField.value = max; // Set the input field back to the maximum allowed value
             }
         }
+        
+        /*new popup script*/
+         function validateQuantity(inputField) {
+            var max = parseInt(inputField.getAttribute('max'));
+            if (parseInt(inputField.value) > max) {
+                alert("Quantity cannot exceed " + max);
+                inputField.value = max; // Set the input field back to the maximum allowed value
+            }
+        }
+
+        function showPopup() {
+            document.getElementById('popup-form').style.display = 'flex'; // Show popup
+        }
+
+        function closePopup() {
+            document.getElementById('popup-form').style.display = 'none'; // Hide popup
+        }
     </script>
     
-     <!-- Include external CSS -->
+      <!-- Include external CSS -->
     <style>
         /* General Body Styling */
         body {
@@ -121,11 +138,13 @@
 
 </head>
 <body>
+    <a href='IBTMainDashboard.jsp'>
     <h1>Send IBT Dashboard</h1>
+    </a>
     
     <form action="IBTServlet" method="post">
         <label>Please enter the product ID</label><br><br>
-        <input type="text" name="e_product_ID"><br><br>
+        <input type="text" name="e_product_ID" required><br><br>
         <input type="submit" value="Check Stores" name="IBT_switch"><br><br>
     </form>
     
@@ -147,7 +166,7 @@
             <input type="text" name="e_customer_number" value="+27"><br><br>
             <label>Please enter Customer email</label><br><br>
             <input type="text" name="e_customer_email"><br><br>
-            <input type="submit" value="Request IBT" name="IBT_switch">
+            <input type="submit" value="Request IBT" name="IBT_switch" onclick="showPopup(); return false;">
             <input type="hidden" value="<%= i.getProductID() %>" name="product_id">
             <input type="hidden" value="<%= i.getStoreID() %>" name="store_id"> 
         </div>
@@ -161,5 +180,6 @@
     <% 
     } 
     %>
+
 </body>
 </html>

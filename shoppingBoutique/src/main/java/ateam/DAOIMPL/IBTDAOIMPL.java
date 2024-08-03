@@ -109,7 +109,7 @@ public class IBTDAOIMPL implements  IBTDAO{
     }
 
     @Override
-    public boolean deleteRequestedIBT(int store_ID) {
+    public boolean ApproveRequestedIBT(int store_ID) {
         boolean success = false;
         try {
             preparedStatement = connection.prepareStatement("UPDATE ibtrequest SET requestFlag = 0 WHERE store_ID = ?");
@@ -177,6 +177,27 @@ public class IBTDAOIMPL implements  IBTDAO{
         }
         return IBT_ID;
     }
+    
+    
+    @Override
+    public boolean declineIBTRequest(int storeID) {
+        boolean success = false;
+        try {
+            preparedStatement = connection.prepareStatement("DELETE FROM ibtrequest WHERE store_ID = ?");
+            preparedStatement.setInt(1, storeID);
+            preparedStatement.execute();
+            int rowsAffected = preparedStatement.executeUpdate();
+        if (rowsAffected > 0) {
+            success = true;
+        }
+        } catch (SQLException ex) {
+            Logger.getLogger(IBTDAOIMPL.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            close(resultSet, preparedStatement);
+        }
+        return success;
+    }
+    
     
     private void close(AutoCloseable... closeables) {
         if (closeables != null) {

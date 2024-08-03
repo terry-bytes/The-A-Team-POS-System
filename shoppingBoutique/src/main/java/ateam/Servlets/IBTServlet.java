@@ -109,7 +109,7 @@ public class IBTServlet extends HttpServlet {
                     request.getRequestDispatcher("IBTSentDashboard.jsp").forward(request, response);
                     break;
 
-                case "IBT_Requests":
+                case "IBT-Requests":
                     handleReceivingIBTRequest(request, response);
                     break;
 
@@ -126,6 +126,10 @@ public class IBTServlet extends HttpServlet {
                     
                 case"Validate Store":
                     handleRetrievingStoreID(request, response);
+                    break;
+                    
+                case "Decline":
+                    handleDeletingIBT(request, response);
                     break;
             }
         }
@@ -174,7 +178,7 @@ public class IBTServlet extends HttpServlet {
        HttpSession session = request.getSession(false);
         Store store_ID = (Store) session.getAttribute("store");
         int store_id = store_ID.getStore_ID();
-         boolean success = ibtService.deleteRequestedIBT(store_id);
+         boolean success = ibtService.ApproveRequestedIBT(store_id);
           if (success) {
         request.setAttribute("message", "IBT Approved successfully");
     } else {
@@ -240,5 +244,18 @@ public class IBTServlet extends HttpServlet {
         int retrievedStoreID = ibtService.retrieveStoreID(IBTRequestID);
         request.setAttribute("retrievedStoreID", retrievedStoreID);
         request.getRequestDispatcher("tellerDashboard.jsp").forward(request, response);
+    }
+    
+    private void handleDeletingIBT(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
+        Store store_ID = (Store) session.getAttribute("store");
+        int store_id = store_ID.getStore_ID();
+        boolean success = ibtService.declineIBTRequest(store_id);
+        if (success) {
+        request.setAttribute("message", "IBT Declined successfully");
+    } else {
+        request.setAttribute("message", "Failed to Decline IBT");
+    }
+          request.getRequestDispatcher("IBTReceiveDashboard.jsp").forward(request, response);
     }
 }
