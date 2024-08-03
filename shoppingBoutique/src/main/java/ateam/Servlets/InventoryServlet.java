@@ -33,6 +33,7 @@ public class InventoryServlet extends HttpServlet {
             throws ServletException, IOException {
 
     
+        
 
         try {
             
@@ -101,14 +102,18 @@ public class InventoryServlet extends HttpServlet {
                 
                 
                 break;
+                
+                case "OK":
+        try {
+            request.getRequestDispatcher("replenishStock.jsp").forward(request, response);
+        } catch (ServletException ex) {
+            Logger.getLogger(InventoryServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        break;
+        
         }
         
-        
-        
-        
-        
-        
-        
+    
     }
     
 }

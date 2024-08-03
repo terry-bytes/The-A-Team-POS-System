@@ -27,7 +27,7 @@ public interface SaleDAO {
     List<Sale> getDailySalesForStore(int storeId);
     List<Sale> getLeastPerformingStores(LocalDate endDate);
 
-    public void addVoucher(int voucherNumber, BigDecimal amount);
+    public void addVoucher(String voucherNumber, BigDecimal amount);
     
 
 }

@@ -67,7 +67,7 @@
 <body>
     <%
         BigDecimal change = (BigDecimal)request.getSession(false).getAttribute("change");
-        int voucher =(int)request.getSession(false).getAttribute("voucher");
+        String voucher =(String)request.getSession(false).getAttribute("voucher");
     %>
     <div class="voucher-container">
         <div class="voucher-header">
@@ -86,6 +86,9 @@
         </div>
     </div>
         
-        <input type="button" href="tellerDashboard.jsp" value="OK">
+       <form action="ReturnedServlet" method="post">
+            <input type="hidden" name="submit" value="OK">
+            <button type="submit">OK</button>
+        </form>
 </body>
 </html>

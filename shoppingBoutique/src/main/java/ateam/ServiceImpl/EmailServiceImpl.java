@@ -105,17 +105,19 @@ public class EmailServiceImpl implements EmailService {
         }
     }
 
-    public void VoucherEmail(String to,BigDecimal change,int voucher){
+    @Override
+    public void VoucherEmail(String to,BigDecimal change,String voucher){
         // Recipient's email ID needs to be mentioned
        
 
         // Sender's email ID needs to be mentioned
-        String from = "Carols_Boutique@outlook.com";
-        final String username = "Carols_Boutique@outlook.com"; // change accordingly
-        final String password = "Password@4"; // change accordingly
+        String from = "ramovhatp@gmail.com";
+        final String username = "ramovhatp@gmail.com"; // change accordingly
+        final String password = "xaed clmt qpis ctvf"; // change accordingly
+
 
         // Assuming you are sending email through relay.jangosmtp.net
-        String host = "smtp.@outlook.com"; // replace with your SMTP server
+        String host = "smtp.gmail.com"; // replace with your SMTP server
 
         Properties props = new Properties();
         props.put("mail.smtp.auth", "true");
@@ -155,13 +157,13 @@ public class EmailServiceImpl implements EmailService {
             // Now set the actual message
             String htmlContent = "<html><body>"
                     + "<div class='voucher-container' style='max-width: 600px; margin: 50px auto; background-color: #ffffff; border: 1px solid #dedede; border-radius: 10px; overflow: hidden; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);'>"
-                    + "<div class='voucher-header' style='background-color: #343a40; color: #ffffff; padding: 20px; text-align: center;'>"
+                    + "<div class='voucher-header' style='background-color: #007BFF; color: #ffffff; padding: 20px; text-align: center;'>"
                     + "<h1 style='margin: 0; font-size: 24px;'>Carol's Boutique</h1>"
                     + "</div>"
                     + "<div class='voucher-body' style='padding: 20px; text-align: center;'>"
                     + "<h2 style='margin-top: 0; font-size: 22px; color: #333333;'>Gift Voucher</h2>"
                     + "<p>Congratulations! You have received a gift voucher worth</p>"
-                    + "<div class='voucher-amount' style='font-size: 20px; color: #28a745;'>" + change.toString() + "</div>"
+                    + "<div class='voucher-amount ' style='font-size: 20px; color: #28a745;'>" +"R"+ change.toString() + "</div>"
                     + "<p>Your voucher code is:</p>"
                     + "<div class='voucher-code' style='margin: 20px 0; font-size: 30px; font-weight: bold; color: #e83e8c; letter-spacing: 2px;'>" + voucher + "</div>"
                     + "</div>"

@@ -112,7 +112,7 @@ public void insertReturn(Return returnRecord) {
     @Override
     public SalesItem getSalesItemById(int saleItemId) {
         SalesItem item = new SalesItem();
-        try (Connection conn = new Connect().connectToDB(); PreparedStatement stmt = conn.prepareStatement("SELECT * FROM sales_items WHERE sales_ID = ?")) {
+        try (Connection conn = new Connect().connectToDB(); PreparedStatement stmt = conn.prepareStatement("SELECT * FROM sales_items WHERE sales_item_ID = ?")) {
             stmt.setInt(1, saleItemId);
             ResultSet rs = stmt.executeQuery();
             

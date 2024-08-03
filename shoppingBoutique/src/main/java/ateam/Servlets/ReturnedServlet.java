@@ -7,6 +7,7 @@ import ateam.Models.Product;
 import ateam.Models.Return;
 import ateam.Models.Sale;
 import ateam.Models.SalesItem;
+import ateam.Models.Voucher;
 import ateam.Service.EmailService;
 import ateam.Service.InventoryService;
 import ateam.Service.ProductService;
@@ -35,6 +36,7 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.mindrot.jbcrypt.BCrypt;
+import java.util.*;
 
 @WebServlet("/ReturnedServlet")
 public class ReturnedServlet extends HttpServlet {
@@ -58,13 +60,21 @@ public class ReturnedServlet extends HttpServlet {
     case "Retrieve-Sale":
         retrieveSale(request, response, session);
         break;
+        
+    case "OK":
+        try {
+            request.getRequestDispatcher("tellerDashboard.jsp").forward(request, response);
+        } catch (ServletException ex) {
+            Logger.getLogger(ReturnedServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        break;
     case "Process-Return":
         processReturn(request, response, session);
         break;
     case "Complete Return":
         request.setAttribute("message", "Refund the customer R" + change);
         try {
-            request.getRequestDispatcher("tellerDashboard.jsp").forward(request, response);
+            request.getRequestDispatcher("returnSale.jsp").forward(request, response);
         } catch (ServletException ex) {
             Logger.getLogger(ReturnedServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -72,16 +82,22 @@ public class ReturnedServlet extends HttpServlet {
     case "Select New Item":
         TheReturn th = new TheReturn();
         EmailService emailServ = new EmailServiceImpl();
-
+        StringBuilder vr= new StringBuilder();
+       
+        
         Random random = new Random();
-        int voucher = 0;
-        String email = (String) request.getAttribute("email");
+        String voucher ;
+        String email = (String) request.getSession(false).getAttribute("emails");
 
         for (int i = 0; i < 10; i++) {
-            voucher = random.nextInt(100);
-            System.out.println(voucher);
+            int digit = random.nextInt(10); // Generates a random number between 0 and 9
+            vr.append(digit);
         }
-
+        
+        voucher = vr.toString();
+        System.out.println(voucher);
+        Voucher date = new Voucher();
+        date.setCreatedAt(new Timestamp(System.currentTimeMillis()));
         request.getSession(false).setAttribute("voucher", voucher);
         th.addVoucher(voucher, change);
         emailServ.VoucherEmail(email, change, voucher);
@@ -129,17 +145,25 @@ public class ReturnedServlet extends HttpServlet {
         int quantity = Integer.parseInt(request.getParameter("quantity"));
         String email = request.getParameter("email");
         String reason = request.getParameter("return_reason");
-        request.getSession(false).setAttribute("email", email);
+        request.getSession(false).setAttribute("emails", email);
 
         Return returns = new Return();
         returns.setSales_ID(salesId);
+        System.out.println(salesId);
         returns.setProduct_ID(productId);
         returns.setQuantity(quantity);
         returns.setReturn_date(new Timestamp(System.currentTimeMillis())); // Ensure return_date is set
         returns.setEmail(email);
         returns.setReason(reason);
 
-        if (!(quantity < sales.getQuantity()) || (sales.getQuantity() != 0)) {
+        if (quantity>sales.getQuantity() || sales.getQuantity() == 0) {
+            
+            request.setAttribute("message", "Error, Item already returned");
+            request.getRequestDispatcher("returnSale.jsp").forward(request, response);
+            
+            
+            
+        } else {
             ret.addReturn(returns);
             boolean decrease = ret.decreaseItems(quantity, salesItemId);
             ret.updateProductQuantity(productId, quantity);
@@ -156,31 +180,12 @@ public class ReturnedServlet extends HttpServlet {
             session.setAttribute("change", change);
             session.setAttribute("message", "Item has been successfully returned");
             response.sendRedirect("returnSale.jsp");
-        } else {
-            request.setAttribute("message", "Error, Item already returned");
-            request.getRequestDispatcher("returnSale.jsp").forward(request, response);
+            
+            
         }
     }
 
-//    private void completeReturn(HttpServletRequest request, HttpServletResponse response, BigDecimal change) throws ServletException, IOException {
-//        request.setAttribute("message", "Refund the customer R" + change);
-//        request.getRequestDispatcher("tellerDashboard.jsp").forward(request, response);
-//    }
-//
-//    private void selectNewItem(HttpServletRequest request, HttpServletResponse response, BigDecimal change) throws ServletException, IOException {
-//        TheReturn th = new TheReturn();
-//        EmailService emailServ = new EmailServiceImpl();
-//
-//        Random random = new Random();
-//        int voucher = random.nextInt(100);
-//
-//        String email = (String) request.getAttribute("email");
-//        request.getSession(false).setAttribute("voucher", voucher);
-//        th.addVoucher(voucher, change);
-//        emailServ.VoucherEmail(email, change, voucher);
-//
-//        request.getRequestDispatcher("voucher.jsp").forward(request, response);
-//    }
+
 
     private boolean verifyManagerPassword(int storeID, String password) {
         Logger.getLogger(ProductServlet.class.getName()).log(Level.INFO, "Verifying manager password for store ID: " + storeID);

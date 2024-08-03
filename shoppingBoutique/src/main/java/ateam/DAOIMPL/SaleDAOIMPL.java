@@ -233,13 +233,13 @@ public class SaleDAOIMPL implements SaleDAO {
     }
 
     @Override
-    public void addVoucher(int voucherNumber, BigDecimal amount) {
+    public void addVoucher(String voucherNumber, BigDecimal amount) {
         Voucher voucher = new Voucher();
         String query = "INSERT INTO vouchers (voucher_code, amount, created_at) VALUES (?, ?, ?)";
         try (Connection conn = new Connect().connectToDB();
              PreparedStatement stmt = conn.prepareStatement(query))  {
-            stmt.setString(1, voucher.getVoucherCode());
-            stmt.setDouble(2, voucher.getAmount());
+            stmt.setString(1,voucherNumber );
+            stmt.setBigDecimal(2, amount);
             stmt.setTimestamp(3, voucher.getCreatedAt());
             stmt.executeUpdate();
         } catch (SQLException ex) {
