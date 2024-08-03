@@ -25,4 +25,5 @@ public interface SaleService2 {
     List<Sale> getAllSalesByStoreId(int storeId);
     List<Sale> getDailyStoreByStoreId(int storeId);
     List<Sale> getLeastPerformingStore(LocalDate endDate);
+    List<Sale> getSaleForStoreByRange(int storeId, LocalDate startDate, LocalDate endDate);
 }

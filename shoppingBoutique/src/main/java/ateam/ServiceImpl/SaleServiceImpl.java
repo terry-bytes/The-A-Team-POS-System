@@ -140,6 +140,11 @@ public class SaleServiceImpl implements SaleService2{
     public List<Sale> getLeastPerformingStore(LocalDate endDate) {
         return saleDao.getLeastPerformingStores(endDate);
     }
+
+    @Override
+    public List<Sale> getSaleForStoreByRange(int storeId, LocalDate startDate, LocalDate endDate) {
+        return saleDao.getSalesForStoreByRange(storeId, startDate, endDate);
+    }
     
     
 }

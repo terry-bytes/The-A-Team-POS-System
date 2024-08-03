@@ -18,7 +18,7 @@
     <body>
         <% Employee manager = (Employee) request.getSession(false).getAttribute("Employee");
            List<Store> stores = (List<Store>) request.getSession(false).getAttribute("Stores");
-           Employee emp = (Employee) request.getSession(false).getAttribute("empToEdit");
+           Employee emp = (Employee) request.getAttribute("employee");
            String message = (String) request.getSession(false).getAttribute("message");
             if (manager != null && manager.getRole() == Role.Manager){%>
             <div class="manager-container">

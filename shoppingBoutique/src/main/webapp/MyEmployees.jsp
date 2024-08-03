@@ -38,6 +38,7 @@
       <th>Last Name</th>
       <th>Email</th>
       <th>Employee Id</th>
+      <th>Position</th>
       <th>Action</th>
     <tr>
 
@@ -47,8 +48,9 @@
         <td><%= emp.getLastName() %></td>
         <td><%= emp.getEmail() %></td>
         <td><%= emp.getEmployees_id() %></td>
+        <td><%= emp.getRole() %></td>
         <td>
-            <a href="#">Update</a>
+            <a href="EmployeeServlet?submit=edit&employeeId=<%=emp.getEmployee_ID()%>">Update</a>
             <a href="#">Remove</a>
         </td>
     </tr>

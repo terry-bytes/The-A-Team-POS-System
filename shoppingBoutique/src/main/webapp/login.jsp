@@ -4,35 +4,34 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Login</title>
-        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/log.css">
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/signin.css">
     </head>
     <body>
         <% String message = (String) request.getAttribute("message");%>
-        <div class="container">
-            <div class="login-box">
-                <div class="login-header">
-                    <h4>Carols Boutique</h4>
+  
+            <div class="login-wrapper">
+                
                     <h3>Login</h3>
-                </div>
+                
 
                 <form action="EmployeeServlet" method="post">
-                    <div class="input-box">
+                    <div class='input-field'>
                         <input type="text"
-                               placeholder='Employee Id'
+                               
                                name='employeeId'
-                               class='input-field'
+                               
                                autocomplete="off" required
                                />
-                        <i class="bx bx-user"></i>
+                        <label>Enter your employee Id</label>
                     </div>
-                    <div class="input-box">
+                    <div class='input-field'>
                         <input type="password"
-                               placeholder='Password'
+                    
                                name='password'
-                               class="input-field"
+                              
                                autocomplete="off" required
                                />
-                        <i class="bx bx-lock-alt"></i>
+                        <label>Enter your password</label>
                     </div>
                     <%if(message != null){%>
                     <p style="color: red;"><%=message%></p>
@@ -46,6 +45,6 @@
                     <a href="${pageContext.request.contextPath}/forgotPassword.jsp">Forgot Password?</a>
                 </div>
             </div>
-        </div>
+ 
     </body>
 </html>

@@ -146,7 +146,7 @@ public class EmployeeServlet extends HttpServlet {
         int employeeId = Integer.parseInt(request.getParameter("employeeId"));
         Employee employee = employeeService.getEmployeeById(employeeId);
         request.setAttribute("employee", employee);
-        request.getRequestDispatcher("/editEmployee.jsp").forward(request, response);
+        request.getRequestDispatcher("editEmployee.jsp").forward(request, response);
     }
 
     private void showDeleteConfirm(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

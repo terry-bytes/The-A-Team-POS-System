@@ -231,4 +231,33 @@ public class SaleDAOIMPL implements SaleDAO {
         return sales;
     }
 
+    @Override
+    public List<Sale> getSalesForStoreByRange(int storeId, LocalDate startDate, LocalDate endDate) {
+         List<Sale> sales = new ArrayList<>();
+        if (connection != null) {
+            String sql = "SELECT sales_ID, sales_date, total_amount, payment_method, employee_ID FROM sales "
+                    + "WHERE store_ID = ? AND sales_date BETWEEN ? AND ? ";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                preparedStatement.setInt(1, storeId);
+                preparedStatement.setTimestamp(2, Timestamp.valueOf(startDate.atStartOfDay()));
+                preparedStatement.setTimestamp(3, Timestamp.valueOf(endDate.atStartOfDay()));
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    while (resultSet.next()) {
+                        Sale sale = new Sale();
+                        sale.setEmployee_ID(resultSet.getInt("employee_ID"));
+                        sale.setPayment_method(resultSet.getString("payment_method"));
+                        sale.setSales_ID(resultSet.getInt("sales_ID"));
+                        sale.setSales_date(resultSet.getTimestamp("sales_date"));
+                        sale.setTotal_amount(resultSet.getBigDecimal("total_amount"));
+
+                        sales.add(sale);
+                    }
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(SaleDAOIMPL.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return sales;
+    }
+
 }

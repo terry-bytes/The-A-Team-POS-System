@@ -49,6 +49,7 @@
             Map<String, BigDecimal> todayReport = (Map<String, BigDecimal>) request.getSession(false).getAttribute("Today'sReport");
             List<TopProductDTO> topProduct = (List<TopProductDTO>) request.getSession(false).getAttribute("top40SellingProducts");
             List<Product> products = (List<Product>) request.getSession(false).getAttribute("Products");
+            Map<Integer, Integer> salesInHour = (Map<Integer, Integer>) request.getSession(false).getAttribute("SalesRate");
 
             int pageSize = 10;
             int currentPage = request.getParameter("page") != null ? Integer.parseInt(request.getParameter("page")) : 1;
@@ -68,6 +69,9 @@
             StringBuilder todaysData = new StringBuilder();
             StringBuilder labels = new StringBuilder();
             StringBuilder data = new StringBuilder();
+            StringBuilder saleRateLabels = new StringBuilder();
+            StringBuilder saleRateData = new StringBuilder();
+            
             if (employee != null) {
                 if (getTopAchievingStores != null && !getTopAchievingStores.isEmpty()) {
 
@@ -162,6 +166,7 @@
                         </div>
                     </div>
                 </div>
+                        <% }%>
 
                 <%if (topSellingEmployees != null && !topSellingEmployees.isEmpty()) {
 
@@ -337,11 +342,33 @@
                     </div>
                     <%}%>
                 </div>
+                <% } %>
+                <% if (salesInHour != null && !salesInHour.isEmpty()){
+                    for (Map.Entry<Integer, Integer> entry : salesInHour.entrySet()){
+                        saleRateLabels.append("'").append(entry.getKey()).append("',");
+                        saleRateData.append(entry.getValue()).append(",");
+                    }
+                %>
+                <div class="report">
+                    <div class="two">
+                        <h4>Sales Rate</h4>
 
 
-
-                <% }
-            }%>
+                        <div class="input-submit">
+                            <input name="submit" value="download" hidden>
+                            <button class="submit-btn" id="submit">Download</button>
+                        </div>
+                    </div>
+                    <div class="graphBox">
+                        <div class="box">
+                            <canvas id="salesRateBar"></canvas>
+                        </div>
+                        <div class="box">
+                            <canvas id="salesRatePie"></canvas>
+                        </div>
+                    </div>
+                </div>
+            <%} }%>
                 <script>
                    document.addEventListener('DOMContentLoaded', () => {
         console.log("Screen loaded successfully...");
@@ -357,6 +384,8 @@
         const todaysReportData = [<%= todaysData.toString() %>];
         const leastPerformingLabels = [<%= leastStoreLabels.toString() %>];
         const leastPerformingData = [<%= leastStoreData.toString() %>];
+        const salesRateLabels = [<%= saleRateLabels.toString() %>];
+        const salesRateData = [<%= saleRateData.toString() %>];
 
         let monthBarChart = null;
         let monthPieChart = null;
@@ -396,6 +425,11 @@
         BarChart(leastPerformingBarCtx, leastPerformingLabels, leastPerformingData, 'Least Performing Stores', barBgColor, barBorderColor);
         initPieChart(leastPerformingPieCtx, leastPerformingLabels, leastPerformingData, pieBgColor);
 
+        const salesRateBarCtx = document.getElementById('salesRateBar').getContext('2d');
+        const salesRatePieCtx = document.getElementById('salesRatePie').getContext('2d');
+        BarChart(salesRateBarCtx, salesRateLabels, salesRateData, 'Hourly Sales for Last 30 days', barBgColor, barBorderColor);
+        initPieChart(salesRatePieCtx, salesRateLabels, salesRateData, pieBgColor);
+        
         // Event listeners
         document.getElementById('RequestMonthReport').addEventListener('click', function () {
             const storeId = document.getElementById('storeMonthlySales').value;
@@ -646,12 +680,5 @@
                         }
                     };
                 </script>
-
-                <%}%>
-
-
-
-
-
                 </body>
                 </html>

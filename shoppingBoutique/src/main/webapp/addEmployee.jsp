@@ -20,11 +20,11 @@
             List<Store> stores = (List<Store>) request.getSession(false).getAttribute("stores");
             String storeName;
         %>
-        <% if(employee != null && employee.getRole() == Role.Manager) { %>
+        <% if(employee == null) { %>
         
         <div class="manager-container">
             <div >
-                <jsp:include page="sidebar.jsp"/>
+   
             </div>
             <div class="main">
                 <div class="login-box">
