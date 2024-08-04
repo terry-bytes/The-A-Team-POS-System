@@ -89,13 +89,7 @@
             color: black;
             
         }
-        p{
-          font-size: 1rem;
-            position: absolute;
-            top:  10px;
-            right: 10px;
-            color: black;  
-        }
+        
         /* Modal styles */
         .modal {
             display: none;
@@ -112,14 +106,13 @@
         }
         .modal-content {
             background-color: #fefefe;
-            margin: 10px;
+            margin: 5% auto;
             padding: 20px;
             border: 1px solid #888;
             width: 80%;
             max-width: 300px;
             text-align: center;
             position: relative;
-            
         }
         .close {
             color: #aaa;
@@ -137,9 +130,20 @@
             width: 50px;
             height: 50px;
             display: block;
-            margin: 0 auto 30px;
-            top: 50px; /* Adjust this value to move the modal higher */
-            text-align: center; /* Center-align modal content */
+            margin: 0 auto 10px;
+        }
+        #okButton {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 10px;
+            background-color: #0000FF;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #okButton:hover {
+            background-color: #0000FF;
         }
         #okButton {
             display: inline-block;
@@ -230,7 +234,7 @@
         <label for="employeeId">Employee ID:</label>
         <input type="text" id="employeeId" name="employeeId" value="<%=employee.getFirstName()+" "+employee.getLastName() %>" readonly>
         <label for="additionalStock">Additional Stock:</label>
-        <input type="number" id="additionalStock" name="additionalStock" required>
+        <input type="number" id="additionalStock" name="additionalStock" required min="0" >
         <label for="storeId">Store ID:</label>
         <input type="number" id="storeId" name="storeId" value="<%=employee.getStore_ID()%>" required readonly>
         <input type="submit" name = "submit" class="button" value="Replenish Stock">
@@ -245,21 +249,25 @@
 <div id="myModal" class="modal">
     <div class="modal-content">
         <span class="close">&times;</span>
-        <img src="button.png" alt="Success" style="width:50px; height:50px;" id ="modal-content img">
+        <img src="button.png" alt="Success">
         <p>Product successfully added to inventory!</p>
         <button id="okButton">OK</button>
     </div>
 </div>
+
 <script>
     var modal = document.getElementById("myModal");
     var span = document.getElementsByClassName("close")[0];
     var okButton = document.getElementById("okButton");
+
     span.onclick = function() {
         modal.style.display = "none";
     }
+
     okButton.onclick = function() {
         modal.style.display = "none";
     }
+
     <% if (request.getAttribute("success") != null && (Boolean) request.getAttribute("success")) { %>
         modal.style.display = "block";
     <% } %>

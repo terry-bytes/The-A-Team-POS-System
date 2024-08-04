@@ -53,6 +53,12 @@ public class InventoryServlet extends HttpServlet {
             int storeId = ((Employee) request.getSession(false).getAttribute("Employee")).getStore_ID();
             int employeeId = ((Employee) request.getSession(false).getAttribute("Employee")).getEmployee_ID();
             
+            if (additionalStock < 0) {
+            request.setAttribute("error", "Additional stock cannot be negative.");
+            request.getRequestDispatcher("replenishStock.jsp").forward(request, response);
+            return;
+        }
+            
             try {
                 inventoryService.replenishStock(productSku, productID, additionalStock, employeeId,storeId);
                 success = true;
