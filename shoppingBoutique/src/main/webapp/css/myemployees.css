@@ -25,6 +25,7 @@ section{
 
 .left-main{
     margin-left: 300px;
+    padding-left: 20px;
 }
 #customers {
   border-collapse: collapse;
@@ -49,4 +50,12 @@ section{
 
   color: white;
 
+}
+
+.header{
+    display: flex;
+    justify-content: space-between;
+    padding-top: 20px;
+    
+    background-color: black;
 }

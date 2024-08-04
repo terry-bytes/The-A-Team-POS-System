@@ -36,42 +36,17 @@
                                />
 
                     </div>
+                  
                     <div class="input-box">
-                        <input type="text"
-                            placeholder='Address'
-                            name='storeAddress'
-                            class='input-field'
-                            autocomplete="on" required
-                        />
-
-                    </div>
-                    <div class="input-box">
-                        <input type="text"
-                            placeholder='City'
-                            name='storeCity'
-                            class='input-field'
-                            autocomplete="on" required
-                            />
-                         
-                    </div>
-                    <div class="input-box">
-                        <input type="text"
-                            placeholder='province'
-                            name='storeProvince'
-                            class='input-field'
-                            autocomplete="off" required
-                            />
-                         
-                    </div>
-                    <div class="input-box">
-                        <input type="text"
-                               placeholder='Zipcode'
-                               name='storeZipcode'
+                        <input type="email"
+                               placeholder='Branch email address'
+                               name='storeEmailAddress'
                                class='input-field'
                                autocomplete="off" required
                                />
 
                     </div>
+                    
                     <div class="input-box">
                         <input type="text"
                                placeholder='Branch Contact number'
@@ -81,10 +56,41 @@
                                />
 
                     </div>
+                    
                     <div class="input-box">
-                        <input type="email"
-                               placeholder='Branch email address'
-                               name='storeEmailAddress'
+                        <input type="text"
+                            placeholder='Address'
+                            name='storeAddress'
+                            class='input-field'
+                            autocomplete="on" required
+                        />
+
+                    </div>
+                    
+                    <div class="input-box">
+                        <input type="text"
+                            placeholder='City'
+                            name='storeCity'
+                            class='input-field'
+                            autocomplete="on" required
+                            />
+                         
+                    </div>
+                    
+                    <div class="input-box">
+                        <input type="text"
+                            placeholder='province'
+                            name='storeProvince'
+                            class='input-field'
+                            autocomplete="off" required
+                            />
+                         
+                    </div>
+                    
+                    <div class="input-box">
+                        <input type="text"
+                               placeholder='Zipcode'
+                               name='storeZipcode'
                                class='input-field'
                                autocomplete="off" required
                                />

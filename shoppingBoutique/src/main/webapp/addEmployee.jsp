@@ -20,7 +20,7 @@
             List<Store> stores = (List<Store>) request.getSession(false).getAttribute("stores");
             String storeName;
         %>
-        <% if(employee == null) { %>
+        <% if(employee != null && employee.getRole() != Role.Teller) { %>
         
         <div class="manager-container">
             <div >

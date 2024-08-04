@@ -192,6 +192,7 @@ public class EmployeeServlet extends HttpServlet {
         emailDetails.setSubject("Email Verification OTP");
         emailDetails.setMessage("Your OTP for email verification is: " + otp);
 
+        System.out.println("otp: "+otp);
         emailService.sendMail(emailDetails);
         request.getSession().setAttribute("otp", otp);
         request.getSession().setAttribute("newEmployee", newEmployee);
@@ -234,6 +235,13 @@ public class EmployeeServlet extends HttpServlet {
         employeeToUpdate.setRole(role);
 
         boolean success = employeeService.updateEmployee(employeeToUpdate);
+        String message = null;
+        if(success){
+            message = "Employee details are updated successfully";
+        }else {
+            message = "Failed to update employee's details";
+        }
+        request.setAttribute("message", message);
         response.sendRedirect(request.getContextPath() + "/employees");
     }
 
@@ -262,6 +270,8 @@ public class EmployeeServlet extends HttpServlet {
 
             switch (employee.getRole()) {
                 case Admin:
+                    List<Employee> employeeList = employeeService.getAllEmployees();
+                    request.setAttribute("employeeList", employeeList);
                     request.getRequestDispatcher("AdminDashboard.jsp").forward(request, response);
                     break;
                 case Manager:
