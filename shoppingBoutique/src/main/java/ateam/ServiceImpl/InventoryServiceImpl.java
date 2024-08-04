@@ -1,13 +1,8 @@
 package ateam.Services.impl;
 
 import ateam.DAO.InventoryDAO;
-import ateam.DAO.ReturnDao;
 import ateam.DAOIMPL.InventoryDAOIMPL;
-import ateam.DAOIMPL.ReturnDaoImpl;
 import ateam.Models.Inventory;
-import ateam.Models.Product;
-import ateam.Models.Return;
-import ateam.Models.Sale;
 import ateam.Models.SalesItem;
 import ateam.Service.InventoryService;
 
@@ -20,7 +15,7 @@ import java.util.logging.Logger;
 
 public class InventoryServiceImpl implements InventoryService {
     private final InventoryDAO inventoryDAO;
-   
+    private static final int RECORDS_PER_PAGE = 10; // Number of records per page
 
     public InventoryServiceImpl() {
         
@@ -29,6 +24,7 @@ public class InventoryServiceImpl implements InventoryService {
         
     }
 
+    
     @Override
      public void replenishStock(String productSKU,int productId, int additionalStock, int employeeId, int storeId) throws SQLException {
     Inventory inventory = new Inventory();
@@ -70,6 +66,8 @@ public class InventoryServiceImpl implements InventoryService {
         }
      }
      
+     
+    
      @Override
     public void processSale(int salesId) throws SQLException {
         try {

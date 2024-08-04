@@ -190,6 +190,7 @@ private int getPreviousQuantity(int productID, int storeID) throws SQLException 
     }
     
     
+     
     @Override
      public List<Inventory> getAllInventories() throws Exception {
         String sql = "SELECT * FROM inventory";
