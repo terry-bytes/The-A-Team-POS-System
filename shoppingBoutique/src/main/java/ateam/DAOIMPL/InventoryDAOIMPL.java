@@ -14,14 +14,15 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class InventoryDAOIMPL implements InventoryDAO {
     
     
-    @Override
-    public void addProductAndInventory(String barcode, int storeID, int quantity,int employeeID) throws SQLException {
+ @Override
+   public void addProductAndInventory(String barcode, int storeID, int quantity,int employeeID) throws SQLException {
     String[] barcodeParts = barcode.split("-");
     String productSKU = barcodeParts[0];
     String size = barcodeParts[1];
@@ -32,7 +33,7 @@ public class InventoryDAOIMPL implements InventoryDAO {
     PreparedStatement psProduct = null;
     PreparedStatement psVariant = null;
     PreparedStatement psInventory = null;
-    
+
     try {
         conn = new Connect().connectToDB();
         conn.setAutoCommit(false); // Start transaction
@@ -57,8 +58,9 @@ public class InventoryDAOIMPL implements InventoryDAO {
             psProduct.setString(5, productSKU);
             psProduct.setInt(6,product.getQuantity_in_stock());
             psProduct.setString(7,product.getProduct_image_path());
-            
-            
+            psProduct.setString(8,size);
+            psProduct.setString(9, color);
+
             // Set other parameters...
             psProduct.executeUpdate();
 
@@ -89,7 +91,7 @@ public class InventoryDAOIMPL implements InventoryDAO {
             psVariant.setInt(4, storeID);
             psVariant.executeUpdate();
         }
-        
+
         // Set other properties before we add on inventory
         inventory.setReorder_point(5); 
         inventory.setLast_updated(new Timestamp(System.currentTimeMillis()));
@@ -101,11 +103,7 @@ public class InventoryDAOIMPL implements InventoryDAO {
         psInventory.setInt(1, productID);
         psInventory.setInt(2, storeID);
         psInventory.setInt(3, quantity);
-        try {
-            psInventory.setInt(4,getPreviousQuantity(productID));
-        } catch (Exception ex) {
-            Logger.getLogger(InventoryDAOIMPL.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        psInventory.setInt(4,inventory.getPrevious_quantity());
         psInventory.setInt(5,inventory.getReorder_point());
         psInventory.setTimestamp(6,inventory.getLast_updated());
         psInventory.setInt(7,employeeID);
@@ -126,7 +124,35 @@ public class InventoryDAOIMPL implements InventoryDAO {
     }
 }
 
+private int getInventoryId(int productID, int storeID) throws SQLException {
+    String query = "SELECT inventory_ID FROM inventory WHERE product_ID = ? AND store_ID = ?";
+    try (Connection conn = new Connect().connectToDB();
+         PreparedStatement ps = conn.prepareStatement(query)) {
+        ps.setInt(1, productID);
+        ps.setInt(2, storeID);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return rs.getInt("inventory_ID");
+        } else {
+            throw new SQLException("No inventory record found for product ID " + productID + " and store ID " + storeID);
+        }
+    }
+}
 
+private int getPreviousQuantity(int productID, int storeID) throws SQLException {
+    String query = "SELECT inventory_quantity FROM inventory WHERE product_ID = ? AND store_ID = ?";
+    try (Connection conn = new Connect().connectToDB();
+         PreparedStatement ps = conn.prepareStatement(query)) {
+        ps.setInt(1, productID);
+        ps.setInt(2, storeID);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return rs.getInt("inventory_quantity");
+        } else {
+            return 0; // Assuming the previous quantity is 0 if no record is found
+        }
+    }
+}
 
 
     @Override
@@ -164,6 +190,7 @@ public class InventoryDAOIMPL implements InventoryDAO {
     }
     
     
+     
     @Override
      public List<Inventory> getAllInventories() throws Exception {
         String sql = "SELECT * FROM inventory";
@@ -257,5 +284,6 @@ public class InventoryDAOIMPL implements InventoryDAO {
         return salesItemList;
     }
 
+    }
+
     
-}

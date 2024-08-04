@@ -33,6 +33,7 @@ public class InventoryServlet extends HttpServlet {
             throws ServletException, IOException {
 
     
+        
 
         try {
             
@@ -45,11 +46,18 @@ public class InventoryServlet extends HttpServlet {
             // Check if the list is not empty and get the first product's ID
             if (!getList.isEmpty()) {
             productId = getList.get(0).getProduct_ID();
-}
+}  
+
             int productID = productId;
             int additionalStock = Integer.parseInt(request.getParameter("additionalStock"));
             int storeId = ((Employee) request.getSession(false).getAttribute("Employee")).getStore_ID();
             int employeeId = ((Employee) request.getSession(false).getAttribute("Employee")).getEmployee_ID();
+            
+            if (additionalStock < 0) {
+            request.setAttribute("error", "Additional stock cannot be negative.");
+            request.getRequestDispatcher("replenishStock.jsp").forward(request, response);
+            return;
+        }
             
             try {
                 inventoryService.replenishStock(productSku, productID, additionalStock, employeeId,storeId);
@@ -100,14 +108,18 @@ public class InventoryServlet extends HttpServlet {
                 
                 
                 break;
+                
+                case "OK":
+        try {
+            request.getRequestDispatcher("replenishStock.jsp").forward(request, response);
+        } catch (ServletException ex) {
+            Logger.getLogger(InventoryServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        break;
+        
         }
         
-        
-        
-        
-        
-        
-        
+    
     }
     
 }

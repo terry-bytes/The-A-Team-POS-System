@@ -168,4 +168,9 @@ public class TheReturn {
         }   
      
     }
+    
+    public void addVoucher(String voucherNumber,BigDecimal amount){
+        
+        saleDao.addVoucher(voucherNumber,amount);
+    }
 }

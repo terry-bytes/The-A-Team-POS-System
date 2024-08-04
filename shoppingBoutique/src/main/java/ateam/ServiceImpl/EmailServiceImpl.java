@@ -106,6 +106,97 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
+    public void VoucherEmail(String to,BigDecimal change,String voucher){
+        // Recipient's email ID needs to be mentioned
+       
+
+        // Sender's email ID needs to be mentioned
+        String from = "ramovhatp@gmail.com";
+        final String username = "ramovhatp@gmail.com"; // change accordingly
+        final String password = "xaed clmt qpis ctvf"; // change accordingly
+
+
+        // Assuming you are sending email through relay.jangosmtp.net
+        String host = "smtp.gmail.com"; // replace with your SMTP server
+
+        Properties props = new Properties();
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.host", host);
+        props.put("mail.smtp.port", "587");
+
+        // Get the Session object
+        Session session = Session.getInstance(props,
+                new javax.mail.Authenticator() {
+                    @Override
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(username, password);
+                    }
+                });
+
+        try {
+            // Create a default MimeMessage object
+            Message message = new MimeMessage(session);
+
+            // Set From: header field of the header
+            message.setFrom(new InternetAddress(from));
+
+            // Set To: header field of the header
+            message.setRecipients(Message.RecipientType.TO,
+                    InternetAddress.parse(to));
+
+            // Set Subject: header field
+            message.setSubject("Your Gift Voucher from Carol's Boutique!");
+
+            // Retrieve session attributes
+           
+
+            // Create the message part
+            BodyPart messageBodyPart = new MimeBodyPart();
+
+            // Now set the actual message
+            String htmlContent = "<html><body>"
+                    + "<div class='voucher-container' style='max-width: 600px; margin: 50px auto; background-color: #ffffff; border: 1px solid #dedede; border-radius: 10px; overflow: hidden; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);'>"
+                    + "<div class='voucher-header' style='background-color: #007BFF; color: #ffffff; padding: 20px; text-align: center;'>"
+                    + "<h1 style='margin: 0; font-size: 24px;'>Carol's Boutique</h1>"
+                    + "</div>"
+                    + "<div class='voucher-body' style='padding: 20px; text-align: center;'>"
+                    + "<h2 style='margin-top: 0; font-size: 22px; color: #333333;'>Gift Voucher</h2>"
+                    + "<p>Congratulations! You have received a gift voucher worth</p>"
+                    + "<div class='voucher-amount ' style='font-size: 20px; color: #28a745;'>" +"R"+ change.toString() + "</div>"
+                    + "<p>Your voucher code is:</p>"
+                    + "<div class='voucher-code' style='margin: 20px 0; font-size: 30px; font-weight: bold; color: #e83e8c; letter-spacing: 2px;'>" + voucher + "</div>"
+                    + "</div>"
+                    + "<div class='voucher-footer' style='background-color: #f8f9fa; padding: 10px; text-align: center; font-size: 12px; color: #6c757d;'>"
+                    + "<p>Thank you for shopping at Carol's Boutique!</p>"
+                    + "<p>Please present this voucher at the time of purchase.</p>"
+                    + "</div>"
+                    + "</div>"
+                    + "</body></html>";
+
+            messageBodyPart.setContent(htmlContent, "text/html");
+
+            // Create a multipart message
+            Multipart multipart = new MimeMultipart();
+
+            // Set text message part
+            multipart.addBodyPart(messageBodyPart);
+
+            // Send the complete message parts
+            message.setContent(multipart);
+
+            // Send message
+            Transport.send(message);
+
+            System.out.println("Sent message successfully....");
+
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    
+    @Override
     public void sendSaleReceipt(String toEmail, String salespersonName, String saleTime, List<Product> items, BigDecimal totalAmountWithVAT, BigDecimal vatAmount, BigDecimal change, String paymentMethod, BigDecimal cashPaid, BigDecimal cardPaid) {
         final String from = "ramovhatp@gmail.com";
         final String password = "xaed clmt qpis ctvf";

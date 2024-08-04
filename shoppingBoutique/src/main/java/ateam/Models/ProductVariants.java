@@ -14,5 +14,6 @@ public class ProductVariants {
     private String size;
     private String color;
     private int store_ID;
+    private int InventoryId;
 
 }
