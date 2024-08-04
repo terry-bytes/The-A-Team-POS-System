@@ -1,13 +1,16 @@
 package ateam.Servlets;
 
 import ateam.BDconnection.Connect;
+import ateam.DAO.InventoryDAO;
 import ateam.DAO.ProductDAO;
 import ateam.DAO.SaleDAO;
 import ateam.DAO.SalesItemDAO;
+import ateam.DAOIMPL.InventoryDAOIMPL;
 import ateam.DAOIMPL.ProductDAOIMPL;
 import ateam.DAOIMPL.SaleDAOIMPL;
 import ateam.DAOIMPL.SalesItemDAOIMPL;
 import ateam.Models.Employee;
+import ateam.Models.Inventory;
 import ateam.Models.Layaway;
 import ateam.Models.Product;
 import ateam.Models.Sale;
@@ -23,7 +26,7 @@ import ateam.Service.ReturnService;
 import ateam.ServiceImpl.EmailServiceImpl;
 import ateam.ServiceImpl.ProductServiceImpl;
 import ateam.ServiceImpl.ReturnServiceImpl;
-import ateam.Services.impl.InventoryServiceImpl;
+import ateam.ServiceImpl.InventoryServiceImpl;
 import org.mindrot.jbcrypt.BCrypt;
 
 import javax.servlet.ServletException;
@@ -55,6 +58,7 @@ public class ProductServlet extends HttpServlet {
     private EmailService emailService = new EmailServiceImpl();
     private Connect dbConnect = new Connect();
     private InventoryService inventoryService = new InventoryServiceImpl();
+    private InventoryDAO inventoryDAO = new InventoryDAOIMPL();
 
     private static final double VAT_RATE = 0.15;
 
@@ -266,7 +270,7 @@ public class ProductServlet extends HttpServlet {
                             }
 
                             inventoryService.processSale(newSalesID);
-                            
+                            List<Inventory> reorderList = inventoryDAO.checkAndSendReorderNotification(loggedInUser.getStore_ID());
 
                             String salespersonName = loggedInUser.getFirstName() + " " + loggedInUser.getLastName();
                             String saleTime = newSale.getSales_date().toString();
@@ -274,7 +278,7 @@ public class ProductServlet extends HttpServlet {
 
                             emailService.sendSaleReceipt(customerEmail, salespersonName, saleTime, scannedItems, totalAmountWithoutVAT, vatAmount, change, newSale.getPayment_method(), cashPaid, cardPaid);
 
-                            SmsSender.sendSms("add number", "Thank you for SHOPPING with us! 😊 Please check your email (" + customerEmail + ") for your RECEIPT.");
+                            SmsSender.sendSms("+27631821265", "Thank you for SHOPPING with us! 😊 Please check your email (" + customerEmail + ") for your RECEIPT.");
 
                             scannedItems.clear();
 
