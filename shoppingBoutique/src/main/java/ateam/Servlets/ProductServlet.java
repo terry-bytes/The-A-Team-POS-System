@@ -248,26 +248,53 @@ public class ProductServlet extends HttpServlet {
                         }
                         
                         else if ("voucher".equals(paymentMethod)) {
-                            String voucherCode = request.getParameter("voucher_code");
-                            request.getSession(false).setAttribute("voucherCode", voucherCode);
-                            voucherAmount = saleService.validateVoucher(voucherCode);
-                            if (voucherAmount.compareTo(BigDecimal.ZERO) <= 0) {
-                                request.setAttribute("errorMessage", "Invalid or expired voucher code.");
-                                break;
-                            }
                             
-                            BigDecimal remainingAmount = totalAmountWithoutVAT.subtract(voucherAmount);
-                            if (remainingAmount.compareTo(BigDecimal.ZERO) < 0) {
-                                change = voucherAmount.subtract(totalAmountWithoutVAT);
-                                voucherAmount = totalAmountWithoutVAT;
-                               
-                            } else {
-                                totalAmountWithoutVAT = remainingAmount;
-                            
-                         }
-                          
+                           String voucherCode = request.getParameter("voucher_code");
+                           request.getSession(false).setAttribute("voucherCode", voucherCode);
+                           voucherAmount = saleService.validateVoucher(voucherCode);
+                           if (voucherAmount.compareTo(BigDecimal.ZERO) <= 0) {
+                               request.setAttribute("errorMessage", "Invalid or expired voucher code.");
+                               request.getRequestDispatcher("tellerDashboard.jsp").forward(request, response);
+                               return;
+                           }
+
+                         BigDecimal  remainingAmount = totalAmountWithoutVAT.subtract(voucherAmount);
+
+                           if (remainingAmount.compareTo(BigDecimal.ZERO) > 0) {
+                               // Store remaining amount in session and redirect to additional payment
+                               request.getSession(false).setAttribute("remainingAmount", remainingAmount);
+                               request.getSession(false).setAttribute("voucherAmount", voucherAmount);
+                               request.setAttribute("voucherCode", voucherCode);
+                               request.getRequestDispatcher("/additionalPayments.jsp").forward(request, response);
+                               return;
+                           } else {
+                               // Voucher covers the entire amount
+                               totalAmountWithoutVAT = BigDecimal.ZERO;
+                           }
+
+                           // Mark the voucher as used
+                           saleService.markVoucherAsUsed(voucherCode);
+                       }
                              
-                        }
+                        else if ("additionalPayment".equals(paymentMethod)) {
+                           BigDecimal remainingAmount = new BigDecimal(request.getParameter("remaining_amount"));
+                           BigDecimal additionalAmount = new BigDecimal(request.getParameter("additional_amount"));
+                           String additionalPaymentMethod = request.getParameter("additional_payment_method");
+                           String voucherCode = request.getParameter("voucher_code");
+
+                           if (additionalAmount.compareTo(remainingAmount) < 0) {
+                               request.setAttribute("errorMessage", "Insufficient additional payment amount.");
+                               request.getRequestDispatcher("tellerDasboard.jsp").forward(request, response);
+                               return;
+                           }
+
+                           newSale.setTotal_amount(remainingAmount.add(additionalAmount));
+                           newSale.setPayment_method(additionalPaymentMethod);
+
+                           // Mark the voucher as used
+                           saleService.markVoucherAsUsed(voucherCode);
+                       }
+
 
                         
                         newSale.setSales_date(new Timestamp(System.currentTimeMillis()));
@@ -275,7 +302,8 @@ public class ProductServlet extends HttpServlet {
                         newSale.setPayment_method(paymentMethod);
                         
                         if(newSale.getPayment_method().equals("voucher")){
-                          
+                            
+                            newSale.setTotal_amount(totalAmountWithoutVAT);
                             // Mark the voucher as used
                             String voucher = (String)request.getSession(false).getAttribute("voucherCode");
                             saleService.markVoucherAsUsed(voucher);
