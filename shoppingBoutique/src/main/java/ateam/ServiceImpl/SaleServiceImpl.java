@@ -14,6 +14,7 @@ import ateam.DTO.SalesDTO;
 import ateam.Models.Store;
 import ateam.Service.EmployeeService;
 import ateam.Service.SaleService2;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -146,6 +147,17 @@ public class SaleServiceImpl implements SaleService2{
     }
 
     @Override
+
+    public void markVoucherAsUsed(String voucherCode) {
+      saleDao.markVoucherAsUsed( voucherCode);   
+    }
+
+    @Override
+    public BigDecimal validateVoucher(String voucherCode) {
+        
+     return saleDao.validateVoucher(voucherCode);
+    }
+
     public List<Sale> getSaleForStoreByRange(int storeId, LocalDate startDate, LocalDate endDate) {
         return saleDao.getSalesForStoreByRange(storeId, startDate, endDate);
     }

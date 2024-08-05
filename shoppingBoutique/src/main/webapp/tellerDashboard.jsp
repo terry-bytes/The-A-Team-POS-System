@@ -159,6 +159,7 @@
                             <button type="submit" name="submit" value="auto-submit" id="auto-submit" style="display: none"></button>
                         </div>
                         <div class="payment-icons">
+
                             <div class="payment-option">
                                 <img src="Icons/cashhh.png" alt="Cash" onclick="selectPaymentMethod('cash')">
                                 <span>Cash</span>
@@ -171,6 +172,11 @@
                                 <img src="Icons/wallet.png" alt="Card & Cash" onclick="selectPaymentMethod('cardAndcash')">
                                 <span>Card & Cash</span>
                             </div>
+                            <div class="payment-option">
+                                <img src="Icons/gift-card.png" alt="voucher" onclick="selectPaymentMethod('voucher')">
+                                <span>voucher</span>
+                            </div>
+
                         </div>
 
                         <p>   </p>
@@ -198,6 +204,8 @@
                                 <input type="text" id="cash_amount" name="cash_amount" placeholder="Cash Amount">
                             </div>
                         </div>
+                        
+                        
                         <div class="payment-method" id="cash-card-amount" style="display:none;">
                             <div class="flex">
                                 <div class="inputBox">
@@ -209,6 +217,13 @@
                                     <input type="text" id="card_amount2" name="card_amount2" placeholder="Card Amount">
                                 </div>
                             </div>
+                        </div>
+                        
+                         <div class="payment-method" id="voucher-code" style="display:none;">
+                        <div>
+                            <label for="voucher_code">Voucher Code:</label>
+                            <input type="text" id="voucher_code" name="voucher_code" placeholder="Voucher Code">
+                        </div>
                         </div>
                         <p>   </p>
                         <div>
@@ -372,6 +387,7 @@
                 document.getElementById("card-details").style.display = "none";
                 document.getElementById("cash-card-amount").style.display = "none";
                 document.getElementById("cash-amount").style.display = "none";
+                document.getElementById("voucher-code").style.display = "none";
 
                 if (method === 'card') {
                     document.getElementById("card-details").style.display = "block";
@@ -380,6 +396,8 @@
                     document.getElementById('card-details').style.display = 'block';
                 } else if (method === 'cash') {
                     document.getElementById("cash-amount").style.display = "block";
+                }else if (method === "voucher") {
+                    document.getElementById("voucher-code").style.display = "block";
                 }
             }
 
@@ -588,6 +606,7 @@
             });
 
         </script>
+        
 
         <script>
             function openPopup() {

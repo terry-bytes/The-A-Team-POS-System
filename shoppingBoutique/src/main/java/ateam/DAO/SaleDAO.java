@@ -8,8 +8,8 @@ import java.util.List;
 
 public interface SaleDAO {
 
-
-
+    void markVoucherAsUsed(String voucherCode);
+    BigDecimal validateVoucher(String voucherCode);
     int startNewSale(int employeeId, int storeId);
 
     BigDecimal calculateTotalAmount(int salesId);

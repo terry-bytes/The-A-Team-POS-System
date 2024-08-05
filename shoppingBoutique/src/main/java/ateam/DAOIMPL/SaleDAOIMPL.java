@@ -269,12 +269,38 @@ public class SaleDAOIMPL implements SaleDAO {
              PreparedStatement stmt = conn.prepareStatement(query))  {
             stmt.setString(1,voucherNumber );
             stmt.setBigDecimal(2, amount);
-            stmt.setTimestamp(3, voucher.getCreatedAt());
+            stmt.setTimestamp(3, new Timestamp(System.currentTimeMillis()));
             stmt.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(SaleDAOIMPL.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+    }
+    
+    @Override
+    public BigDecimal validateVoucher(String voucherCode) {
+        BigDecimal amount = BigDecimal.ZERO;
+        try (Connection conn = new Connect().connectToDB();
+             PreparedStatement stmt = conn.prepareStatement("SELECT amount FROM vouchers WHERE voucher_code = ? AND used = 0")) {
+            stmt.setString(1, voucherCode);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                amount = rs.getBigDecimal("amount");
+            }
+        } catch (SQLException e) {
+           
+        }
+        return amount;
+    }
+    @Override
+    public void markVoucherAsUsed(String voucherCode) {
+        try (Connection conn = new Connect().connectToDB();
+             PreparedStatement stmt = conn.prepareStatement("UPDATE vouchers SET used = 1 WHERE voucher_code = ?")) {
+            stmt.setString(1, voucherCode);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            
+        }
     }
 
 }
