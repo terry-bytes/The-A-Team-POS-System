@@ -22,7 +22,6 @@ import com.itextpdf.text.Chunk;
 import com.itextpdf.text.pdf.PdfAction;
 import java.net.URL;
 
-
 public class EmailServiceImpl implements EmailService {
 
     private Email email;
@@ -328,7 +327,11 @@ public class EmailServiceImpl implements EmailService {
 
             // Text part of the email
             BodyPart messageBodyPart = new MimeBodyPart();
-            messageBodyPart.setText("Please find your sale receipt attached.");
+            String ratingLink = "https://docs.google.com/forms/d/1MSLxiI52-CQt369KCBjfVfxGBPJyDa0_D7MDYGYCEng/viewform?edit_requested=true#responses";
+            String emailContent = "<p>Please find your sale receipt attached.</p>"
+                    + "<p>We would appreciate it if you could take a moment to rate your experience. "
+                    + "<a href='" + ratingLink + "'>click here</a>.</p>";
+            messageBodyPart.setContent(emailContent, "text/html");
             multipart.addBodyPart(messageBodyPart);
 
             // PDF attachment
