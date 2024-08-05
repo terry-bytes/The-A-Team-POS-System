@@ -15,44 +15,637 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
 
-        <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
-        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/teller.css">
+       
+        
+        
+        <style>
+            /*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 31 Jul 2024, 15:08:03
+    Author     : T440
+*/
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+
+.payment-section {
+    flex: 1;
+}
+.payment-icons{
+    display: flex;
+    width: 100%;
+    justify-content: space-around
+}
+.payment-icons img {
+    width: 50px;
+    cursor: pointer;
+    margin-left: 15px;
+}
+.payment-icons img:hover {
+    transform: scale(1.1);
+}
+.green-arrow-button {
+    background-color: #19a1e0; /* Green background */
+    color: white; /* White text color */
+    border: none; /* Remove border */
+    padding: 10px 20px; /* Adjust padding */
+    font-size: 1em; /* Font size */
+    cursor: pointer; /* Pointer cursor */
+    border-radius: 7px; /* Rounded corners */
+    position: relative; /* For positioning the arrow */
+    display: inline-block; /* Make sure it behaves like a button */
+}
+
+.green-arrow-button::after {
+    content: ""; /* No text */
+    position: absolute; /* Position the arrow */
+    top: 50%; /* Center vertically */
+    right: 10px; /* Position from the right */
+    width: 10; /* Zero width */
+    height: 10; /* Zero height */
+    border-top: 10px solid transparent; /* Top part of the arrow */
+    border-bottom: 10px solid transparent; /* Bottom part of the arrow */
+    border-left: 10px solid #fff; /* Arrow color */
+    transform: translateY(-50%); /* Center arrow vertically */
+}
+.big-key {
+    flex: 2; /* Makes the key wider */
+    font-size: 1.4em; /* Larger text */
+    padding: 20px; /* Larger padding */
+}
+
+body {
+
+    background: #aecdf0;
+}
+
+
+
+.styled-button{
+    background-color: #3498db; 
+
+    border: none; 
+    color: white; 
+    padding: 15px 20px; /* Some padding */
+    text-align: center; /* Centered text */
+    text-decoration: none; /* Remove underline */
+    display: inline-block; /* Make the button inline */
+    font-size: 16px; /* Increase font size */
+    margin: 4px 2px; /* Some margin */
+    cursor: pointer; /* Pointer/hand icon */
+    border-radius: 5px; /* Rounded corners */
+    transition: background-color 0.3s;
+}
+
+
+#complete{
+    background-color: #f48106;
+}
+
+#IBT{
+    background-color: #ff0000;
+}
+
+#lay{
+    background-color: #6bf406;}
+
+
+.styled-input {
+    width: 100%; 
+    padding: 12px 20px; 
+    margin: 8px 0;
+    border: 2px solid #630467; 
+    border-radius: 4px; 
+    font-size: 16px; 
+    transition: border-color 0.3s; 
+    background: rgba(254, 254, 254, 0.5);
+}
+
+.styled-input:focus {
+    border-color: #3498db; 
+    outline: none; 
+}
+
+.container {
+    display: flex;
+    padding: 20px;
+}
+.scanned-items {
+    flex: 1;
+    margin-right: 20px;
+}
+.payment-section {
+    flex: 1;
+}
+.my-header {
+    background: #f0f0f0;
+    padding: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.my-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.my-nav li {
+    display: inline;
+    margin-right: 20px;
+}
+.my-nav a {
+    text-decoration: none;
+    color: #333;
+}
+.scanned-items h2 {
+    color: #2980b9;
+}
+
+
+
+table {
+    background: #fff;
+    width: 100%;
+    border-collapse: collapse;
+}
+th, td {
+    border: 1px solid #ddd;
+    padding: 10px;
+}
+th {
+    background: #f5f5f5;
+}
+.total-price {
+    margin-top: 20px;
+    font-size: 1.2em;
+}
+.manual-entry {
+    display: flex;
+    align-items: center;
+}
+
+.manual-entry input {
+    margin-right: 10px;
+}
+
+.manual-entry .green-arrow-button {
+    margin-right: 10px;
+}
+
+.manual-entry-section {
+    background: rgba(254, 254, 254, 0.3);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+#manual-sku {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+.keyboard {
+    /*display: flex;
+    justify-content: flex-start; /* Aligns the keyboard to the left 
+    align-items: center;
+    margin-left: 5px;*/
+}
+
+.keyboard-wrapper {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr); /* 12 columns for numbers and special characters */
+    gap: 5px; /* Space between keys */
+}
+
+.key {
+    padding: 10px;
+    background-color: #3498db;
+    border: 1px solid #ccc;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 4px;
+    user-select: none;
+}
+
+.key.big-key {
+    grid-column: span 3; /* Make the Shift and Backspace keys wider */
+}
+
+.key:hover {
+    background-color: #2980b9;
+}
+
+
+
+/* Adjust the layout for the QWERTY keys */
+.key:nth-child(n+13):nth-child(-n+22) {
+    grid-column: span 1;
+}
+
+.key:nth-child(n+23):nth-child(-n+31) {
+    grid-column: span 1;
+}
+
+.key:nth-child(n+32):nth-child(-n+39) {
+    grid-column: span 1;
+}
+
+
+
+.manual-entry {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+.transaction-buttons {
+    display: flex;
+    justify-content: space-between; 
+    
+    flex-wrap: wrap;
+    gap: 20px; /* Adjust the spacing between buttons as needed */
+}
+
+.transaction-buttons form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.transaction-buttons button {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+.transaction-buttons .icon {
+    width: 50px; /* Adjust the size as needed */
+    height: auto;
+}
+
+.transaction-buttons label {
+    margin-top: 5px; /* Adjust the spacing as needed */
+    text-align: center;
+}
+
+
+
+
+
+#barcode-scanner {
+
+}
+.right-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.left-section {
+    flex: 1;
+    padding-right: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.user-info {
+    display: flex;
+    flex-direction: row;
+
+}
+
+.user-info img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+
+
+.user-details {
+    display: flex;
+    align-items: center;
+}
+
+
+
+.logout {
+    list-style: none;
+    right: 10px;
+}
+
+.payment-method {
+    margin-top: 20px;
+}
+
+.payment-method div {
+    margin-bottom: 15px;
+}
+
+.flex {
+    display: flex;
+    justify-content: space-between;
+}
+
+.flex .inputBox {
+    flex: 1;
+    margin-right: 10px;
+}
+
+.flex .inputBox:last-child {
+    margin-right: 0;
+}
+
+.payment-method label {
+    display: block;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+.payment-method input {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #ccc; 
+    border-radius: 4px; 
+    transition: border-color .3s;
+}
+
+.payment-method input:focus{
+    border-color: #3498db; 
+    outline: none;
+}
+
+.submit-btns{
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+        </style>
+        
+        <style>
+    /* The Popup Background */
+    .popup {
+        display: none; /* Hidden by default */
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.5); /* Black w/ opacity */
+    }
+    /* Popup Content */
+    .popup-content {
+        background-color: #ffffff;
+        margin: 10% auto; /* Center the popup */
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        width: 80%;
+        max-width: 500px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    /* Close Button */
+    .close {
+        color: #888;
+        float: right;
+        font-size: 1.5em;
+        font-weight: bold;
+        cursor: pointer;
+    }
+    .close:hover,
+    .close:focus {
+        color: #000;
+        text-decoration: none;
+    }
+    /* Heading */
+    .popup-content h2 {
+        margin-top: 0;
+        color: #333;
+        font-size: 1.6em;
+    }
+    /* Form Elements */
+    label {
+        display: block;
+        margin-bottom: 8px;
+        color: #555;
+        font-weight: bold;
+    }
+    input[type="text"] {
+        width: calc(100% - 20px);
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1em;
+    }
+    /* Store Info */
+    .store-info {
+        margin-bottom: 20px;
+    }
+    .store-info label {
+        font-weight: normal;
+    }
+    /* Button Group */
+    .button-group {
+        display: flex;
+        justify-content: space-between;
+    }
+    /* Buttons */
+    .btn {
+        padding: 10px 15px;
+        border: none;
+        border-radius: 4px;
+        color: #fff;
+        font-size: 1em;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+    .btn-primary {
+        background-color: #007bff;
+    }
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+    .btn-secondary {
+        background-color: #28a745;
+    }
+    .btn-secondary:hover {
+        background-color: #218838;
+    }
+</style>
+
+
+        <!-- Add styles for popups -->
+    <style>
+    .popup {
+        display: none; /* Hidden by default */
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+    .popup-content {
+        background-color: #fefefe;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+    }
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+    .close:hover,
+    .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+    
+    </style>
+
+
+
+
+
+
+
+
         <style>
             /* Popup Form Styles */
-            .popup {
-                display: none; /* Hidden by default */
-                position: fixed;
-                left: 0;
-                top: 0;
-                width: 100%;
-                height: 100%;
-                overflow: auto;
-                background-color: rgba(0,0,0,0.4); /* Black with opacity */
-            }
-
-            .popup-content {
-                background-color: #fefefe;
-                margin: 15% auto;
-                padding: 20px;
-                border: 1px solid #888;
-                width: 80%;
-                max-width: 500px;
-            }
-
-            .close {
-                color: #aaa;
-                float: right;
-                font-size: 28px;
-                font-weight: bold;
-            }
-
-            .close:hover,
-            .close:focus {
-                color: black;
-                text-decoration: none;
-                cursor: pointer;
-            }
+        .popup {
+            display: none; /* Hidden by default */
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4); /* Black with opacity */
+        }
+        .popup-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
         </style>
+        
+        <style>
+            /* poooooooopuuups */
+
+
+
+/* Popup Overlay */
+.popup-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 1000;
+}
+
+.popup-content {
+    position: relative;
+    background-color: #fff;
+    border: 1px solid #333;
+    width: 50%; /* Adjust width as needed */
+    margin: 10% auto;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.popup-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    font-size: 20px;
+    color: #aaa;
+}
+
+.popup-close:hover {
+    color: #333;
+}
+
+.popup-content h2 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.popup-content form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.popup-content label {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.popup-content input[type="text"],
+.popup-content input[type="email"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1em;
+    box-sizing: border-box;
+}
+
+.popup-content button[type="submit"] {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin-top: 15px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 1em;
+}
+
+.popup-content button[type="submit"]:hover {
+    background-color: #2980b9;
+}
+            </style>
     </head>
 
     <body>
@@ -188,7 +781,7 @@
 
                             <button class="styled-button" id="complete" type="submit" name="submit" value="Complete-Sale">Complete Sale</button>
                             <input class="styled-button" id="lay" type="submit" value="Process Layaway" onclick="openPopup()">
-                            <input class="styled-button" id="IBT" type="button" value="Process IBT" id="openPopupButton">
+                            <input class="styled-button"  type="button" value="Process IBT" id="openPopupButton">
 
                         </div>
                     </form>
@@ -285,20 +878,7 @@
             </div>
         </div>
 
-        <!-- The Popup Form -->
-        <div id="popupForm" class="popup">
-            <div class="popup-content">
-                <span class="close" id="closePopup">&times;</span>
-                <h2>Enter IBT ID Number</h2>
-                <form id="ibtForm">
-                    <label for="ibtNumber">IBT ID:</label>
-                    <input type="text" id="ibtNumber" name="ibtNumber" required>
-                    <label>Store ID: </label><label></label>
-                    <label></label><label></label>
-                    <label></label><label></label>
-                    <input type="submit" value="Submit">
-                </form>
-            </div>
+       
         </div>
 
         <script>
@@ -607,6 +1187,46 @@
                 });
             }
         </script>
+        
+         <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get the popup elements
+        var popup = document.getElementById("popupForm");
+        var successPopup = document.getElementById("successPopup");
+        var btn = document.querySelector('input[value^="Process Payment"]'); // Selects the "Process Payment" button
+        var closePopup = document.getElementById("closePopup");
+        var closeSuccessPopup = document.getElementById("closeSuccessPopup");
+        // Function to open the success popup
+        function showSuccessPopup() {
+            successPopup.style.display = "block";
+        }
+        // When the user clicks the "Process Payment" button, show the success popup
+        btn.onclick = function(event) {
+            event.preventDefault(); // Prevent form submission for demonstration purposes
+            showSuccessPopup();
+        };
+        // When the user clicks on <span> (x) in success popup, close the success popup
+        closeSuccessPopup.onclick = function() {
+            successPopup.style.display = "none";
+        };
+        // When the user clicks on <span> (x) in the main popup, close the main popup
+        closePopup.onclick = function() {
+            popup.style.display = "none";
+        };
+        // When the user clicks anywhere outside of the success popup, close it
+        window.onclick = function(event) {
+            if (event.target === successPopup) {
+                successPopup.style.display = "none";
+            }
+        };
+        // When the user clicks anywhere outside of the main popup, close it
+        window.onclick = function(event) {
+            if (event.target === popup) {
+                popup.style.display = "none";
+            }
+        };
+    });
+</script>
 
         <div class="popup-overlay" id="layawayPopup">
             <div class="popup-content">
@@ -621,5 +1241,31 @@
                 </form>
             </div>
         </div>
+        
+         <!-- The Popup Form -->
+    <div id="popupForm" class="popup">
+        <div class="popup-content">
+            <span class="close" id="closePopup">&times;</span>
+            <h2>Enter IBT ID Number</h2>
+            <form id="ibtForm" action="IBTServlet" method="post">
+                <label for="ibtNumber">IBT ID:</label>
+                <input type="text" id="ibtNumber" name="ibtNumber" >
+                <label>Store ID of Sent IBT: </label><label id="storeID"><%= request.getAttribute("retrievedStoreID")%></label>
+                <label></label><label></label>
+                <label></label><label></label>
+                <input type="submit" value="Validate Store" name="IBT_switch"> 
+            </form>
+                <input type="submit" value="Process Payment to store: <%= request.getAttribute("retrievedStoreID")%>">
+        </div>
+    </div>
+                
+                <!-- Success Popup -->
+    <div id="successPopup" class="popup">
+    <div class="popup-content">
+        <span class="close" id="closeSuccessPopup">&times;</span>
+        <h2>Payment Successful</h2>
+        <p>Your payment has been processed successfully to store: <%= request.getAttribute("retrievedStoreID")%></p>
+    </div>
+    </div>
     </body>
 </html>

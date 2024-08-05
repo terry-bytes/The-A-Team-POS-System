@@ -121,7 +121,7 @@ public class LayawayServlet extends HttpServlet {
                handleNewLayawayAdding(request, response);
                sendFirstEmail(request, response);
                break;
-           case "View Layaway":
+           case "Search Layaway":
                handleSearchingLayawayByID(request, response);
                break;
            case "View all Layaways":
