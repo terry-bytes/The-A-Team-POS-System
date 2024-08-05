@@ -301,6 +301,7 @@
             window.onclick = function(event) {
                 if (event.target === popup) {
                     popup.style.display = "none";
+
                 }
             };
          
@@ -309,6 +310,24 @@
     
     
     <script>
+
+                };
+
+                // When the user clicks anywhere outside of the popup, close it
+                window.onclick = function (event) {
+                    if (event.target === popup) {
+                        popup.style.display = "none";
+                    }
+                };
+            });
+        </script>
+
+        <video id="barcode-scanner" autoplay></video>
+        <audio id="beep-sound" src="beep.mp3" preload="auto"></audio>
+
+        <script>
+           
+
             function selectPaymentMethod(method) {
                 document.getElementById("payment-method").value = method;
 

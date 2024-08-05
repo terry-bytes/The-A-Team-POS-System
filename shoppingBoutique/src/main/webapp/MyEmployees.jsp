@@ -4,6 +4,8 @@
     Author     : T440
 --%>
 
+<%@page import="ateam.Models.Store"%>
+<%@page import="ateam.Models.Role"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.Set"%>
 <%@page import="ateam.Models.Employee"%>
@@ -13,46 +15,49 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>My Employee</title>
-        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/report.css">
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/myemployees.css">
     </head>
     <body>
-        <% List<Employee> employees = (List<Employee>) request.getSession(false).getAttribute("MyEmployees");%>
+        <section>
+        <% List<Employee> employees = (List<Employee>) request.getSession(false).getAttribute("MyEmployees");
+            Store store = (Store) request.getSession(false).getAttribute("store");
+            Employee employee = (Employee) request.getSession(false).getAttribute("Employee");
+            if (employee != null && employee.getRole() == Role.Manager){
+        %>
         <jsp:include page="sidebar.jsp"/>
-        <div class="menu-content">
-
-
-
-            <div class="table-wrapper">
-                <h4>My Employees</h4>
-                <div>
-                    <table class="fl-table">
-                        <caption>My Employees</caption>
-                        <p> </p>
-                        <form action="addEmployee.jsp" method="get">
-                            <button type="submit" class="submit-btn">Add Employee</button>
-                        </form>
-                        <thead>
-                            <tr>
-                                <th><!-- Intentionally Blank --></th>
-                                <th>First Name</th>
-                                <th>Last Name</th>
-                                <th>Email</th>
-                                <th>Employee Id</th>
-                            <tr>
-                        </thead>
-                        <tbody>
-                            <% for (Employee employee : employees) {%>
-                            <tr>
-                                <td><%= employee.getFirstName()%></td>
-                                <td><%= employee.getLastName()%></td>
-                                <td><%= employee.getEmail()%></td>
-                                <td><%= employee.getEmployees_id()%></td>
-                            </tr>
-                            <%}%>
-                        </tbody>
-                    </table>
-                </div>
+        <div class="left-main">
+            <div class="header">
+                <h4>Employees for <%= store.getStore_name()%></h4>
+                <a href="EmployeeServlet?submit=getAddEmployee">Add Employee</a>
             </div>
+                
+                    <table id="customers">
+    <tr>
+      
+      <th>First Name</th>
+      <th>Last Name</th>
+      <th>Email</th>
+      <th>Employee Id</th>
+      <th>Action</th>
+    <tr>
+
+    <% for (Employee emp : employees){%>
+    <tr>
+        <td><%= emp.getFirstName() %></td>
+        <td><%= emp.getLastName() %></td>
+        <td><%= emp.getEmail() %></td>
+        <td><%= emp.getEmployees_id() %></td>
+        <td>
+            <a href="#">Update</a>
+            <a href="#">Remove</a>
+        </td>
+    </tr>
+    <%}%>
+
+</table>
+                </div>
         </div>
+        <%}%>
+        </section>
     </body>
 </html>
