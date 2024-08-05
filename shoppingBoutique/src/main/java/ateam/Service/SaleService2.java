@@ -2,8 +2,10 @@ package ateam.Service;
 
 
 
+import ateam.DTO.SalesDTO;
 import ateam.Models.Employee;
 import ateam.Models.Sale;
+import ateam.Models.SaleDTO;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -26,4 +28,5 @@ public interface SaleService2 {
     List<Sale> getDailyStoreByStoreId(int storeId);
     List<Sale> getLeastPerformingStore(LocalDate endDate);
     List<Sale> getSaleForStoreByRange(int storeId, LocalDate startDate, LocalDate endDate);
+    List<SalesDTO> getStoreSales(int storeId);
 }

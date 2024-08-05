@@ -4,6 +4,7 @@
     Author     : carme
 --%>
 
+<%@page import="ateam.Models.Store"%>
 <%@page import="ateam.Models.Employee"%>
 <%@page import="java.util.List"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -134,27 +135,22 @@
         }
         .emp-tb tbody tr:hover{
             color: #007bff;
-            font-weight: 600;
+            font-weight: 400;
         }
          </style>
     </head>
     <body>
         <%  List<Employee> employeeList = (List<Employee>) request.getAttribute("employeeList"); 
-        
+            List<Store> storeList = (List<Store>) request.getAttribute("storeList");
 
-            int pageSize = 15;
-            int currentPage = request.getParameter("page") != null ? Integer.parseInt(request.getParameter("page")) : 1;
-            int totalRows = employeeList.size();
-            int totalPages = (int) Math.ceil((double) totalRows / pageSize);
-
-            int start = (currentPage - 1) * pageSize;
-            int end = Math.min(start + pageSize, totalRows);
+            
         
             %>
         
         
         <h1>Please choose an option</h1>
-        <form action="AdminServlet" method="post">
+   
+        <form action="AdminServlet" method="POST">
         <label>View all employees</label>
         <button class="btn-submit" name="admin_switch" value="View">View</button>
         <label>Add Managers</label>
@@ -164,12 +160,22 @@
         <button class="btn-submit" name="admin_switch" value="View Report">View</button>
         
         <label>Add a Store</label>
-        <button class="btn-submit" name="admin_switch" value="Add Store">Add</button>
-                </form>
+        
+        </form>
 
         <!-- Display all layaways in a table -->
         <div class="table-wrapper">
-            <table class="emp-tb">
+            
+                <%if (employeeList != null && !employeeList.isEmpty()) {
+                    int pageSize = 15;
+            int currentPage = request.getParameter("page") != null ? Integer.parseInt(request.getParameter("page")) : 1;
+            int totalRows = employeeList.size();
+            int totalPages = (int) Math.ceil((double) totalRows / pageSize);
+
+            int start = (currentPage - 1) * pageSize;
+            int end = Math.min(start + pageSize, totalRows);
+                %>
+                <table class="emp-tb">
             <thead>
                 <tr>
                     <th>Employee Id</th>
@@ -183,7 +189,7 @@
             </thead>
             <tbody>
                <%
-        if (employeeList != null && !employeeList.isEmpty()) {
+        
             for (int i = start; i < end; i++) {
                 Employee employee = employeeList.get(i);
         %>
@@ -196,31 +202,21 @@
             <td><%= employee.getEmail() %></td>
             <td>
                  <form action="EmployeeServlet" method="post" style="display:inline;">
-                            <input type="hidden" name="employeeId" value="<%= employee.getEmployees_id() %>">
+                            <input type="hidden" name="employeeId" value="<%= employee.getEmployee_ID() %>">
                             <button type="submit" name="submit" value="edit" class="icon-button">
                                 <i class='bx bx-edit icon'></i>
                             </button>
                         </form>
-                        <form action="DeleteEmployeeServlet" method="post" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this employee?');">
-                            <input type="hidden" name="employeeId" value="<%= employee.getEmployees_id() %>">
+                        <form action="EmployeeServlet" method="post" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this employee?');">
+                            <input type="hidden" name="employeeId" value="<%= employee.getEmployee_ID() %>">
                             <button type="submit" name="submit" value="delete" class="icon-button">
                                 <i class='bx bx-trash icon'></i>
                             </button>
                         </form>
             </td>
         </tr>
-        <%
-            }
-        } else {
-        %>
-        <tr>
-            <td colspan="8">No Employees found.</td>
-        </tr>
-        <%
-        }
-        %>
-            </tbody>
-        </table>
+            <%}%>
+            </table>
             <div class="pagination">
                             <% if (currentPage > 1) {%>
                             <a href="?page=<%= currentPage - 1%>">Previous</a>
@@ -232,6 +228,47 @@
                             <a href="?page=<%= currentPage + 1%>">Next</a>
                             <% } %>
                         </div>
+           <%}%>
+            
+            <div class="stores">
+                <% if (storeList != null && !storeList.isEmpty()){
+        %>
+        <table class="emp-tb">
+        <thead>
+                <tr>
+                    <th>Store Id</th>
+                    <th>Store name</th>
+                    <th>Store Address</th>
+                    <th>Store City</th>
+                    <th>Province</th>
+                    <th>Zipcode</th>
+                    <th>Email</th>
+                    <th>contact number</th>
+                    <th>View Store</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% for(Store store : storeList){%>
+                <tr>
+                    <td><%= store.getStore_ID()%></td>
+                    <td><%= store.getStore_name() %></td>
+                    <td><%= store.getStore_address() %></td>
+                    <td><%= store.getStore_city()%></td>
+                    <td><%= store.getStore_province()%></td>
+                    <td><%= store.getStore_zipcode()%></td>
+                    <td><%= store.getStore_email()%></td>
+                    <td><%= store.getStore_phone()%></td>
+                    <td>
+                        <form action="StoreServlet" method="get">
+                            <input name="storeId" value="<%= store.getStore_ID() %>" type="hidden">
+                            <button name="submit" type="submit" value="getStoreDashboard">View</button>
+                        </form>
+                    </td>
+                </tr>
+                <%}%>
+        </table>
+                <%}%>
+            </div>
         </div> 
     </body>
 </html>

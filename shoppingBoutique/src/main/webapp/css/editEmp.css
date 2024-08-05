@@ -27,9 +27,7 @@ body{
     display: flex;
 }
 
-.manager-container > div {
-    flex: 1;
-}
+
 
 .main {
     padding: 20px;

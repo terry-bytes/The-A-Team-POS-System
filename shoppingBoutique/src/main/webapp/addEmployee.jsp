@@ -21,10 +21,10 @@
             String storeName;
         %>
         <% if(employee != null && employee.getRole() != Role.Teller) { %>
-        
+        <jsp:include page="sidebar.jsp"></jsp:include>
         <div class="manager-container">
         <div>
-            <jsp:include page="sidebar.jsp"></jsp:include>
+            
         </div>
         <div class="main">
             <div class="login-box">

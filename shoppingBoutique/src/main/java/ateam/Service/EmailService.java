@@ -5,6 +5,7 @@
 package ateam.Service;
 
 import ateam.Models.Email;
+import ateam.Models.Inventory;
 import ateam.Models.Product;
 import java.math.BigDecimal;
 import java.util.List;
@@ -17,7 +18,11 @@ public interface EmailService {
 
     void sendMail(Email email);
 
+    void sendReorderNotification(String managerEmail, List<Inventory> reorderList);
+
     void sendPasswordResetMail(String email, String otp);
 
-    void sendSaleReceipt(String toEmail, String salespersonName, String saleTime, List<Product> items, BigDecimal totalAmountWithVAT, BigDecimal vatAmount, BigDecimal change, String paymentMethod,BigDecimal cashPaid,BigDecimal cardPaid);
+    void VoucherEmail(String to, BigDecimal change, String voucher);
+
+    void sendSaleReceipt(String toEmail, String salespersonName, String saleTime, List<Product> items, BigDecimal totalAmountWithVAT, BigDecimal vatAmount, BigDecimal change, String paymentMethod, BigDecimal cashPaid, BigDecimal cardPaid);
 }

@@ -4,6 +4,7 @@ import ateam.BDconnection.Connect;
 import ateam.DAO.SaleDAO;
 import ateam.Models.Sale;
 import ateam.Models.SalesItem;
+import ateam.Models.Voucher;
 
 import java.math.BigDecimal;
 import java.sql.*;
@@ -258,6 +259,22 @@ public class SaleDAOIMPL implements SaleDAO {
             }
         }
         return sales;
+    }
+
+    @Override
+    public void addVoucher(String voucherNumber, BigDecimal amount) {
+        Voucher voucher = new Voucher();
+        String query = "INSERT INTO vouchers (voucher_code, amount, created_at) VALUES (?, ?, ?)";
+        try (Connection conn = new Connect().connectToDB();
+             PreparedStatement stmt = conn.prepareStatement(query))  {
+            stmt.setString(1,voucherNumber );
+            stmt.setBigDecimal(2, amount);
+            stmt.setTimestamp(3, voucher.getCreatedAt());
+            stmt.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(SaleDAOIMPL.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
 
 }

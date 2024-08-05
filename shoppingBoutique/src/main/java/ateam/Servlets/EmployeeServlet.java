@@ -222,7 +222,6 @@ public class EmployeeServlet extends HttpServlet {
         Role role = Role.valueOf(request.getParameter("role"));
         
         String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
-        System.out.println("Stored hashed password: " + hashedPassword);
         
       
         Employee employeeToUpdate = new Employee();
@@ -242,13 +241,21 @@ public class EmployeeServlet extends HttpServlet {
             message = "Failed to update employee's details";
         }
         request.setAttribute("message", message);
-        response.sendRedirect(request.getContextPath() + "/employees");
+        request.getRequestDispatcher("editEmployee.jsp").forward(request, response);
     }
 
     private void deleteEmployee(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int employeeId = Integer.parseInt(request.getParameter("employeeId"));
         boolean success = employeeService.deleteEmployee(employeeId);
-        response.sendRedirect(request.getContextPath() + "/employees");
+        
+        
+        if(success){
+            request.setAttribute("message", "Employee deleted Successsfully");
+        }else{
+            request.setAttribute("message", "Failed to delete employee");
+        }
+        
+        request.getRequestDispatcher("MyEmployees.jsp").forward(request, response);
     }
 
     private void handleLogin(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

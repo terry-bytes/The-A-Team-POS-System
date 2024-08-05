@@ -420,11 +420,16 @@
         initBarChart(salesCtx, salesLabels, salesData, 'Sales', barBgColor, barBorderColor);
         initPieChart(salesPieCtx, salesLabels, salesData, pieBgColor);
 
-        const monthBarCtx = document.getElementById('monthReportBar').getContext('2d');
-        const monthPieCtx = document.getElementById('monthReportPie').getContext('2d');
-        BarChart(monthBarCtx, monthLabels, monthData, 'Total Amount', barBgColor, barBorderColor);
-        initPieChart(monthPieCtx, monthLabels, monthData, pieBgColor);
 
+        let monthBarCtx;
+        let monthPieCtx;
+        if(monthLabels.length > 0 && monthData.length > 0 ){
+        monthBarCtx = document.getElementById('monthReportBar').getContext('2d');
+        monthPieCtx = document.getElementById('monthReportPie').getContext('2d');
+        BarChart(monthBarCtx, monthLabels, monthData, 'Total Amount', barBgColor, barBorderColor);
+        initPieChart(monthPieCtx, monthLabels, monthData, pieBgColor);}
+
+        
         const topSellingEmpBarCtx = document.getElementById('topSellingEmpReportBar').getContext('2d');
         const topSellingEmpPieCtx = document.getElementById('topSellingEmpReportPie').getContext('2d');
         BarChart(topSellingEmpBarCtx, topSellingEmployees, topSellingEmpData, 'Top Employee', barBgColor, barBorderColor);
@@ -441,6 +446,7 @@
         initPieChart(salesRatePieCtx, salesRateLabels, salesRateData, pieBgColor);
         
         // Event listeners
+        if(monthLabels.length > 0 && monthData.length > 0 ){
         document.getElementById('RequestMonthReport').addEventListener('click', function () {
             const storeId = document.getElementById('storeMonthlySales').value;
             const monthDate = document.getElementById('monthDatePicker').value;
@@ -452,6 +458,7 @@
 
             fetchMonthReport(storeId, monthDate);
         });
+    }
 
         document.getElementById("leastPerformingStore").addEventListener('click', function () {
             const target = document.getElementById("leastPerformingStoreTarget").value;

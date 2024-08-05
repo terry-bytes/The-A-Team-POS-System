@@ -41,11 +41,31 @@
             border: 1px solid #ccc;
         }
         th, td {
-            padding: 10px;
+            padding: 1px;
             text-align: left;
         }
         th {
             background-color: #f4f4f4;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            padding: 0;
+        }
+        .pagination li {
+            margin: 0 5px;
+        }
+        .pagination a {
+            text-decoration: none;
+            color: #000;
+            padding: 8px 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .pagination a.active {
+            background-color: #0000FF;
+            color: white;
         }
         .sidebar img {
             width: 45px;
@@ -62,14 +82,13 @@
             
         }
     </style>
-    
-    <div id="mySidenav" class="sidebar">
-    <a href="replenishStock.jsp" >
-        <img src="Icons/back.png" alt="Icon 1"> Back
-    </a><br><br>
-    </div>
 </head>
 <body>
+    <div id="mySidenav" class="sidebar">
+        <a href="replenishStock.jsp" >
+            <img src="Icons/back.png" alt="Icon 1"> Back
+        </a><br><br>
+    </div>
     <div class="container">
         <h1>All Inventory Logs</h1>
         <% 
@@ -78,7 +97,7 @@
         %>
             <p>No Inventory available</p>
         <% } else { %>
-            <table>
+            <table id="inventoryTable">
                 <thead>
                     <tr>
                         <th>Inventory ID</th>
@@ -91,7 +110,7 @@
                         <th>Updated By Employee ID</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="inventoryBody">
                     <c:forEach var="inventory" items="${inventoryList}">
                         <tr>
                             <td>${inventory.inventory_ID}</td>
@@ -106,7 +125,52 @@
                     </c:forEach>
                 </tbody>
             </table>
+            <ul class="pagination" id="pagination">
+                <!-- Pagination links will be inserted here by JavaScript -->
+            </ul>
         <% } %>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const recordsPerPage = 10;
+            const inventoryTable = document.getElementById('inventoryTable');
+            const inventoryBody = document.getElementById('inventoryBody');
+            const pagination = document.getElementById('pagination');
+            const rows = Array.from(inventoryBody.querySelectorAll('tr'));
+            const totalPages = Math.ceil(rows.length / recordsPerPage);
+            
+            function showPage(page) {
+                // Hide all rows
+                rows.forEach((row, index) => {
+                    row.style.display = 'none';
+                });
+                
+                // Show the rows for the selected page
+                const start = (page - 1) * recordsPerPage;
+                const end = start + recordsPerPage;
+                rows.slice(start, end).forEach(row => {
+                    row.style.display = '';
+                });
+                
+                // Update pagination links
+                pagination.innerHTML = '';
+                for (let i = 1; i <= totalPages; i++) {
+                    const li = document.createElement('li');
+                    const a = document.createElement('a');
+                    a.href = '#';
+                    a.innerText = i;
+                    a.className = (i === page) ? 'active' : '';
+                    a.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        showPage(i);
+                    });
+                    li.appendChild(a);
+                    pagination.appendChild(li);
+                }
+            }
+            
+            showPage(1); // Show the first page initially
+        });
+    </script>
 </body>
 </html>

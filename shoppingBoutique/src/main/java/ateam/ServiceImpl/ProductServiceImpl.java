@@ -10,7 +10,7 @@ import ateam.Models.Product;
 import ateam.Service.InventoryService;
 import ateam.Service.ProductService;
 import java.util.List;
-import ateam.Services.impl.InventoryServiceImpl;
+import ateam.ServiceImpl.InventoryServiceImpl;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;

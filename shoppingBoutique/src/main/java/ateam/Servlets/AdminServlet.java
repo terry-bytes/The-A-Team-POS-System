@@ -7,9 +7,18 @@ package ateam.Servlets;
 
 import ateam.BDconnection.Connect;
 import ateam.DAOIMPL.EmployeeDAOIMPL;
+import ateam.DTO.SalesDTO;
 import ateam.Models.Employee;
+import ateam.Models.SalesItem;
+import ateam.Models.Store;
 import ateam.Service.EmployeeService;
+import ateam.Service.ReturnService;
+import ateam.Service.SaleService2;
+import ateam.Service.StoreService;
 import ateam.ServiceImpl.EmployeeServiceImpl;
+import ateam.ServiceImpl.ReturnServiceImpl;
+import ateam.ServiceImpl.SaleServiceImpl;
+import ateam.ServiceImpl.StoreServiceImpl;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
@@ -27,6 +36,9 @@ import javax.servlet.http.HttpServletResponse;
 public class AdminServlet extends HttpServlet {
     
     private EmployeeService employeeService = new EmployeeServiceImpl(new EmployeeDAOIMPL());
+    private final StoreService storeService = new StoreServiceImpl();
+    private final SaleService2 saleService = new SaleServiceImpl();
+    private final ReturnService returnService = new ReturnServiceImpl();
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -57,7 +69,10 @@ public class AdminServlet extends HttpServlet {
             throws ServletException, IOException {
         processRequest(request, response);
         List<Employee> employeeList = employeeService.getAllEmployees();
+        List<Store> stores = storeService.getAllStores();
+        
         request.setAttribute("employeeList", employeeList);
+        request.setAttribute("storeList", stores);
         request.getRequestDispatcher("AdminDashboard.jsp").forward(request, response);
     }
 
@@ -88,6 +103,21 @@ public class AdminServlet extends HttpServlet {
                 
             case "Add Store":
                 handleAddStore(request, response);
+                break;
+            case "getStoreDashboard":
+                int storeId = Integer.parseInt(request.getParameter("storeId"));
+                List<SalesDTO> mySales = saleService.getStoreSales(storeId);
+                System.out.println("My $ Store Sales: "+ mySales.size());
+                
+                request.getSession(false).setAttribute("myStoreSales", mySales);
+                request.getRequestDispatcher("storeDashboard.jsp").forward(request, response);
+                break;
+            case "viewSaleItems":
+                int saleId = Integer.parseInt(request.getParameter("saleId"));
+                List<SalesItem> sales = returnService.getSalesItemsBySaleId(saleId);
+                
+                request.getSession(false).setAttribute("SalesItems", sales);
+                request.getRequestDispatcher("salesItems.jsp").forward(request, response);
                 break;
         }
     }

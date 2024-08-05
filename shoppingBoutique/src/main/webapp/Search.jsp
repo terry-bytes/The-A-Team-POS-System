@@ -98,7 +98,28 @@
         table a {
             text-decoration: none;
         }
+    
+        .sidebar img {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .sidebar a {
+            font: 100% bolder;
+            text-decoration: none; /* Remove underlining */
+            font-size: 25px;
+            color: black;
+            display: block;
+            
+        }
     </style>
+    
+    <div id="mySidenav" class="sidebar">
+    <a href="replenishStock.jsp" >
+        <img src="Icons/back.png" alt="Icon 1"> Back
+    </a><br><br>
+    </div>
 </head>
 <body>
     <h1>Store Inventory Summary</h1>
