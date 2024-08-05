@@ -17,6 +17,11 @@ import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
 import com.itextpdf.text.pdf.draw.LineSeparator;
 import java.io.ByteArrayOutputStream;
+import com.itextpdf.text.Anchor;
+import com.itextpdf.text.Chunk;
+import com.itextpdf.text.pdf.PdfAction;
+import java.net.URL;
+
 
 public class EmailServiceImpl implements EmailService {
 
@@ -193,7 +198,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public void sendSaleReceipt(String toEmail, String salespersonName, String saleTime, List<Product> items, BigDecimal totalAmountWithVAT, BigDecimal vatAmount, BigDecimal change, String paymentMethod, BigDecimal cashPaid, BigDecimal cardPaid) {
+    public void sendSaleReceipt(String toEmail, String salespersonName, String saleTime, List<Product> items, BigDecimal totalAmountWithVAT, BigDecimal vatAmount, BigDecimal change, String paymentMethod, BigDecimal cashPaid, BigDecimal cardPaid, int saleID) {
         final String from = "ramovhatp@gmail.com";
         final String password = "xaed clmt qpis ctvf";
         Properties props = new Properties();
@@ -243,6 +248,7 @@ public class EmailServiceImpl implements EmailService {
             Paragraph saleDetails = new Paragraph("Sale Details:", headerFont);
             saleDetails.setSpacingBefore(10);
             document.add(saleDetails);
+            document.add(new Paragraph("Sale ID: " + saleID, normalFont));
             document.add(new Paragraph("Salesperson: " + salespersonName, normalFont));
             document.add(new Paragraph("Sale Time: " + saleTime, normalFont));
             document.add(new Paragraph(" "));
@@ -289,12 +295,35 @@ public class EmailServiceImpl implements EmailService {
             document.add(new Paragraph("Payment Method: " + paymentMethod, normalFont));
             document.add(new Paragraph(" "));
 
+            // Return Policy
+            document.add(new Paragraph("Return Policy:", headerFont));
+            document.add(new Paragraph("We hope you are satisfied with your purchase. If you are not completely satisfied, you may return the item within 10 days of purchase for a full refund or exchange, subject to the following conditions:", normalFont));
+            document.add(new Paragraph("1. The item must be unused and in its original packaging.", normalFont));
+            document.add(new Paragraph("2. A valid receipt must be presented at the time of return.", normalFont));
+            document.add(new Paragraph("3. Certain items may be subject to a restocking fee.", normalFont));
+            document.add(new Paragraph("4. The return policy does not apply to clearance items.", normalFont));
+            document.add(new Paragraph("5. We do not accept the return of underwears.", normalFont));
+            document.add(new Paragraph("For more information, please contact our customer service.", normalFont));
+            document.add(new Paragraph(" "));
+
             // Footer
             Paragraph footer = new Paragraph("Thank you for shopping with us!", normalFont);
             footer.setSpacingBefore(20);
             document.add(footer);
             document.add(new Paragraph("Best regards,", normalFont));
             document.add(new Paragraph("Your Company Name", normalFont));
+
+            // Add Google Form link
+// Add Google Form link
+            String googleFormURL = "https://docs.google.com/forms/d/1MSLxiI52-CQt369KCBjfVfxGBPJyDa0_D7MDYGYCEng/viewform?pli=1&pli=1&edit_requested=true#responses";
+            Paragraph feedbackParagraph = new Paragraph();
+            feedbackParagraph.setSpacingBefore(10);
+            feedbackParagraph.add(new Chunk("We value your feedback. Please ", normalFont));
+            Chunk link = new Chunk("click here", normalFont);
+            link.setAction(new PdfAction(PdfAction.URL, googleFormURL));
+            feedbackParagraph.add(link);
+            feedbackParagraph.add(new Chunk(" to rate your experience.", normalFont));
+            document.add(feedbackParagraph);
 
             document.close();
             pdfStream.flush();
