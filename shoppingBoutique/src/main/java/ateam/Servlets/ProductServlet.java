@@ -277,7 +277,6 @@ public class ProductServlet extends HttpServlet {
                             String customerEmail = request.getParameter("customer_email");
                              request.setAttribute("saleID", newSalesID);
 
-                            emailService.sendSaleReceipt(customerEmail, salespersonName, saleTime, scannedItems, totalAmountWithoutVAT, vatAmount, change, newSale.getPayment_method(), cashPaid, cardPaid);
                            emailService.sendSaleReceipt(customerEmail, salespersonName, saleTime, scannedItems, totalAmountWithoutVAT, vatAmount, change, newSale.getPayment_method(), cashPaid, cardPaid, newSalesID);
 
                             SmsSender.sendSms("+27631821265", "Thank you for SHOPPING with us! 😊 Please check your email (" + customerEmail + ") for your RECEIPT.");
