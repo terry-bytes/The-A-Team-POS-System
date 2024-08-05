@@ -18,6 +18,29 @@
         <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/teller.css">
         <style>
+            .payment-icons {
+                display: flex;
+                gap: 10px; /* Adjust the spacing between options */
+            }
+
+            .payment-option {
+                text-align: center;
+                cursor: pointer;
+            }
+
+            .payment-option img {
+                display: block;
+                margin: 0 auto;
+                width: 50px; /* Adjust the size of the icons */
+                height: 50px;
+            }
+
+            .payment-option span {
+                display: block;
+                margin-top: 5px;
+                font-size: 14px; /* Adjust the font size */
+            }
+
             /* Popup Form Styles */
             .popup {
                 display: none; /* Hidden by default */
@@ -136,10 +159,20 @@
                             <button type="submit" name="submit" value="auto-submit" id="auto-submit" style="display: none"></button>
                         </div>
                         <div class="payment-icons">
-                            <img src="Icons/cashhh.png" alt="Cash" onclick="selectPaymentMethod('cash')">
-                            <img src="Icons/290142_business_card_cash_credit_money_icon.png" alt="Card" onclick="selectPaymentMethod('card')">
-                            <img src="Icons/wallet.png" alt="Card & Cash" onclick="selectPaymentMethod('cardAndcash')">
+                            <div class="payment-option">
+                                <img src="Icons/cashhh.png" alt="Cash" onclick="selectPaymentMethod('cash')">
+                                <span>Cash</span>
+                            </div>
+                            <div class="payment-option">
+                                <img src="Icons/290142_business_card_cash_credit_money_icon.png" alt="Card" onclick="selectPaymentMethod('card')">
+                                <span>Card</span>
+                            </div>
+                            <div class="payment-option">
+                                <img src="Icons/wallet.png" alt="Card & Cash" onclick="selectPaymentMethod('cardAndcash')">
+                                <span>Card & Cash</span>
+                            </div>
                         </div>
+
                         <p>   </p>
 
 
@@ -179,7 +212,7 @@
                         </div>
                         <p>   </p>
                         <div>
-                            <label for="customer_email">Customer Email:</label>
+                          
                             <input class="styled-input" type="email" id="customer_email" name="customer_email" placeholder="Enter customer email" >
                         </div>
                         <p>   </p>
@@ -331,7 +364,7 @@
         <audio id="beep-sound" src="beep.mp3" preload="auto"></audio>
 
         <script>
-           
+
             function selectPaymentMethod(method) {
                 document.getElementById("payment-method").value = method;
 
