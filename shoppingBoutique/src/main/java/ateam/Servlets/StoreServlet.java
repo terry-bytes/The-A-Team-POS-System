@@ -7,9 +7,13 @@ package ateam.Servlets;
 
 import ateam.BDconnection.Connect;
 import ateam.DAOIMPL.StoreDAOIMPL;
+import ateam.DTO.SalesDTO;
 import ateam.Exception.DuplicateStoreException;
+import ateam.Models.Employee;
 import ateam.Models.Store;
+import ateam.Service.SaleService2;
 import ateam.Service.StoreService;
+import ateam.ServiceImpl.SaleServiceImpl;
 import ateam.ServiceImpl.StoreServiceImpl;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -29,6 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet(name = "StoreServlet", urlPatterns = {"/StoreServlet"})
 public class StoreServlet extends HttpServlet {
     private StoreService storeService =  new StoreServiceImpl(new StoreDAOIMPL(new Connect().connectToDB()));;
+    private SaleService2 saleService = new SaleServiceImpl();
     
     
     /**
@@ -53,6 +58,11 @@ public class StoreServlet extends HttpServlet {
         
         switch(request.getParameter("submit")){
             case "getStoreDashboard":
+                Employee manager = (Employee) request.getSession(false).getAttribute("Employee");
+                List<SalesDTO> mySales = saleService.getStoreSales(manager.getStore_ID());
+                System.out.println("My $ Store Sales: "+ mySales.size());
+                
+                request.getSession(false).setAttribute("myStoreSales", mySales);
                 request.getRequestDispatcher("storeDashboard.jsp").forward(request, response);
                 break;
         }

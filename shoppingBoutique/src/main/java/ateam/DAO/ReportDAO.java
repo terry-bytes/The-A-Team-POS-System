@@ -33,4 +33,5 @@ public interface ReportDAO {
     Map<Integer, BigDecimal> getTotalSalesAmountPerStore(LocalDate startDate, LocalDate endDate);
     List<Sale> getTodaysSales();
     TopSellingEmployeeDTO getTopSellingEmployeeForProduct(int productId);
+    List<Sale> getSalesForStore(LocalDate startDate, LocalDate endDate, int storeId);
 }

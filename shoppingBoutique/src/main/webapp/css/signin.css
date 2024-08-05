@@ -7,4 +7,102 @@ and open the template in the editor.
     Created on : 01 Aug 2024, 05:37:22
     Author     : T440
 */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
 
+body{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100vh;
+}
+
+body::before{
+    content: '';
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    background-image: linear-gradient(to right, #277af6, #0098f7, #48b2ef, #85c7e5, #bfd9e0);
+    background-position: center;
+    background-size: cover;
+}
+
+.login-wrapper{
+    width: 400px;
+    padding: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 8px;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+form{
+    display: flex;
+    flex-direction: column;
+}
+
+.input-field{
+    position: relative;
+    margin: 15px 0;
+    border-bottom: 2px solid #ccc;
+}
+
+.input-field input{
+    width: 100%;
+    height: 40px;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #fff;
+    font-size: 1rem;
+}
+
+.input-field label{
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translate(-50%);
+    color: #fff;
+    font-size: 1rem;
+    pointer-events: none;
+    transition: .3s ease;
+}
+
+.input-field input::focus~label,
+.input-field input::valid~label{
+    transform: translateY(-120%);
+    font-size: 0.8rem;
+    top: 10px;
+}
+
+.login-wrapper a{
+    color: #efefef;
+    text-decoration: none; 
+}
+
+.login-wrapper a:hover{
+    text-decoration: underline;
+}
+
+button{
+    background: #fff;
+    color: #000;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 12px 20px;
+    border-radius: 3px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: .3s ease;
+}
+
+button:hover{
+    background: rgba(255, 255, 255, 0.2);
+    
+}

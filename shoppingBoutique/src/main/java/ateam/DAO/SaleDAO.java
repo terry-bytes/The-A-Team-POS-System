@@ -26,8 +26,9 @@ public interface SaleDAO {
     void updateStockQuantities(List<SalesItem> salesItems);
     List<Sale> getDailySalesForStore(int storeId);
     List<Sale> getLeastPerformingStores(LocalDate endDate);
+    List<Sale> getSalesForStoreByRange(int storeId, LocalDate startDate, LocalDate endDate);
 
     public void addVoucher(String voucherNumber, BigDecimal amount);
-    
+   
 
 }

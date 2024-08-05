@@ -49,6 +49,7 @@
             Map<String, BigDecimal> todayReport = (Map<String, BigDecimal>) request.getSession(false).getAttribute("Today'sReport");
             List<TopProductDTO> topProduct = (List<TopProductDTO>) request.getSession(false).getAttribute("top40SellingProducts");
             List<Product> products = (List<Product>) request.getSession(false).getAttribute("Products");
+            Map<Integer, Integer> salesInHour = (Map<Integer, Integer>) request.getSession(false).getAttribute("SalesRate");
 
             int pageSize = 10;
             int currentPage = request.getParameter("page") != null ? Integer.parseInt(request.getParameter("page")) : 1;
@@ -68,6 +69,9 @@
             StringBuilder todaysData = new StringBuilder();
             StringBuilder labels = new StringBuilder();
             StringBuilder data = new StringBuilder();
+            StringBuilder saleRateLabels = new StringBuilder();
+            StringBuilder saleRateData = new StringBuilder();
+            
             if (employee != null) {
                 if (getTopAchievingStores != null && !getTopAchievingStores.isEmpty()) {
 
@@ -162,6 +166,7 @@
                         </div>
                     </div>
                 </div>
+                        <% }%>
 
                 <%if (topSellingEmployees != null && !topSellingEmployees.isEmpty()) {
 
@@ -337,11 +342,41 @@
                     </div>
                     <%}%>
                 </div>
+                <% } %>
+                <% if (salesInHour != null && !salesInHour.isEmpty()){
+                    for (Map.Entry<Integer, Integer> entry : salesInHour.entrySet()){
+                        saleRateLabels.append("'").append(entry.getKey()).append("',");
+                        saleRateData.append(entry.getValue()).append(",");
+                    }
+                %>
+                <div class="report">
+                    <div class="two">
+                        <h4>Sales Rate</h4>
 
-
-
-                <% }
-            }%>
+                        <h4>Check another stores</h4>
+                            <select id='hourlyRateStoreId'>
+                                <option  disabled selected>Select Product</option>
+                                <% for (Store store : stores) {%>
+                                <option value="<%= store.getStore_ID()%>"><%= store.getStore_name() %></option>
+                                <% } %>
+                            </select>
+                        <div class="input-submit">
+                            <input name="submit" value="download" hidden>
+                            <button class="submit-btn" id="submit">Download</button>
+                        </div>
+                    </div>
+                    <div class="graphBox">
+                        <div class="box">
+                            <canvas id="salesRateBar"></canvas>
+                            <div id="noDataBar" class="no-data-message">No data available</div>
+                        </div>
+                        <div class="box">
+                            <canvas id="salesRatePie"></canvas>
+                            <div id="noDataPie" class="no-data-message">No data available</div>
+                        </div>
+                    </div>
+                </div>
+            <%} }%>
                 <script>
                    document.addEventListener('DOMContentLoaded', () => {
         console.log("Screen loaded successfully...");
@@ -357,6 +392,8 @@
         const todaysReportData = [<%= todaysData.toString() %>];
         const leastPerformingLabels = [<%= leastStoreLabels.toString() %>];
         const leastPerformingData = [<%= leastStoreData.toString() %>];
+        const salesRateLabels = [<%= saleRateLabels.toString() %>];
+        const salesRateData = [<%= saleRateData.toString() %>];
 
         let monthBarChart = null;
         let monthPieChart = null;
@@ -364,6 +401,8 @@
         let leastPieChart = null;
         let topEmpBarChart = null;
         let topEmpPieChart = null;
+        let saleAnalyticBarChart = null;
+        let saleAnalyticPieChart = null;
 
         // Colors
         const barBgColor = 'rgba(54, 162, 235, 0.2)';
@@ -381,11 +420,16 @@
         initBarChart(salesCtx, salesLabels, salesData, 'Sales', barBgColor, barBorderColor);
         initPieChart(salesPieCtx, salesLabels, salesData, pieBgColor);
 
-        const monthBarCtx = document.getElementById('monthReportBar').getContext('2d');
-        const monthPieCtx = document.getElementById('monthReportPie').getContext('2d');
-        BarChart(monthBarCtx, monthLabels, monthData, 'Total Amount', barBgColor, barBorderColor);
-        initPieChart(monthPieCtx, monthLabels, monthData, pieBgColor);
 
+        let monthBarCtx;
+        let monthPieCtx;
+        if(monthLabels.length > 0 && monthData.length > 0 ){
+        monthBarCtx = document.getElementById('monthReportBar').getContext('2d');
+        monthPieCtx = document.getElementById('monthReportPie').getContext('2d');
+        BarChart(monthBarCtx, monthLabels, monthData, 'Total Amount', barBgColor, barBorderColor);
+        initPieChart(monthPieCtx, monthLabels, monthData, pieBgColor);}
+
+        
         const topSellingEmpBarCtx = document.getElementById('topSellingEmpReportBar').getContext('2d');
         const topSellingEmpPieCtx = document.getElementById('topSellingEmpReportPie').getContext('2d');
         BarChart(topSellingEmpBarCtx, topSellingEmployees, topSellingEmpData, 'Top Employee', barBgColor, barBorderColor);
@@ -396,7 +440,13 @@
         BarChart(leastPerformingBarCtx, leastPerformingLabels, leastPerformingData, 'Least Performing Stores', barBgColor, barBorderColor);
         initPieChart(leastPerformingPieCtx, leastPerformingLabels, leastPerformingData, pieBgColor);
 
+        const salesRateBarCtx = document.getElementById('salesRateBar').getContext('2d');
+        const salesRatePieCtx = document.getElementById('salesRatePie').getContext('2d');
+        BarChart(salesRateBarCtx, salesRateLabels, salesRateData, 'Hourly Sales for Last 30 days', barBgColor, barBorderColor);
+        initPieChart(salesRatePieCtx, salesRateLabels, salesRateData, pieBgColor);
+        
         // Event listeners
+        if(monthLabels.length > 0 && monthData.length > 0 ){
         document.getElementById('RequestMonthReport').addEventListener('click', function () {
             const storeId = document.getElementById('storeMonthlySales').value;
             const monthDate = document.getElementById('monthDatePicker').value;
@@ -408,6 +458,7 @@
 
             fetchMonthReport(storeId, monthDate);
         });
+    }
 
         document.getElementById("leastPerformingStore").addEventListener('click', function () {
             const target = document.getElementById("leastPerformingStoreTarget").value;
@@ -442,6 +493,50 @@
             const productId = this.value;
             getTopProductSeller(productId);
         });
+
+        document.getElementById("hourlyRateStoreId").addEventListener('change', function(){
+            const storeId = this.value;
+            getSaleAnalytics(storeId);
+        });
+        
+        function getSaleAnalytics(storeId){
+            fetch('SalesDemo', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({storeId: storeId, submit: 'salesAnalytics'})
+            })
+                    .then(response => response.json())
+                    .then(data => {
+                        const salesAnalyticsLabel = data.labels;
+                        const salesAnalyticsData = data.data;
+                        
+                        if(saleAnalyticPieChart){
+                            saleAnalyticBarChart.destroy();
+                            saleAnalyticPieChart.destroy();
+                        }
+                        
+                        
+                        if (salesAnalyticsData.length > 0) {
+                            
+                            document.getElementById('salesRateBar').style.display = 'block';
+                            document.getElementById('noDataBar').style.display = 'none';
+                            saleAnalyticBarChart = updateBarChart(salesRateBarCtx, salesAnalyticsLabel, salesAnalyticsData, 'Hourly Sales for Last 30 days', barBgColor, barBorderColor);
+
+                            document.getElementById('salesRatePie').style.display = 'block';
+                            document.getElementById('noDataPie').style.display = 'none';
+                            saleAnalyticPieChart = updatePieChart(salesRatePieCtx, salesAnalyticsLabel, salesAnalyticsData, pieBgColor);
+                        } else {
+                            document.getElementById('salesRateBar').style.display = 'none';
+                            document.getElementById('noDataBar').style.display = 'block';
+
+                            document.getElementById('salesRatePie').style.display = 'none';
+                            document.getElementById('noDataPie').style.display = 'block';
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+        }
 
         function getTopProductSeller(productId) {
             fetch('SalesDemo', {
@@ -646,12 +741,5 @@
                         }
                     };
                 </script>
-
-                <%}%>
-
-
-
-
-
                 </body>
                 </html>

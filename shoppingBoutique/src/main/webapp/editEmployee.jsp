@@ -14,11 +14,12 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>JSP Page</title>
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/css/editEmp.css" type="text/css">
     </head>
     <body>
         <% Employee manager = (Employee) request.getSession(false).getAttribute("Employee");
-           List<Store> stores = (List<Store>) request.getSession(false).getAttribute("Stores");
-           Employee emp = (Employee) request.getSession(false).getAttribute("empToEdit");
+           List<Store> stores = (List<Store>) request.getSession(false).getAttribute("stores");
+           Employee emp = (Employee) request.getAttribute("employee");
            String message = (String) request.getSession(false).getAttribute("message");
             if (manager != null && manager.getRole() == Role.Manager){%>
             <div class="manager-container">
@@ -28,7 +29,7 @@
             <div class="main">
                 <div class="login-box">
                     <div class="login-header">
-                        <h3>Add Employee</h3>
+                        <h3>Update <%= emp.getFirstName() %>'s details</h3>
                     </div>
                     <form action="EmployeeServlet" method="post">
                         <div class="two-forms">
@@ -81,7 +82,7 @@
                                 <option value="Manager">Manager</option>
                             </select>
                         </div>
-                        <div class="select-container" id="storeSelector" style="display: none;">
+                        <div class="select-container" id="storeSelector">
                             <label>Store</label>
 
                             <select class="select-box" name="storeId">
@@ -98,8 +99,8 @@
                         <% } %>
                         <div class="input-submit">
                             <input name="submit" value="update" hidden>
-
-                            <button class="submit-btn" id="submit">Add Employee</button>
+                            <input name="employeeId" value="<%= emp.getEmployee_ID()%>" hidden="">
+                            <button class="submit-btn" id="submit">Update</button>
 
                         </div>
                     </form>

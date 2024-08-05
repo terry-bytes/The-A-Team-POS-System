@@ -27,7 +27,9 @@ import ateam.ServiceImpl.SaleServiceImpl;
 import ateam.ServiceImpl.StoreServiceImpl;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -515,5 +517,30 @@ public class Reports {
 
     public TopSellingEmployeeDTO getTopSellingEmployeeForProduct(int productId){
         return reportDao.getTopSellingEmployeeForProduct(productId);
+    }
+    
+    public Map<Integer, Integer> hourlySales(int storeId){
+        LocalDate endDate = LocalDate.now();
+        LocalDate startDate = endDate.minusDays(30);
+
+        // Assume saleService.getSaleForStoreByRange returns a List<Sale>
+        List<Sale> sales = saleService.getSaleForStoreByRange(storeId, startDate, endDate);
+        Map<Integer, Integer> hourlySales = new TreeMap<>();
+
+        
+        DateTimeFormatter hourFormatter = DateTimeFormatter.ofPattern("HH");
+
+        sales.forEach(sale -> {
+            if (sale.getSales_date() != null) {
+                // Convert Timestamp to LocalDateTime
+                LocalDateTime saleDateTime = sale.getSales_date().toLocalDateTime();
+                int hour = Integer.parseInt(saleDateTime.format(hourFormatter));
+                // Update the sales count for the given hour
+                hourlySales.put(hour, hourlySales.getOrDefault(hour, 0) + 1);
+            }
+        });
+        System.out.println("Total size of my map: "+ hourlySales);
+
+        return hourlySales;
     }
 }
