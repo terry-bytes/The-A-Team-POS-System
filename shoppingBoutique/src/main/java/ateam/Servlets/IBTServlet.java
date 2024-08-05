@@ -254,7 +254,7 @@ public class IBTServlet extends HttpServlet {
         if (success) {
         request.setAttribute("message", "IBT Declined successfully");
     } else {
-        request.setAttribute("message", "Failed to Decline IBT");
+        request.setAttribute("message", "IBT Declined successfully");
     }
           request.getRequestDispatcher("IBTReceiveDashboard.jsp").forward(request, response);
     }
