@@ -1,6 +1,7 @@
 package ateam.ServiceImpl;
 
 import ateam.Models.Email;
+import ateam.Models.Inventory;
 import ateam.Models.Product;
 import ateam.Service.EmailService;
 import java.io.IOException;
@@ -16,6 +17,10 @@ import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
 import com.itextpdf.text.pdf.draw.LineSeparator;
 import java.io.ByteArrayOutputStream;
+import com.itextpdf.text.Anchor;
+import com.itextpdf.text.Chunk;
+import com.itextpdf.text.pdf.PdfAction;
+import java.net.URL;
 
 public class EmailServiceImpl implements EmailService {
 
@@ -106,15 +111,13 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public void VoucherEmail(String to,BigDecimal change,String voucher){
+    public void VoucherEmail(String to, BigDecimal change, String voucher) {
         // Recipient's email ID needs to be mentioned
-       
 
         // Sender's email ID needs to be mentioned
         String from = "ramovhatp@gmail.com";
         final String username = "ramovhatp@gmail.com"; // change accordingly
         final String password = "xaed clmt qpis ctvf"; // change accordingly
-
 
         // Assuming you are sending email through relay.jangosmtp.net
         String host = "smtp.gmail.com"; // replace with your SMTP server
@@ -128,11 +131,11 @@ public class EmailServiceImpl implements EmailService {
         // Get the Session object
         Session session = Session.getInstance(props,
                 new javax.mail.Authenticator() {
-                    @Override
-                    protected PasswordAuthentication getPasswordAuthentication() {
-                        return new PasswordAuthentication(username, password);
-                    }
-                });
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(username, password);
+            }
+        });
 
         try {
             // Create a default MimeMessage object
@@ -149,8 +152,6 @@ public class EmailServiceImpl implements EmailService {
             message.setSubject("Your Gift Voucher from Carol's Boutique!");
 
             // Retrieve session attributes
-           
-
             // Create the message part
             BodyPart messageBodyPart = new MimeBodyPart();
 
@@ -163,7 +164,7 @@ public class EmailServiceImpl implements EmailService {
                     + "<div class='voucher-body' style='padding: 20px; text-align: center;'>"
                     + "<h2 style='margin-top: 0; font-size: 22px; color: #333333;'>Gift Voucher</h2>"
                     + "<p>Congratulations! You have received a gift voucher worth</p>"
-                    + "<div class='voucher-amount ' style='font-size: 20px; color: #28a745;'>" +"R"+ change.toString() + "</div>"
+                    + "<div class='voucher-amount ' style='font-size: 20px; color: #28a745;'>" + "R" + change.toString() + "</div>"
                     + "<p>Your voucher code is:</p>"
                     + "<div class='voucher-code' style='margin: 20px 0; font-size: 30px; font-weight: bold; color: #e83e8c; letter-spacing: 2px;'>" + voucher + "</div>"
                     + "</div>"
@@ -195,9 +196,8 @@ public class EmailServiceImpl implements EmailService {
         }
     }
 
-    
     @Override
-    public void sendSaleReceipt(String toEmail, String salespersonName, String saleTime, List<Product> items, BigDecimal totalAmountWithVAT, BigDecimal vatAmount, BigDecimal change, String paymentMethod, BigDecimal cashPaid, BigDecimal cardPaid) {
+    public void sendSaleReceipt(String toEmail, String salespersonName, String saleTime, List<Product> items, BigDecimal totalAmountWithVAT, BigDecimal vatAmount, BigDecimal change, String paymentMethod, BigDecimal cashPaid, BigDecimal cardPaid, int saleID) {
         final String from = "ramovhatp@gmail.com";
         final String password = "xaed clmt qpis ctvf";
         Properties props = new Properties();
@@ -247,6 +247,7 @@ public class EmailServiceImpl implements EmailService {
             Paragraph saleDetails = new Paragraph("Sale Details:", headerFont);
             saleDetails.setSpacingBefore(10);
             document.add(saleDetails);
+            document.add(new Paragraph("Sale ID: " + saleID, normalFont));
             document.add(new Paragraph("Salesperson: " + salespersonName, normalFont));
             document.add(new Paragraph("Sale Time: " + saleTime, normalFont));
             document.add(new Paragraph(" "));
@@ -293,6 +294,17 @@ public class EmailServiceImpl implements EmailService {
             document.add(new Paragraph("Payment Method: " + paymentMethod, normalFont));
             document.add(new Paragraph(" "));
 
+            // Return Policy
+            document.add(new Paragraph("Return Policy:", headerFont));
+            document.add(new Paragraph("We hope you are satisfied with your purchase. If you are not completely satisfied, you may return the item within 10 days of purchase for a full refund or exchange, subject to the following conditions:", normalFont));
+            document.add(new Paragraph("1. The item must be unused and in its original packaging.", normalFont));
+            document.add(new Paragraph("2. A valid receipt must be presented at the time of return.", normalFont));
+            document.add(new Paragraph("3. Certain items may be subject to a restocking fee.", normalFont));
+            document.add(new Paragraph("4. The return policy does not apply to clearance items.", normalFont));
+            document.add(new Paragraph("5. We do not accept the return of underwears.", normalFont));
+            document.add(new Paragraph("For more information, please contact our customer service.", normalFont));
+            document.add(new Paragraph(" "));
+
             // Footer
             Paragraph footer = new Paragraph("Thank you for shopping with us!", normalFont);
             footer.setSpacingBefore(20);
@@ -315,7 +327,11 @@ public class EmailServiceImpl implements EmailService {
 
             // Text part of the email
             BodyPart messageBodyPart = new MimeBodyPart();
-            messageBodyPart.setText("Please find your sale receipt attached.");
+            String ratingLink = "https://docs.google.com/forms/d/1MSLxiI52-CQt369KCBjfVfxGBPJyDa0_D7MDYGYCEng/viewform?edit_requested=true#responses";
+            String emailContent = "<p>Please find your sale receipt attached.</p>"
+                    + "<p>We would appreciate it if you could take a moment to rate your experience. "
+                    + "<a href='" + ratingLink + "'>click here</a>.</p>";
+            messageBodyPart.setContent(emailContent, "text/html");
             multipart.addBodyPart(messageBodyPart);
 
             // PDF attachment
@@ -332,6 +348,54 @@ public class EmailServiceImpl implements EmailService {
             System.out.println("Sale receipt email sent successfully to " + toEmail);
 
         } catch (MessagingException | IOException | DocumentException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void sendReorderNotification(String managerEmail, List<Inventory> reorderList) {
+        final String from = "ramovhatp@gmail.com";
+        final String password = "xaed clmt qpis ctvf";
+
+        Properties props = new Properties();
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.host", "smtp.gmail.com");
+        props.put("mail.smtp.port", "587");
+        props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
+        props.put("mail.smtp.ssl.protocols", "TLSv1.2");
+
+        Session session = Session.getInstance(props, new javax.mail.Authenticator() {
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(from, password);
+            }
+        });
+
+        try {
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(from));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(managerEmail));
+            message.setSubject("Reorder Notification");
+
+            StringBuilder content = new StringBuilder();
+            content.append("Dear Manager,\n\n");
+            content.append("The following items are low on stock and need to be reordered:\n\n");
+            for (Inventory inventory : reorderList) {
+                content.append("Product ID: ").append(inventory.getProduct_ID()).append("\n");
+                content.append("Current Quantity: ").append(inventory.getInventory_quantity()).append("\n");
+                content.append("Reorder Point: ").append(inventory.getReorder_point()).append("\n\n");
+            }
+            content.append("Please take the necessary actions.\n\n");
+            content.append("Best regards,\n");
+            content.append("Inventory Management Team");
+
+            message.setText(content.toString());
+
+            Transport.send(message);
+
+            System.out.println("Reorder notification sent successfully to " + managerEmail);
+
+        } catch (MessagingException e) {
             e.printStackTrace();
         }
     }

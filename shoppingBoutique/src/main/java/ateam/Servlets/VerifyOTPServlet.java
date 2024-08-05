@@ -83,7 +83,11 @@ public class VerifyOTPServlet extends HttpServlet {
                 emailService.sendMail(emailDetails);
                 request.setAttribute("addEmployeeMessage", "Employee added successfully");
             }
-            response.sendRedirect(request.getContextPath() + "/employees?submit=getAddEmployee");
+            if(manager != null){
+                request.getRequestDispatcher("addEmployee.jsp").forward(request, response);
+            }else{
+                request.getRequestDispatcher("login.jsp").forward(request, response);
+            }
         } else {
             request.setAttribute("otpMessage", "Invalid OTP. Please try again.");
             request.getRequestDispatcher("/verifyOTP.jsp").forward(request, response);

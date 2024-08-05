@@ -443,4 +443,9 @@ public class ReportDaoImpl implements ReportDAO{
     return null;
 }
 
+    @Override
+    public List<Sale> getSalesForStore(LocalDate startDate, LocalDate endDate, int storeId) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

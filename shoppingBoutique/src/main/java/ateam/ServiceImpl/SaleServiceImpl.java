@@ -10,7 +10,9 @@ import ateam.DTO.EmployeeMonthSales;
 import ateam.Models.Employee;
 import ateam.Models.Role;
 import ateam.Models.Sale;
+import ateam.DTO.SalesDTO;
 import ateam.Models.Store;
+import ateam.Service.EmployeeService;
 import ateam.Service.SaleService2;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -32,9 +34,11 @@ import java.util.TreeMap;
  */
 public class SaleServiceImpl implements SaleService2{
     private final SaleDAO saleDao;
+    private final EmployeeService employeeService;
     
     public SaleServiceImpl(){
         this.saleDao = new SaleDAOIMPL();
+        this.employeeService = new EmployeeServiceImpl();
     }
     @Override
     public List<Sale> getAllSales() {
@@ -143,6 +147,7 @@ public class SaleServiceImpl implements SaleService2{
     }
 
     @Override
+
     public void markVoucherAsUsed(String voucherCode) {
       saleDao.markVoucherAsUsed( voucherCode);   
     }
@@ -152,7 +157,41 @@ public class SaleServiceImpl implements SaleService2{
         
      return saleDao.validateVoucher(voucherCode);
     }
-    
+
+    public List<Sale> getSaleForStoreByRange(int storeId, LocalDate startDate, LocalDate endDate) {
+        return saleDao.getSalesForStoreByRange(storeId, startDate, endDate);
+    }
+
+    @Override
+    public List<SalesDTO> getStoreSales(int storeId) {
+        List<Sale> sales = saleDao.getSalesbyStoreId(storeId);
+        if (sales == null) {
+            throw new IllegalStateException("Sales list is null for storeId: " + storeId);
+        }
+
+        List<SalesDTO> mySales = new ArrayList<>();
+        sales.forEach(sale -> {
+            SalesDTO saleDto = new SalesDTO();
+            saleDto.setSaleId(sale.getSales_ID());
+
+            Employee employee = employeeService.getEmployeeById(sale.getEmployee_ID());
+            if (employee != null) {
+                saleDto.setTeller(employee.getFirstName());
+            } else if(sale.getEmployee_ID() == 0){
+                saleDto.setTeller("Unknown");
+            }else {
+                saleDto.setTeller(Integer.toString(sale.getEmployee_ID()));
+            }
+
+            saleDto.setSalesDate(sale.getSales_date());
+            saleDto.setPaymentMethod(sale.getPayment_method());
+            saleDto.setTotalAmount(sale.getTotal_amount());
+            mySales.add(saleDto);
+        });
+
+        return mySales;
+    }
+
     
     
 }

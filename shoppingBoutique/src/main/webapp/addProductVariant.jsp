@@ -2,6 +2,27 @@
 <html>
 <head>
     <title>Add Product Variant</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            box-sizing: border-box;
+        }
+        body{
+            background: #aecdf0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100vh;
+        }
+        h1{
+            font-weight: 600;
+            color: #fff;
+        }
+        
+    </style>
 </head>
 <body>
     <h1>Add Product Variant</h1>

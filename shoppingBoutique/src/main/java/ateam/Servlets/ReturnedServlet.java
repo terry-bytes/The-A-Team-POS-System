@@ -16,7 +16,7 @@ import ateam.ServiceImpl.EmailServiceImpl;
 import ateam.ServiceImpl.ProductServiceImpl;
 import ateam.ServiceImpl.ReturnServiceImpl;
 import ateam.ServiceImpl.TheReturn;
-import ateam.Services.impl.InventoryServiceImpl;
+import ateam.ServiceImpl.InventoryServiceImpl;
 import ateam.Servlets.ProductServlet;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;

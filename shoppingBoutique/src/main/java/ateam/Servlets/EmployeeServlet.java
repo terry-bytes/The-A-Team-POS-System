@@ -146,7 +146,7 @@ public class EmployeeServlet extends HttpServlet {
         int employeeId = Integer.parseInt(request.getParameter("employeeId"));
         Employee employee = employeeService.getEmployeeById(employeeId);
         request.setAttribute("employee", employee);
-        request.getRequestDispatcher("/editEmployee.jsp").forward(request, response);
+        request.getRequestDispatcher("editEmployee.jsp").forward(request, response);
     }
 
     private void showDeleteConfirm(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -186,21 +186,18 @@ public class EmployeeServlet extends HttpServlet {
         
         newEmployee.setRole(role);
         
-        if(employeeService.addEmployee(newEmployee)){
-            request.setAttribute("message", "successfully added");
-        }
-        request.getRequestDispatcher("addEmployee.jsp").forward(request, response);
-//        String otp = generateOTP();
-//        Email emailDetails = new Email("ramovhatp@gmail.com", "xaed clmt qpis ctvf");
-//        emailDetails.setReceiver(email);
-//        emailDetails.setSubject("Email Verification OTP");
-//        emailDetails.setMessage("Your OTP for email verification is: " + otp);
-//
-//        emailService.sendMail(emailDetails);
-//        request.getSession().setAttribute("otp", otp);
-//        request.getSession().setAttribute("newEmployee", newEmployee);
-//
-//        response.sendRedirect(request.getContextPath() + "/verifyOTP.jsp");
+        String otp = generateOTP();
+        Email emailDetails = new Email("ramovhatp@gmail.com", "xaed clmt qpis ctvf");
+        emailDetails.setReceiver(email);
+        emailDetails.setSubject("Email Verification OTP");
+        emailDetails.setMessage("Your OTP for email verification is: " + otp);
+
+        System.out.println("otp: "+otp);
+        emailService.sendMail(emailDetails);
+        request.getSession().setAttribute("otp", otp);
+        request.getSession().setAttribute("newEmployee", newEmployee);
+
+        response.sendRedirect(request.getContextPath() + "/verifyOTP.jsp");
         
         
         
@@ -225,7 +222,6 @@ public class EmployeeServlet extends HttpServlet {
         Role role = Role.valueOf(request.getParameter("role"));
         
         String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
-        System.out.println("Stored hashed password: " + hashedPassword);
         
       
         Employee employeeToUpdate = new Employee();
@@ -238,13 +234,28 @@ public class EmployeeServlet extends HttpServlet {
         employeeToUpdate.setRole(role);
 
         boolean success = employeeService.updateEmployee(employeeToUpdate);
-        response.sendRedirect(request.getContextPath() + "/employees");
+        String message = null;
+        if(success){
+            message = "Employee details are updated successfully";
+        }else {
+            message = "Failed to update employee's details";
+        }
+        request.setAttribute("message", message);
+        request.getRequestDispatcher("editEmployee.jsp").forward(request, response);
     }
 
     private void deleteEmployee(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int employeeId = Integer.parseInt(request.getParameter("employeeId"));
         boolean success = employeeService.deleteEmployee(employeeId);
-        response.sendRedirect(request.getContextPath() + "/employees");
+        
+        
+        if(success){
+            request.setAttribute("message", "Employee deleted Successsfully");
+        }else{
+            request.setAttribute("message", "Failed to delete employee");
+        }
+        
+        request.getRequestDispatcher("MyEmployees.jsp").forward(request, response);
     }
 
     private void handleLogin(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -266,7 +277,7 @@ public class EmployeeServlet extends HttpServlet {
 
             switch (employee.getRole()) {
                 case Admin:
-                    request.getRequestDispatcher("AdminDashboard.jsp").forward(request, response);
+                    response.sendRedirect("AdminServlet");
                     break;
                 case Manager:
                     response.sendRedirect("SalesDemo");

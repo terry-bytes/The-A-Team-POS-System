@@ -1,0 +1,104 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 02 Aug 2024, 13:35:28
+    Author     : T440
+*/
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body{
+    background-image: linear-gradient(to right, #277af6, #0098f7, #48b2ef, #85c7e5, #bfd9e0);
+}
+
+section{
+    display: flex;
+}
+
+.left-main{
+    margin-left: 300px;
+    padding-left: 20px;
+}
+#customers {
+  border-collapse: collapse;
+  width: 100%;
+  border: 1px solid #fff;
+  border-radius: 10px;
+}
+
+/* General table styles */
+#customers {
+  border-collapse: collapse; /* Ensures borders between cells are merged */
+  width: 100%; /* Makes the table take the full width of its container */
+}
+
+#customers td, #customers th {
+  border-bottom: 1px solid rgba(254, 254, 254, 0.5); /* Bottom border for cells */
+  padding: 8px; /* Padding inside cells */
+  text-align: left; /* Aligns text to the left inside cells */
+}
+
+/* Zebra striping for table rows */
+#customers tr:nth-child(even) {
+  background: rgba(254, 254, 254, 0.1); /* Lighter background for even rows */
+}
+
+#customers tr:nth-child(odd) {
+  background: rgba(254, 254, 254, 0.05); /* Slightly different background for odd rows */
+}
+
+/* Highlight row on hover */
+#customers tr:hover {
+  background: rgba(254, 254, 254, 0.2); /* Light background on hover */
+}
+
+/* Header styling */
+#customers th {
+  padding-top: 12px; /* Extra padding on top */
+  padding-bottom: 12px; /* Extra padding on bottom */
+  text-align: left; /* Aligns text to the left in headers */
+  color: white; /* Text color for headers */
+  background-color: #333; /* Dark background color for headers */
+}
+
+/* Bottom border for the last row */
+#customers tr:last-child td {
+  border-bottom: 2px solid #333; /* Adds a thicker bottom border for the last row */
+}
+#customers .icon{
+    min-width: 60px;
+    border-radius: 6px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: #5ba4e7;
+    transition: 0.3s ease;
+}
+.icon-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.icon-button i {
+    font-size: 1.2em;
+}
+#customers tbody tr:hover{
+    color: #007bff;
+    font-weight: 600;
+}
+.header{
+    display: flex;
+    justify-content: space-between;
+    padding-top: 20px;
+}

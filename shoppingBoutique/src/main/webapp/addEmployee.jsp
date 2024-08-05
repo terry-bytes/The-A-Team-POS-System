@@ -8,7 +8,8 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Add Employee</title>
-        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/log.css">
+
+          <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/editEmp.css">
         <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     </head>
     <body>
@@ -19,92 +20,97 @@
             List<Store> stores = (List<Store>) request.getSession(false).getAttribute("stores");
             String storeName;
         %>
-        <% if(employee != null && employee.getRole() == Role.Manager) { %>
-        
+        <% if(employee != null && employee.getRole() != Role.Teller) { %>
+        <jsp:include page="sidebar.jsp"></jsp:include>
         <div class="manager-container">
-            <div >
-                <jsp:include page="sidebar.jsp"/>
-            </div>
-            <div class="main">
-                <div class="login-box">
-                    <div class="login-header">
-                        <h3>Add Employee</h3>
-                    </div>
-                    <form action="EmployeeServlet" method="post">
-                        <div class="two-forms">
-                            <div class="input-box">
-                                <input type="text"
-                                       placeholder='First Name'
-                                       name='firstName'
-                                       class='input-field'
-                                       autocomplete="off" required
-                                       />
-                                 <i class="bx bx-user"></i>
-                            </div>
-                            <div class="input-box">
-                                <input type="text"
-                                       placeholder='Last Name'
-                                       name='lastName'
-                                       class='input-field'
-                                       autocomplete="off" required
-                                       />
-                                 <i class="bx bx-user"></i>
-                            </div>
-                        </div>
-
+        <div>
+            
+        </div>
+        <div class="main">
+            <div class="login-box">
+                <div class="login-header">
+                    <h3>Add Employee</h3>
+                </div>
+                <form action="EmployeeServlet" method="post">
+                    <div class="two-forms">
                         <div class="input-box">
-                            <input type="email"
-                                   placeholder='Email'
-                                   name='email'
+                            <label for="firstName">First Name</label>
+                            <input type="text"
+                                   id="firstName"
+                                   placeholder='First Name'
+                                   name='firstName'
                                    class='input-field'
                                    autocomplete="off" required
                                    />
-                            <i class="bx bx-envelope"></i>
+                             <i class="bx bx-user"></i>
                         </div>
-
                         <div class="input-box">
-                            <input type="password"
-                                   placeholder='Password'
-                                   name='password'
-                                   class="input-field"
+                            <label for="lastName">Last Name</label>
+                            <input type="text"
+                                   id="lastName"
+                                   placeholder='Last Name'
+                                   name='lastName'
+                                   class='input-field'
                                    autocomplete="off" required
                                    />
-                            <i class="bx bx-lock-alt"></i>
+                             <i class="bx bx-user"></i>
                         </div>
-                        <div class="select-container">
-                            <label>Role</label>
-                            <select class="select-box" name="role" id="roleSelector">
-                                <% if(roles != null) {
-                                    for(Role role : roles) { %>
-                                    <option value="<%=role.name()%>"><%=role.name()%></option>
-                                    <% } } %>
-                            </select>
-                        </div>
-                        <div class="select-container" id="storeSelector" style="display: none;">
-                            <label>Store</label>
+                    </div>
 
-                            <select class="select-box" name="managerStoreId">
-                                <% if(stores != null) {
-                                    for(Store store : stores) { %>
-                                    <option value="<%=store.getStore_ID() %>"><%=store.getStore_name() %></option>
-                                    <% } } %>
-                            </select>
-                        </div>
-                        <input type="hidden" name="tellerStoreId" value="<%=employee.getStore_ID()%>"/>
-                        <% if(message != null) { %>
+                    <div class="input-box">
+                        <label for="email">Email</label>
+                        <input type="email"
+                               id="email"
+                               placeholder='Email'
+                               name='email'
+                               class='input-field'
+                               autocomplete="off" required
+                               />
+                        <i class="bx bx-envelope"></i>
+                    </div>
 
-                        <p><%=message%></p>
-                        <% } %>
-                        <div class="input-submit">
-                            <input name="submit" value="add" hidden>
+                    <div class="input-box">
+                        <label for="password">Password</label>
+                        <input type="password"
+                               id="password"
+                               placeholder='Password'
+                               name='password'
+                               class="input-field"
+                               autocomplete="off" required
+                               />
+                        <i class="bx bx-lock-alt"></i>
+                    </div>
+                    <div class="select-container">
+                        <label for="roleSelector">Role</label>
+                        <select class="select-box" name="role" id="roleSelector">
+                            <% if(roles != null) {
+                                for(Role role : roles) { %>
+                                <option value="<%=role.name()%>"><%=role.name()%></option>
+                                <% } } %>
+                        </select>
+                    </div>
+                    <div class="select-container" id="storeSelector" style="display: none;">
+                        <label for="managerStoreId">Store</label>
 
-                            <button class="submit-btn" id="submit">Add Employee</button>
-
-                        </div>
-                    </form>
-                </div>
+                        <select class="select-box" name="managerStoreId" id="managerStoreId">
+                            <% if(stores != null) {
+                                for(Store store : stores) { %>
+                                <option value="<%=store.getStore_ID() %>"><%=store.getStore_name() %></option>
+                                <% } } %>
+                        </select>
+                    </div>
+                    <input type="hidden" name="tellerStoreId" value="<%=employee.getStore_ID()%>"/>
+                    <% if(message != null) { %>
+                    <p><%=message%></p>
+                    <% } %>
+                    <div class="input-submit">
+                        <input name="submit" value="add" hidden>
+                        <button class="submit-btn" id="submit">Add Employee</button>
+                    </div>
+                </form>
             </div>
         </div>
+    </div>
         <% } else { %>
         <jsp:include page="unauthorized.jsp"/>
         <% } %>

@@ -7,8 +7,13 @@ package ateam.Servlets;
 
 import ateam.BDconnection.Connect;
 import ateam.DAOIMPL.StoreDAOIMPL;
+import ateam.DTO.SalesDTO;
+import ateam.Exception.DuplicateStoreException;
+import ateam.Models.Employee;
 import ateam.Models.Store;
+import ateam.Service.SaleService2;
 import ateam.Service.StoreService;
+import ateam.ServiceImpl.SaleServiceImpl;
 import ateam.ServiceImpl.StoreServiceImpl;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -28,6 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet(name = "StoreServlet", urlPatterns = {"/StoreServlet"})
 public class StoreServlet extends HttpServlet {
     private StoreService storeService =  new StoreServiceImpl(new StoreDAOIMPL(new Connect().connectToDB()));;
+    private SaleService2 saleService = new SaleServiceImpl();
     
     
     /**
@@ -52,6 +58,11 @@ public class StoreServlet extends HttpServlet {
         
         switch(request.getParameter("submit")){
             case "getStoreDashboard":
+                Employee manager = (Employee) request.getSession(false).getAttribute("Employee");
+                List<SalesDTO> mySales = saleService.getStoreSales(manager.getStore_ID());
+                System.out.println("My $ Store Sales: "+ mySales.size());
+                
+                request.getSession(false).setAttribute("myStoreSales", mySales);
                 request.getRequestDispatcher("storeDashboard.jsp").forward(request, response);
                 break;
         }
@@ -95,15 +106,26 @@ public class StoreServlet extends HttpServlet {
         store.setStore_address(request.getParameter("storeAddress"));
         store.setStore_city(request.getParameter("storeCity"));
         store.setStore_province(request.getParameter("storeProvince"));
-        store.setStore_zipcode(Integer.parseInt(request.getParameter("storeZipcode")));
+        try{
+            store.setStore_zipcode(Integer.parseInt(request.getParameter("storeZipcode")));
+        }catch(NumberFormatException num){
+            request.setAttribute("message", "Zip Code must be a number");
+            request.getRequestDispatcher("storeDashboard.jsp").forward(request, response);
+        }
         store.setStore_phone(request.getParameter("storePhone"));
         store.setStore_email(request.getParameter("storeEmailAddress"));
-        boolean success = storeService.addStore(store);
-        if (success) {
-        request.setAttribute("message", "Store added successfully");
-    } else {
-        request.setAttribute("message", "Failed to add store");
-    }
+        boolean success;
+        try {
+            success = storeService.addStore(store);
+            if (success) {
+                request.setAttribute("message", "Store added successfully");
+            } else {
+                request.setAttribute("message", "Failed to add store");
+            }
+        } catch (DuplicateStoreException ex) {
+            request.setAttribute("message", ex.getMessage());
+        }
+        
         request.getRequestDispatcher("storeDashboard.jsp").forward(request, response);
     }
     
