@@ -315,16 +315,7 @@ public class EmailServiceImpl implements EmailService {
 
             // Add Google Form link
 // Add Google Form link
-            String googleFormURL = "https://docs.google.com/forms/d/1MSLxiI52-CQt369KCBjfVfxGBPJyDa0_D7MDYGYCEng/viewform?pli=1&pli=1&edit_requested=true#responses";
-            Paragraph feedbackParagraph = new Paragraph();
-            feedbackParagraph.setSpacingBefore(10);
-            feedbackParagraph.add(new Chunk("We value your feedback. Please ", normalFont));
-            Chunk link = new Chunk("click here", normalFont);
-            link.setAction(new PdfAction(PdfAction.URL, googleFormURL));
-            feedbackParagraph.add(link);
-            feedbackParagraph.add(new Chunk(" to rate your experience.", normalFont));
-            document.add(feedbackParagraph);
-
+           
             document.close();
             pdfStream.flush();
             byte[] pdfBytes = pdfStream.toByteArray();
@@ -413,4 +404,6 @@ public class EmailServiceImpl implements EmailService {
         String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$";
         return email.matches(emailRegex);
     }
+
+    
 }
