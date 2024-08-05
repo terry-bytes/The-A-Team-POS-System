@@ -4,6 +4,7 @@
     Author     : T440
 --%>
 
+<%@page import="ateam.Models.Role"%>
 <%@page import="ateam.Models.SalesItem"%>
 <%@page import="java.util.List"%>
 <%@page import="ateam.Models.Employee"%>
@@ -15,18 +16,81 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>JSP Page</title>
         <style>
-            @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
             *{
-                margin: 0;
-                padding: 0;
-                box-sizing: border-box;
-                font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            box-sizing: border-box;
+        }
+        body{
+            background-image: linear-gradient(to right, #277af6, #0098f7, #48b2ef, #85c7e5, #bfd9e0);
+            width: 100%;
+            height: 100vh;
+        }
+        section{
+            display: flex;
+        }
+        .left-main{
+            margin-left: 300px;
+            padding-left: 20px;
+            margin-right: 300px;
+        }
+            h1 {
+                color: #333;
             }
+            form {
+                margin-bottom: 20px;
+            }
+            label {
+                font-weight: bold;
+                margin-right: 10px;
+            }
+            .btn-submit {
+                background-color: #007bff; 
+                border: none; 
+                color: white; 
+                padding: 15px 20px; /* Some padding */
+                text-align: center; /* Centered text */
+                text-decoration: none; /* Remove underline */
+                display: inline-block; /* Make the button inline */
+                font-size: 16px; /* Increase font size */
+                margin: 4px 2px; /* Some margin */
+                cursor: pointer; /* Pointer/hand icon */
+                border-radius: 5px; /* Rounded corners */
+                transition: background-color 0.3s;
+            }
+            .btn-submit:hover {
+                background-color: #2980b9;
+            }
+            
+            
+            .pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
 
-            body{
-                background-image: linear-gradient(to right, #277af6, #0098f7, #48b2ef, #85c7e5, #bfd9e0);
-            }
-            .emp-tb {
+.pagination a {
+    margin: 0 5px;
+    padding: 8px 16px;
+    text-decoration: none;
+    color: #007bff;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+}
+
+.pagination a.active {
+    background-color: #007bff;
+    color: white;
+    border: 1px solid #007bff;
+}
+
+.pagination a:hover:not(.active) {
+    background-color: #ddd;
+}
+
+
+        .emp-tb {
             font-family: sans-serif;
             width: 100%;
             background-color: rgb(255, 255, 255);
@@ -82,20 +146,37 @@
             color: #007bff;
             font-weight: 400;
         }
-        </style>
+        .myEmployees{
+            margin-top: 30px;
+        }
+         h2{
+            color: #fff;
+            font-weight: 600;
+        }
+        .header { 
+    padding: 20px; /* Space inside the header */
+    border-bottom: 1px solid #ddd; /* Bottom border for separation */
+    display: flex; /* Use flexbox for horizontal alignment */
+    align-items: center; /* Center items vertically */
+    justify-content: space-between; /* Distribute space between items */
+}
+         </style>
     </head>
     <body>
         <% Employee  employee = (Employee) request.getSession(false).getAttribute("Employee");
             List<SalesItem> sales = (List<SalesItem>) request.getSession(false).getAttribute("SalesItems");
             %>
             <div class="manager-container">
-        <div>
-            <jsp:include page="sidebar.jsp"></jsp:include>
-        </div>
-        <div class="main">
+            <% if (employee.getRole() == Role.Manager){%>
+                <jsp:include page="sidebar.jsp"></jsp:include>
+                <% } else {%>
+                <jsp:include page="managerSidebar.jsp"/>
+                <%}%>
+
+        <div class="left-main">
             <div class="login-box">
-                <div class="login-header">
-                    <h3>View sales Item</h3>
+                <div class="header">
+                    <h2>View sales Items</h2>
                 </div>
                
                 <div class="two-forms">
@@ -121,7 +202,7 @@
                     <td><%= item.getUnit_price() %></td>
                 </tr>
                 <%}%>
-        </table><%}%>S
+        </table><%}%>
                 </div>
                      
             </div>

@@ -45,7 +45,7 @@
                 margin-right: 10px;
             }
             .btn-submit {
-                background-color: #3498db; 
+                background-color: #007bff; 
                 border: none; 
                 color: white; 
                 padding: 15px 20px; /* Some padding */
@@ -148,7 +148,7 @@
         .myEmployees{
             margin-top: 30px;
         }
-        .myEmployees h4{
+         h2{
             color: #fff;
             font-weight: 600;
         }
@@ -158,6 +158,21 @@
     display: flex; /* Use flexbox for horizontal alignment */
     align-items: center; /* Center items vertically */
     justify-content: space-between; /* Distribute space between items */
+}
+.styled-input {
+    
+    padding: 5px 8px; 
+    margin: 8px 0;
+    border: 2px solid #007bff; 
+    border-radius: 10px; 
+    font-size: 16px; 
+    transition: border-color 0.3s; 
+    background: rgba(254, 254, 254, 0.5);
+}
+
+.styled-input:focus {
+    border-color: #3498db; 
+    outline: none; 
 }
          </style>
     </head>
@@ -174,9 +189,10 @@
        
                 <div class="myEmployees">
                     <div class="header">
-                        <h4>Carol's boutique employees</h4>
+                        <h2>Carol's boutique employees</h2>
+                        <input class="styled-input" type="text" id="searchInput" onkeyup="filterTable()" placeholder="Search for employees..">
                         <form action="AdminServlet" method="POST">
-                            <button name="admin_switch" value="AddManager">Add Employee</button>
+                            <button class="btn-submit" name="admin_switch" value="AddManager">Add Employee</button>
                         </form>
                     </div>
         <!-- Display all layaways in a table -->
@@ -191,7 +207,7 @@
             int start = (currentPage - 1) * pageSize;
             int end = Math.min(start + pageSize, totalRows);
                 %>
-                <table class="emp-tb">
+                <table id="employee" class="emp-tb">
             <thead>
                 <tr>
                     <th>Employee Id</th>
@@ -250,9 +266,9 @@
                 <% if (storeList != null && !storeList.isEmpty()){
         %>
         <div class="header">
-                        <h4>Carol's boutique Store</h4>
+                        <h2>Carol's boutique Store</h2>
                         <form action="AdminServlet" method="POST">
-                            <button name="admin_switch" value="Add Store">Add Store</button>
+                            <button class="btn-submit" name="admin_switch" value="Add Store">Add Store</button>
                         </form>
                     </div>
         <table class="emp-tb">
@@ -283,7 +299,7 @@
                     <td>
                         <form action="StoreServlet" method="get">
                             <input name="storeId" value="<%= store.getStore_ID() %>" type="hidden">
-                            <button name="submit" type="submit" value="getStoreDashboard">View</button>
+                            <button class="btn-submit" name="submit" type="submit" value="getStoreDashboard">View</button>
                         </form>
                     </td>
                 </tr>
@@ -294,5 +310,25 @@
         </div> 
             </div>
         </section>
+            <script>
+                function filterTable() {
+    var input, filter, table, tr, td, i, j;
+    input = document.getElementById('searchInput');
+    filter = input.value.toUpperCase();
+    table = document.getElementById('employee');
+    tr = table.getElementsByTagName('tr');
+
+    for (i = 1; i < tr.length; i++) { // Start at 1 to skip the header row
+        tr[i].style.display = 'none'; // Hide all rows initially
+        td = tr[i].getElementsByTagName('td');
+        for (j = 0; j < td.length; j++) {
+            if (td[j] && td[j].innerHTML.toUpperCase().indexOf(filter) > -1) {
+                tr[i].style.display = ''; // Show row if it matches
+                break; // Stop checking other columns in this row
+            }
+        }
+    }
+}
+                </script>
     </body>
 </html>

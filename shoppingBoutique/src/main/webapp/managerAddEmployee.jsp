@@ -29,7 +29,7 @@
         <% if(employee != null && employee.getRole() != Role.Teller) { %>
         
         <div class="manager-container">
-            <jsp:include page="sidebar.jsp"></jsp:include>
+            <jsp:include page="managerSidebar.jsp"></jsp:include>
         <div class="left-main">
             <div class="login-box">
                 <div class="login-header">
