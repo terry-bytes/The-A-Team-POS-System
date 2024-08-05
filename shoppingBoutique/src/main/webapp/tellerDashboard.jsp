@@ -6,6 +6,8 @@
 <%@page import="java.util.List"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
 
 <!DOCTYPE html>
 <html>
@@ -18,6 +20,29 @@
         <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/teller.css">
         <style>
+            .payment-icons {
+                display: flex;
+                gap: 10px; /* Adjust the spacing between options */
+            }
+
+            .payment-option {
+                text-align: center;
+                cursor: pointer;
+            }
+
+            .payment-option img {
+                display: block;
+                margin: 0 auto;
+                width: 50px; /* Adjust the size of the icons */
+                height: 50px;
+            }
+
+            .payment-option span {
+                display: block;
+                margin-top: 5px;
+                font-size: 14px; /* Adjust the font size */
+            }
+
             /* Popup Form Styles */
             .popup {
                 display: none; /* Hidden by default */
@@ -53,6 +78,263 @@
                 cursor: pointer;
             }
         </style>
+
+        <style>
+            /* The Popup Background */
+            .popup {
+                display: none; /* Hidden by default */
+                position: fixed;
+                z-index: 1;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                overflow: auto;
+                background-color: rgba(0, 0, 0, 0.5); /* Black w/ opacity */
+            }
+            /* Popup Content */
+            .popup-content {
+                background-color: #ffffff;
+                margin: 10% auto; /* Center the popup */
+                padding: 20px;
+                border: 1px solid #ccc;
+                border-radius: 8px;
+                width: 80%;
+                max-width: 500px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            }
+            /* Close Button */
+            .close {
+                color: #888;
+                float: right;
+                font-size: 1.5em;
+                font-weight: bold;
+                cursor: pointer;
+            }
+            .close:hover,
+            .close:focus {
+                color: #000;
+                text-decoration: none;
+            }
+            /* Heading */
+            .popup-content h2 {
+                margin-top: 0;
+                color: #333;
+                font-size: 1.6em;
+            }
+            /* Form Elements */
+            label {
+                display: block;
+                margin-bottom: 8px;
+                color: #555;
+                font-weight: bold;
+            }
+            input[type="text"] {
+                width: calc(100% - 20px);
+                padding: 10px;
+                margin-bottom: 15px;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                font-size: 1em;
+            }
+            /* Store Info */
+            .store-info {
+                margin-bottom: 20px;
+            }
+            .store-info label {
+                font-weight: normal;
+            }
+            /* Button Group */
+            .button-group {
+                display: flex;
+                justify-content: space-between;
+            }
+            /* Buttons */
+            .btn {
+                padding: 10px 15px;
+                border: none;
+                border-radius: 4px;
+                color: #fff;
+                font-size: 1em;
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+            }
+            .btn-primary {
+                background-color: #007bff;
+            }
+            .btn-primary:hover {
+                background-color: #0056b3;
+            }
+            .btn-secondary {
+                background-color: #28a745;
+            }
+            .btn-secondary:hover {
+                background-color: #218838;
+            }
+        </style>
+
+
+        <!-- Add styles for popups -->
+        <style>
+            .popup {
+                display: none; /* Hidden by default */
+                position: fixed;
+                z-index: 1;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                overflow: auto;
+                background-color: rgb(0,0,0); /* Fallback color */
+                background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            }
+            .popup-content {
+                background-color: #fefefe;
+                margin: 15% auto;
+                padding: 20px;
+                border: 1px solid #888;
+                width: 80%;
+            }
+            .close {
+                color: #aaa;
+                float: right;
+                font-size: 28px;
+                font-weight: bold;
+            }
+            .close:hover,
+            .close:focus {
+                color: black;
+                text-decoration: none;
+                cursor: pointer;
+            }
+
+        </style>
+
+
+
+
+
+
+
+
+        <style>
+            /* Popup Form Styles */
+            .popup {
+                display: none; /* Hidden by default */
+                position: fixed;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                overflow: auto;
+                background-color: rgba(0,0,0,0.4); /* Black with opacity */
+            }
+            .popup-content {
+                background-color: #fefefe;
+                margin: 15% auto;
+                padding: 20px;
+                border: 1px solid #888;
+                width: 80%;
+                max-width: 500px;
+            }
+            .close {
+                color: #aaa;
+                float: right;
+                font-size: 28px;
+                font-weight: bold;
+            }
+            .close:hover,
+            .close:focus {
+                color: black;
+                text-decoration: none;
+                cursor: pointer;
+            }
+        </style>
+
+        <style>
+            /* poooooooopuuups */
+
+
+
+            /* Popup Overlay */
+            .popup-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0,0,0,0.5);
+                z-index: 1000;
+            }
+
+            .popup-content {
+                position: relative;
+                background-color: #fff;
+                border: 1px solid #333;
+                width: 50%; /* Adjust width as needed */
+                margin: 10% auto;
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            }
+
+            .popup-close {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                cursor: pointer;
+                font-size: 20px;
+                color: #aaa;
+            }
+
+            .popup-close:hover {
+                color: #333;
+            }
+
+            .popup-content h2 {
+                margin-bottom: 20px;
+                color: #333;
+            }
+
+            .popup-content form {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .popup-content label {
+                font-weight: bold;
+                margin-bottom: 10px;
+            }
+
+            .popup-content input[type="text"],
+            .popup-content input[type="email"] {
+                width: 100%;
+                padding: 10px;
+                margin-bottom: 15px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                font-size: 1em;
+                box-sizing: border-box;
+            }
+
+            .popup-content button[type="submit"] {
+                background-color: #3498db;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                margin-top: 15px;
+                cursor: pointer;
+                border-radius: 4px;
+                font-size: 1em;
+            }
+
+            .popup-content button[type="submit"]:hover {
+                background-color: #2980b9;
+            }
+        </style>
+
     </head>
 
     <body>
@@ -70,6 +352,7 @@
                                 Employee loggedInUser = (Employee) session.getAttribute("Employee");%>
                             <h3><%=loggedInUser.getFirstName()%> <%=loggedInUser.getLastName()%></h3>
                         </div> 
+
 
                         <div class="logout">
 
@@ -135,11 +418,29 @@
                             <button type="submit" name="submit" value="auto-submit" id="auto-submit" style="display: none"></button>
                         </div>
                         <div class="payment-icons">
-                            <img src="Icons/cashhh.png" alt="Cash" onclick="selectPaymentMethod('cash')">
-                            <img src="Icons/290142_business_card_cash_credit_money_icon.png" alt="Card" onclick="selectPaymentMethod('card')">
-                            <img src="Icons/wallet.png" alt="Card & Cash" onclick="selectPaymentMethod('cardAndcash')">
-                            <img src="Icons/gift-card.png" alt="voucher" onclick="selectPaymentMethod('voucher')">
+
+                            <div class="payment-option">
+                                <img src="Icons/cashhh.png" alt="Cash" onclick="selectPaymentMethod('cash')">
+                                <span>Cash</span>
+                            </div>
+                            <div class="payment-option">
+                                <img src="Icons/290142_business_card_cash_credit_money_icon.png" alt="Card" onclick="selectPaymentMethod('card')">
+                                <span>Card</span>
+                            </div>
+                            <div class="payment-option">
+                                <img src="Icons/wallet.png" alt="Card & Cash" onclick="selectPaymentMethod('cardAndcash')">
+                                <span>Card & Cash</span>
+                            </div>
+                            <div class="payment-option">
+                                <img src="Icons/gift-card.png" alt="voucher" onclick="selectPaymentMethod('voucher')">
+                                <span>voucher</span>
+                            </div>
+
                         </div>
+                        <c:if test="${not empty errorMessage}">
+                            <div class="error-message">${errorMessage}</div>
+                        </c:if>
+
                         <p>   </p>
 
 
@@ -165,8 +466,8 @@
                                 <input type="text" id="cash_amount" name="cash_amount" placeholder="Cash Amount">
                             </div>
                         </div>
-                        
-                        
+
+
                         <div class="payment-method" id="cash-card-amount" style="display:none;">
                             <div class="flex">
                                 <div class="inputBox">
@@ -179,16 +480,16 @@
                                 </div>
                             </div>
                         </div>
-                        
-                         <div class="payment-method" id="voucher-code" style="display:none;">
-                        <div>
-                            <label for="voucher_code">Voucher Code:</label>
-                            <input type="text" id="voucher_code" name="voucher_code" placeholder="Voucher Code">
-                        </div>
+
+                        <div class="payment-method" id="voucher-code" style="display:none;">
+                            <div>
+                                <label for="voucher_code">Voucher Code:</label>
+                                <input type="text" id="voucher_code" name="voucher_code" placeholder="Voucher Code">
+                            </div>
                         </div>
                         <p>   </p>
                         <div>
-                            <label for="customer_email">Customer Email:</label>
+
                             <input class="styled-input" type="email" id="customer_email" name="customer_email" placeholder="Enter customer email" >
                         </div>
                         <p>   </p>
@@ -197,7 +498,7 @@
 
                             <button class="styled-button" id="complete" type="submit" name="submit" value="Complete-Sale">Complete Sale</button>
                             <input class="styled-button" id="lay" type="submit" value="Process Layaway" onclick="openPopup()">
-                            <input class="styled-button" id="IBT" type="button" value="Process IBT" id="openPopupButton">
+                            <input class="styled-button"  type="button" value="Process IBT" id="openPopupButton">
 
                         </div>
                     </form>
@@ -294,21 +595,7 @@
             </div>
         </div>
 
-        <!-- The Popup Form -->
-        <div id="popupForm" class="popup">
-            <div class="popup-content">
-                <span class="close" id="closePopup">&times;</span>
-                <h2>Enter IBT ID Number</h2>
-                <form id="ibtForm">
-                    <label for="ibtNumber">IBT ID:</label>
-                    <input type="text" id="ibtNumber" name="ibtNumber" required>
-                    <label>Store ID: </label><label></label>
-                    <label></label><label></label>
-                    <label></label><label></label>
-                    <input type="submit" value="Submit">
-                </form>
-            </div>
-        </div>
+
 
         <script>
             document.addEventListener('DOMContentLoaded', function () {
@@ -340,6 +627,7 @@
         <audio id="beep-sound" src="beep.mp3" preload="auto"></audio>
 
         <script>
+
             function selectPaymentMethod(method) {
                 document.getElementById("payment-method").value = method;
 
@@ -356,7 +644,7 @@
                     document.getElementById('card-details').style.display = 'block';
                 } else if (method === 'cash') {
                     document.getElementById("cash-amount").style.display = "block";
-                }else if (method === "voucher") {
+                } else if (method === "voucher") {
                     document.getElementById("voucher-code").style.display = "block";
                 }
             }
@@ -566,7 +854,7 @@
             });
 
         </script>
-        
+
 
         <script>
             function openPopup() {
@@ -620,6 +908,47 @@
             }
         </script>
 
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                // Get the popup elements
+                var popup = document.getElementById("popupForm");
+                var successPopup = document.getElementById("successPopup");
+                var btn = document.querySelector('input[value^="Process Payment"]'); // Selects the "Process Payment" button
+                var closePopup = document.getElementById("closePopup");
+                var closeSuccessPopup = document.getElementById("closeSuccessPopup");
+                // Function to open the success popup
+                function showSuccessPopup() {
+                    successPopup.style.display = "block";
+                }
+                // When the user clicks the "Process Payment" button, show the success popup
+                btn.onclick = function (event) {
+                    event.preventDefault(); // Prevent form submission for demonstration purposes
+                    showSuccessPopup();
+                };
+                // When the user clicks on <span> (x) in success popup, close the success popup
+                closeSuccessPopup.onclick = function () {
+                    successPopup.style.display = "none";
+                };
+                // When the user clicks on <span> (x) in the main popup, close the main popup
+                closePopup.onclick = function () {
+                    popup.style.display = "none";
+                };
+                // When the user clicks anywhere outside of the success popup, close it
+                window.onclick = function (event) {
+                    if (event.target === successPopup) {
+                        successPopup.style.display = "none";
+                    }
+                };
+                // When the user clicks anywhere outside of the main popup, close it
+                window.onclick = function (event) {
+                    if (event.target === popup) {
+                        popup.style.display = "none";
+                    }
+                };
+            });
+        </script>
+
+
         <div class="popup-overlay" id="layawayPopup">
             <div class="popup-content">
                 <span class="popup-close" onclick="closePopup()">&times;</span>
@@ -633,5 +962,33 @@
                 </form>
             </div>
         </div>
+
+
+        <!-- The Popup Form -->
+        <div id="popupForm" class="popup">
+            <div class="popup-content">
+                <span class="close" id="closePopup">&times;</span>
+                <h2>Enter IBT ID Number</h2>
+                <form id="ibtForm" action="IBTServlet" method="post">
+                    <label for="ibtNumber">IBT ID:</label>
+                    <input type="text" id="ibtNumber" name="ibtNumber" >
+                    <label>Store ID of Sent IBT: </label><label id="storeID"><%= request.getAttribute("retrievedStoreID")%></label>
+                    <label></label><label></label>
+                    <label></label><label></label>
+                    <input type="submit" value="Validate Store" name="IBT_switch"> 
+                </form>
+                <input type="submit" value="Process Payment to store: <%= request.getAttribute("retrievedStoreID")%>">
+            </div>
+        </div>
+
+        <!-- Success Popup -->
+        <div id="successPopup" class="popup">
+            <div class="popup-content">
+                <span class="close" id="closeSuccessPopup">&times;</span>
+                <h2>Payment Successful</h2>
+                <p>Your payment has been processed successfully to store: <%= request.getAttribute("retrievedStoreID")%></p>
+            </div>
+        </div>
+
     </body>
 </html>

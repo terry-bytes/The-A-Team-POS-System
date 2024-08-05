@@ -11,11 +11,23 @@
     /* Basic reset for body */
     body {
         font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
+        
         background-color: #72c2f1;
     }
-
+    .sidebar img {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .sidebar a {
+            font: 100% bolder;
+            text-decoration: none; /* Remove underlining */
+            font-size: 25px;
+            color: black;
+            display: block;
+            
+        }
     .container {
         display: flex;
         flex-direction: column;
@@ -29,6 +41,8 @@
     .content {
         background-color: #fff;
         padding: 20px;
+         align-items: center;
+        justify-content: center;
         border-radius: 8px;
         box-shadow: 0 0 10px rgba(0,0,0,0.1);
         max-width: 800px;
@@ -132,9 +146,16 @@
     <%
         BigDecimal change =(BigDecimal)request.getSession(false).getAttribute("change");
         BigDecimal remainingAmount =(BigDecimal)request.getSession(false).getAttribute("remainingAmount");
+        
     %>
     
-   <div class="container"> 
+    <div id="mySidenav" class="sidebar">
+        <a href="tellerDashboard.jsp" >
+            <img src="Icons/back.png" alt="Icon 1"> Back
+        </a><br><br>
+    </div>
+    
+  
         <div class="content">
             <h1>Return Sale</h1>
 
@@ -219,7 +240,7 @@
                 <button type="submit">Pick New Item</button>
             </form>
         </div>
-    </div>
+
 
     <!-- Modal Structure -->
     <div id="returnModal" class="modal">

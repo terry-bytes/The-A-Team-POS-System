@@ -1,0 +1,145 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 03 Aug 2024, 14:43:25
+    Author     : T440
+*/
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body{
+    height: 100%;
+    width: 100%;
+    background-image: linear-gradient(to right, #277af6, #0098f7, #48b2ef, #85c7e5, #bfd9e0);
+    background-position: center;
+    background-size: cover;
+}
+
+.manager-container {
+    display: flex;
+}
+
+
+.left-main{
+    margin-left: 300px;
+    padding-left: 20px;
+     display: flex; /* Use flexbox for centering */
+    justify-content: center; /* Center items horizontally */
+    align-items: center; /* Center items vertically if needed */
+    height: 100vh; 
+}
+.main {
+    padding: 20px;
+    display: flex;
+
+}
+
+.login-box {
+    background: rgba(255, 255, 255, 1);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    margin: auto;
+    
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.login-header h3 {
+    margin: 0;
+}
+
+.two-forms {
+    display: flex;
+    justify-content: space-between;
+}
+
+.input-box {
+    position: relative;
+    margin-bottom: 20px;
+    flex: 1;
+    margin-right: 10px;
+}
+
+.input-box:last-child {
+    margin-right: 0;
+}
+
+.input-box input {
+    width: 100%;
+    padding: 12px 30px; 
+    border: 1px solid #3498db;
+    border-radius: 5px;
+    box-sizing: border-box;
+    background: rgba(255, 255, 255, 1);
+}
+
+.input-box i {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 1.2em;
+    color: #aaa;
+}
+
+.input-box label {
+    position: absolute;
+    top: -10px;
+    left: 10px;
+    background: rgba(255, 255, 255, 1);
+    padding: 0 1px;
+    font-size: 0.9em;
+    color: #555;
+}
+
+.select-container {
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.select-container label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.select-box {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.input-submit {
+    text-align: center;
+}
+
+.submit-btn {
+    padding: 10px 20px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.submit-btn:hover {
+    background-color: #2980b9;
+}
+
+p {
+    color: red;
+    text-align: center;
+}

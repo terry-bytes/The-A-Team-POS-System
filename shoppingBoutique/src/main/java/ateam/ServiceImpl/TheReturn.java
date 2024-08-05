@@ -18,7 +18,7 @@ import ateam.Models.Product;
 import ateam.Models.Return;
 import ateam.Models.Sale;
 import ateam.Models.SalesItem;
-import ateam.Services.impl.InventoryServiceImpl;
+import ateam.ServiceImpl.InventoryServiceImpl;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.logging.Level;

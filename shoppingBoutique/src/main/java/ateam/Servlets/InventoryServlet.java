@@ -6,7 +6,7 @@ import ateam.Models.Product;
 import ateam.Service.InventoryService;
 import ateam.Service.ProductService;
 import ateam.ServiceImpl.ProductServiceImpl;
-import ateam.Services.impl.InventoryServiceImpl;
+import ateam.ServiceImpl.InventoryServiceImpl;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;

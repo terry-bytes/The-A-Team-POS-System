@@ -28,15 +28,10 @@
             </div>
             <div class="nav-menu">
                 <ul>
-                    <li class="profile-area">
-                        <div class="theme-btn">
-                            <span class="material-icons-sharp">light_mode</span>
-                            <span class="material-icons-sharp">dark_mode</span>
-                        </div>
-                    </li>
-                    <li><a href="" class="link">Dashboard</a></li>
+                    
+                    <li><a href="SalesDemo?submit=getReports" class="link">Dashboard</a></li>
                     <li><a href="StoreServlet?submit=getStoreDashboard" class="link">My Store</a></li>
-                    <li><a href="" class="link">Notifications</a></li>
+                    
                     
                 </ul>
                 

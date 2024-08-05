@@ -80,7 +80,12 @@ public class SalesDemo extends HttpServlet {
         Map<String, BigDecimal> todaysSales = reports.getTodaysReportForAllStores();
         List<TopProductDTO> topProduct = reports.top40SellingProducts();
         List<Product> products = productService.getAllItems();
+        Map<Integer, Integer> salesInHour = reports.hourlySales(manager.getStore_ID());
 
+        System.out.println("MonthReport for my store: "+ generateMonthReportForStore.size());
+        System.out.println("least performing store: "+ leastPerformingStore.size());
+        
+        request.getSession(false).setAttribute("SalesRate", salesInHour);
         request.getSession(false).setAttribute("Products", products);
         request.getSession(false).setAttribute("top40SellingProducts", topProduct);
         request.getSession(false).setAttribute("Today'sReport", todaysSales);
@@ -127,6 +132,8 @@ public class SalesDemo extends HttpServlet {
             case "downloadReport":
                 handleDownloadRequest(request, response);
                 break;
+            case "salesAnalytics":
+                handleSalesAnalytics(request, response);
         }
     }
 
@@ -249,4 +256,19 @@ public class SalesDemo extends HttpServlet {
         }
     }
 
+    private void handleSalesAnalytics(HttpServletRequest request, HttpServletResponse response) throws IOException{
+        int storeId = Integer.parseInt(request.getParameter("storeId"));
+        
+        Map<Integer, Integer> salesInHour = reports.hourlySales(storeId);
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, Object> responseData = new TreeMap<>();
+        responseData.put("labels", salesInHour.keySet().toArray(new Integer[0])); // Convert keys to array for labels
+        responseData.put("data", salesInHour.values().toArray(new Integer[0]));
+        
+         response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        // Write the response data as JSON
+        mapper.writeValue(response.getWriter(), responseData);
+    }
 }

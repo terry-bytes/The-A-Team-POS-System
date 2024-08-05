@@ -247,7 +247,7 @@ public class ProductServlet extends HttpServlet {
                             change = totalPaid.subtract(totalAmountWithoutVAT);
                         }
                         
-                        else if ("voucher".equals(paymentMethod)) {
+                       else if ("voucher".equals(paymentMethod)) {
                             
                            String voucherCode = request.getParameter("voucher_code");
                            request.getSession(false).setAttribute("voucherCode", voucherCode);
@@ -275,7 +275,7 @@ public class ProductServlet extends HttpServlet {
                            // Mark the voucher as used
                            saleService.markVoucherAsUsed(voucherCode);
                        }
-                             
+                           
                         else if ("additionalPayment".equals(paymentMethod)) {
                            BigDecimal remainingAmount = new BigDecimal(request.getParameter("remaining_amount"));
                            BigDecimal additionalAmount = new BigDecimal(request.getParameter("additional_amount"));
@@ -296,13 +296,13 @@ public class ProductServlet extends HttpServlet {
                        }
 
 
-                        
+
                         newSale.setSales_date(new Timestamp(System.currentTimeMillis()));
                         newSale.setTotal_amount(totalAmountWithoutVAT);
                         newSale.setPayment_method(paymentMethod);
                         
                         if(newSale.getPayment_method().equals("voucher")){
-                            
+                          
                             newSale.setTotal_amount(totalAmountWithoutVAT);
                             // Mark the voucher as used
                             String voucher = (String)request.getSession(false).getAttribute("voucherCode");

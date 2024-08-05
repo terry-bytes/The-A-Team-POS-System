@@ -109,7 +109,7 @@ public class IBTServlet extends HttpServlet {
                     request.getRequestDispatcher("IBTSentDashboard.jsp").forward(request, response);
                     break;
 
-                case "IBT_Requests":
+                case "IBT-Requests":
                     handleReceivingIBTRequest(request, response);
                     break;
 
@@ -122,6 +122,14 @@ public class IBTServlet extends HttpServlet {
                    
                 case "Send SMS":
                     handleRetrievingCustomerNumber(request, response);
+                    break;
+                    
+                case"Validate Store":
+                    handleRetrievingStoreID(request, response);
+                    break;
+                    
+                case "Decline":
+                    handleDeletingIBT(request, response);
                     break;
             }
         }
@@ -156,7 +164,7 @@ public class IBTServlet extends HttpServlet {
         String customerName = request.getParameter("e_customer_name");
         String customerNumber = request.getParameter("e_customer_number");
         String customerEmail = request.getParameter("e_customer_email");
-        boolean success = ibtService.sendIBTRequest(product_id, store_id,store_name, product_quantity, customerName, customerNumber, customerEmail);
+        boolean success = ibtService.sendIBTRequest(product_id, store_id,store_name, product_quantity, customerName, customerNumber, customerEmail, store_id);
         if (success) {
         request.setAttribute("message", "IBT sent successfully");
     } else {
@@ -170,7 +178,7 @@ public class IBTServlet extends HttpServlet {
        HttpSession session = request.getSession(false);
         Store store_ID = (Store) session.getAttribute("store");
         int store_id = store_ID.getStore_ID();
-         boolean success = ibtService.deleteRequestedIBT(store_id);
+         boolean success = ibtService.ApproveRequestedIBT(store_id);
           if (success) {
         request.setAttribute("message", "IBT Approved successfully");
     } else {
@@ -229,5 +237,25 @@ public class IBTServlet extends HttpServlet {
         SmsSender.sendSms("+27631821265", message);
 
         System.out.println("CUSTOMER NUMBER " + customerNumber);
+    }
+    
+    private void handleRetrievingStoreID(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        int IBTRequestID = Integer.parseInt(request.getParameter("ibtNumber"));
+        int retrievedStoreID = ibtService.retrieveStoreID(IBTRequestID);
+        request.setAttribute("retrievedStoreID", retrievedStoreID);
+        request.getRequestDispatcher("tellerDashboard.jsp").forward(request, response);
+    }
+    
+    private void handleDeletingIBT(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
+        Store store_ID = (Store) session.getAttribute("store");
+        int store_id = store_ID.getStore_ID();
+        boolean success = ibtService.declineIBTRequest(store_id);
+        if (success) {
+        request.setAttribute("message", "IBT Declined successfully");
+    } else {
+        request.setAttribute("message", "IBT Declined successfully");
+    }
+          request.getRequestDispatcher("IBTReceiveDashboard.jsp").forward(request, response);
     }
 }

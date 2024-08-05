@@ -7,6 +7,7 @@ package ateam.ServiceImpl;
 
 import ateam.DAO.StoreDAO;
 import ateam.DAOIMPL.StoreDAOIMPL;
+import ateam.Exception.DuplicateStoreException;
 import ateam.Models.Store;
 import ateam.Service.StoreService;
 import java.util.List;
@@ -27,13 +28,15 @@ public class StoreServiceImpl implements StoreService{
     
 
     @Override
-    public boolean addStore(Store store) {
+    public boolean addStore(Store store) throws DuplicateStoreException{
         if(getAllStores().stream()
                 .filter(s -> s.getStore_name().equalsIgnoreCase(store.getStore_name()))
                 .findFirst()
                 .orElse(null)
-                != null)
-            return false;
+                != null){
+            throw new DuplicateStoreException();
+        }
+            
         return storeDao.addStore(store);
     }
 

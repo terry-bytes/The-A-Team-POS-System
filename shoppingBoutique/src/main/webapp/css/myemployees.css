@@ -1,0 +1,123 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 02 Aug 2024, 13:35:28
+    Author     : T440
+*/
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body{
+    background-image: linear-gradient(to right, #277af6, #0098f7, #48b2ef, #85c7e5, #bfd9e0);
+}
+
+section{
+    display: flex;
+}
+
+.left-main{
+    margin-left: 300px;
+    padding-left: 20px;
+}
+.emp-tb {
+    font-family: sans-serif;
+    width: 100%;
+    background-color: rgb(255, 255, 255);
+    border-collapse: collapse;
+    font-size: 1em;
+    margin: 20px 0;
+    border-radius: 5px 5px 0 0;
+    overflow: hidden;
+}
+.emp-tb thead tr{
+    font-family: sans-serif;
+    background-color: #007bff;
+    color: #fff;
+    text-align: left;
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
+.emp-tb th,
+.emp-tb td{ 
+    padding: 12px 15px;
+}
+.emp-tb tbody tr{
+    border-bottom: 1px solid #ddd;
+}
+.emp-tb tbody tr:nth-of-type(even){
+    background-color: #f3f3f3;
+}
+.emp-tb tbody tr:last-of-type{
+    border-bottom: 2px solid #007bff;
+}
+.emp-tb .icon{
+    min-width: 60px;
+    border-radius: 6px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: #5ba4e7;
+    transition: 0.3s ease;
+}
+.icon-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.icon-button i {
+    font-size: 1.2em;
+}
+.emp-tb tbody tr:hover{
+    color: #007bff;
+    font-weight: 400;
+}
+.header {
+    background-color: #f8f9fa; /* Light background color */
+    padding: 20px; /* Space inside the header */
+    border-bottom: 1px solid #ddd; /* Bottom border for separation */
+    display: flex; /* Flexbox for alignment */
+    flex-direction: column; /* Stack items vertically */
+    align-items: flex-start; /* Align items to the start */
+    gap: 10px; /* Space between items */
+}
+
+.header h4 {
+    margin: 0; /* Remove default margin */
+    font-size: 1.5em; /* Adjust font size */
+}
+
+.header p {
+    margin: 0; /* Remove default margin */
+    color: #d9534f; /* Color for the message */
+}
+
+.header a {
+    text-decoration: none; /* Remove underline from link */
+    color: #007bff; /* Link color */
+    font-weight: bold; /* Make link text bold */
+    margin-bottom: 10px; /* Space below the link */
+}
+
+.header a:hover {
+    text-decoration: underline; /* Underline link on hover */
+}
+
+.header input#searchInput {
+    padding: 10px; /* Space inside the input */
+    border: 1px solid #ccc; /* Border color */
+    border-radius: 5px; /* Rounded corners */
+    width: 100%; /* Full width of container */
+    max-width: 300px; /* Limit width of input */
+}

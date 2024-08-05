@@ -2,9 +2,11 @@ package ateam.Service;
 
 
 
+import ateam.DTO.SalesDTO;
 import ateam.Models.Employee;
 import ateam.Models.Sale;
 import java.math.BigDecimal;
+import ateam.Models.SaleDTO;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +28,11 @@ public interface SaleService2 {
     List<Sale> getAllSalesByStoreId(int storeId);
     List<Sale> getDailyStoreByStoreId(int storeId);
     List<Sale> getLeastPerformingStore(LocalDate endDate);
+
     void markVoucherAsUsed(String voucherCode);
     BigDecimal validateVoucher(String voucherCode);
+
+    List<Sale> getSaleForStoreByRange(int storeId, LocalDate startDate, LocalDate endDate);
+    List<SalesDTO> getStoreSales(int storeId);
+
 }

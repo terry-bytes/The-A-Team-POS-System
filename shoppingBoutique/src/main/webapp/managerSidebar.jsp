@@ -1,7 +1,7 @@
- <%-- 
-    Document   : sidebar
-    Created on : Jul 17, 2024, 9:15:57 AM
-    Author     : Admin
+<%-- 
+    Document   : managerSidebar
+    Created on : 05 Aug 2024, 14:06:10
+    Author     : T440
 --%>
 
 <%@page import="ateam.Models.Employee"%>
@@ -10,7 +10,8 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Sidebar</title>
+        <title>JSP Page</title>
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/sidebar.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/>
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/sidebar.css" />
         
@@ -18,7 +19,7 @@
         <script src="${pageContext.request.contextPath}/js/sidebar.js" defer></script>
     </head>
     <body>
-        <% Employee employee = (Employee) request.getSession(false).getAttribute("Employee");%>
+         <% Employee employee = (Employee) request.getSession(false).getAttribute("Employee");%>
         
         <nav class="sidebar close">
             <div class="menu">
@@ -36,28 +37,20 @@
                     <i class='bx bx-chevron-right toggle'></i>
                 </header>
                 
+                <li class="nav-link">
+                    <a href="SalesDemo?submit=getReports">
+                        <i class='bx bx-home-alt-2 icon' ></i>
+                        <span class="text nav-text">Home</span>
+                    </a>
+                </li>
                 
                 <li class="nav-link">
                     <a href="SalesDemo?submit=getReports">
-                        <i class='bx bx-home-alt icon' ></i>
+                        <i class='bx bxs-report icon' ></i>
                         <span class="text nav-text">Reports</span>
                     </a>
                 </li>
                 
-                <li class="nav-link">
-                    
-                    <a href="EmployeeServlet?submit=myEmployees">
-                        <i class='bx bx-group icon'></i>
-                        <span class="text nav-text">My Employees</span>
-                    </a>
-                </li>
-                
-                <li class="nav-link">
-                    <a href="StoreServlet?submit=getStoreDashboard">
-                        <i class='bx bx-store icon' ></i>
-                        <span class="text nav-text">My Store</span>
-                    </a>
-                </li>
                 
                 <li "class="nav-link">
                      <a href="IBTMainDashboard.jsp">

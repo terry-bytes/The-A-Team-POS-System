@@ -50,6 +50,7 @@
         }
 
         input[type="text"],
+        input[type="number"],
         select {
             width: calc(100% - 22px);
             padding: 10px;
@@ -57,6 +58,24 @@
             margin-bottom: 10px;
             border: 1px solid #cccccc;
             border-radius: 4px;
+        }
+
+        .payment-section {
+            display: none;
+        }
+
+        .flex {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .inputBox {
+            flex: 1;
+            margin-right: 10px;
+        }
+
+        .inputBox:last-child {
+            margin-right: 0;
         }
 
         button {
@@ -74,8 +93,32 @@
         }
     </style>
     <title>Additional Payment Required</title>
+    <script>
+        function showAdditionalPaymentSection() {
+            var paymentMethod = document.querySelector('select[name="additional_payment_method"]').value;
+            var sections = document.querySelectorAll('.payment-section');
+            sections.forEach(section => section.style.display = 'none');
+
+            if (paymentMethod === 'cash') {
+                document.getElementById('cash-section').style.display = 'block';
+            } else if (paymentMethod === 'card') {
+                document.getElementById('card-section').style.display = 'block';
+            } else if (paymentMethod === 'cashAndCard') {
+                document.getElementById('cash-card-section').style.display = 'block';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelector('select[name="additional_payment_method"]').addEventListener('change', showAdditionalPaymentSection);
+        });
+    </script>
 </head>
 <body>
+    <%
+       BigDecimal remainingAmount = (BigDecimal) request.getSession(false).getAttribute("remainingAmount");
+       BigDecimal voucherAmount = (BigDecimal) request.getSession(false).getAttribute("voucherAmount");
+       String voucherCode = (String) request.getSession(false).getAttribute("voucherCode");
+    %>
     <div class="container">
         <div class="content">
             <h2>Additional Payment Required</h2>
@@ -88,15 +131,51 @@
                 <div>
                     <label for="additional_payment_method">Select Payment Method:</label>
                     <select name="additional_payment_method" required>
+                        <option value="">Select</option>
                         <option value="cash">Cash</option>
                         <option value="card">Card</option>
                         <option value="cashAndCard">Cash and Card</option>
                     </select>
                 </div>
-                <div>
-                    <label for="additional_amount">Enter Amount:</label>
-                    <input type="text" name="additional_amount" required>
+
+                <!-- Cash Section -->
+                <div class="payment-section" id="cash-section">
+                    <label for="additional_cash_amount">Enter Cash Amount:</label>
+                    <input type="number" name="additional_cash_amount" step="0.01">
                 </div>
+
+                <!-- Card Section -->
+                <div class="payment-section" id="card-section">
+                    <div>
+                        <label for="card_number">Card Number:</label>
+                        <input type="text" id="card_number" name="card_number" placeholder="Card Number">
+                    </div>
+                    <div class="flex">
+                        <div class="inputBox">
+                            <label for="expiry_date">Expiry Date:</label>
+                            <input type="text" id="expiry_date" name="expiry_date" placeholder="Expiry Date">
+                        </div>
+                        <div class="inputBox">
+                            <label for="cvv">CVV:</label>
+                            <input type="text" id="cvv" name="cvv" placeholder="CVV">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cash and Card Section -->
+                <div class="payment-section" id="cash-card-section">
+                    <div class="flex">
+                        <div class="inputBox">
+                            <label for="cash_amount2">Enter Cash Amount:</label>
+                            <input type="number" id="cash_amount2" name="cash_amount2" step="0.01">
+                        </div>
+                        <div class="inputBox">
+                            <label for="card_amount2">Enter Card Amount:</label>
+                            <input type="number" id="card_amount2" name="card_amount2" step="0.01">
+                        </div>
+                    </div>
+                </div>
+
                 <button type="submit">Complete Payment</button>
             </form>
         </div>
