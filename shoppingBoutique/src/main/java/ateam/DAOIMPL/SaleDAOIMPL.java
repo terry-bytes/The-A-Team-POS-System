@@ -233,6 +233,35 @@ public class SaleDAOIMPL implements SaleDAO {
     }
 
     @Override
+    public List<Sale> getSalesForStoreByRange(int storeId, LocalDate startDate, LocalDate endDate) {
+         List<Sale> sales = new ArrayList<>();
+        if (connection != null) {
+            String sql = "SELECT sales_ID, sales_date, total_amount, payment_method, employee_ID FROM sales "
+                    + "WHERE store_ID = ? AND sales_date BETWEEN ? AND ? ";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                preparedStatement.setInt(1, storeId);
+                preparedStatement.setTimestamp(2, Timestamp.valueOf(startDate.atStartOfDay()));
+                preparedStatement.setTimestamp(3, Timestamp.valueOf(endDate.atStartOfDay()));
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    while (resultSet.next()) {
+                        Sale sale = new Sale();
+                        sale.setEmployee_ID(resultSet.getInt("employee_ID"));
+                        sale.setPayment_method(resultSet.getString("payment_method"));
+                        sale.setSales_ID(resultSet.getInt("sales_ID"));
+                        sale.setSales_date(resultSet.getTimestamp("sales_date"));
+                        sale.setTotal_amount(resultSet.getBigDecimal("total_amount"));
+
+                        sales.add(sale);
+                    }
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(SaleDAOIMPL.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return sales;
+    }
+
+    @Override
     public void addVoucher(String voucherNumber, BigDecimal amount) {
         Voucher voucher = new Voucher();
         String query = "INSERT INTO vouchers (voucher_code, amount, created_at) VALUES (?, ?, ?)";
@@ -240,10 +269,37 @@ public class SaleDAOIMPL implements SaleDAO {
              PreparedStatement stmt = conn.prepareStatement(query))  {
             stmt.setString(1,voucherNumber );
             stmt.setBigDecimal(2, amount);
-            stmt.setTimestamp(3, voucher.getCreatedAt());
+            stmt.setTimestamp(3, new Timestamp(System.currentTimeMillis()));
             stmt.executeUpdate();
         } catch (SQLException ex) {
             Logger.getLogger(SaleDAOIMPL.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+    
+    @Override
+    public BigDecimal validateVoucher(String voucherCode) {
+        BigDecimal amount = BigDecimal.ZERO;
+        try (Connection conn = new Connect().connectToDB();
+             PreparedStatement stmt = conn.prepareStatement("SELECT amount FROM vouchers WHERE voucher_code = ? AND used = 0")) {
+            stmt.setString(1, voucherCode);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                amount = rs.getBigDecimal("amount");
+            }
+        } catch (SQLException e) {
+           
+        }
+        return amount;
+    }
+    @Override
+    public void markVoucherAsUsed(String voucherCode) {
+        try (Connection conn = new Connect().connectToDB();
+             PreparedStatement stmt = conn.prepareStatement("UPDATE vouchers SET used = 1 WHERE voucher_code = ?")) {
+            stmt.setString(1, voucherCode);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            
         }
     }
 

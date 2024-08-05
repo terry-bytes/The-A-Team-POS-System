@@ -1,3 +1,9 @@
+<%-- 
+    Document   : managerAddEmployee
+    Created on : 05 Aug 2024, 15:30:27
+    Author     : T440
+--%>
+
 <%@page import="ateam.Models.Store"%>
 <%@page import="ateam.Models.Employee"%>
 <%@page import="java.util.List"%>
@@ -7,7 +13,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Add Store</title>
+        <title>Add Employee</title>
 
           <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/editEmp.css">
         <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
@@ -27,53 +33,31 @@
         <div class="left-main">
             <div class="login-box">
                 <div class="login-header">
-                    <h3>Add Store</h3>
+                    <h3>Add Employee</h3>
                 </div>
                 <form action="EmployeeServlet" method="post">
-                    <div class="input-box">
-                            <label for="firstName">Store Name</label>
-                            <input type="text"
-                                   id="firstName"
-                                   placeholder='Store name'
-                                   name='storeName'
-                                   class='input-field'
-                                   autocomplete="off" required
-                                   />
-                             <i class='bx bx-store icon' ></i>
-                        </div>
-                    <div class="input-box">
-                            <label for="firstName">Store Address</label>
-                            <input type="text"
-                                   id="firstName"
-                                   placeholder='Store Address'
-                                   name='storeAddress'
-                                   class='input-field'
-                                   autocomplete="off" required
-                                   />
-                             <i class='bx bx-location-plus'></i>
-                        </div>
                     <div class="two-forms">
                         <div class="input-box">
-                            <label for="firstName">Province</label>
+                            <label for="firstName">First Name</label>
                             <input type="text"
                                    id="firstName"
-                                   placeholder='Province'
-                                   name='storeProvince'
+                                   placeholder='First Name'
+                                   name='firstName'
                                    class='input-field'
                                    autocomplete="off" required
                                    />
-                             <i class='bx bx-location-plus'></i>
+                             <i class="bx bx-user"></i>
                         </div>
                         <div class="input-box">
-                            <label for="lastName">Zipcode</label>
+                            <label for="lastName">Last Name</label>
                             <input type="text"
                                    id="lastName"
-                                   placeholder='Zipcode'
-                                   name='storeZipcode'
+                                   placeholder='Last Name'
+                                   name='lastName'
                                    class='input-field'
                                    autocomplete="off" required
                                    />
-                             
+                             <i class="bx bx-user"></i>
                         </div>
                     </div>
 
@@ -81,8 +65,8 @@
                         <label for="email">Email</label>
                         <input type="email"
                                id="email"
-                               placeholder='Store Email Address'
-                               name='storeEmailAddress'
+                               placeholder='Email'
+                               name='email'
                                class='input-field'
                                autocomplete="off" required
                                />
@@ -90,21 +74,40 @@
                     </div>
 
                     <div class="input-box">
-                        <label for="password">Store Contact Number</label>
-                        <input type="number"
+                        <label for="password">Password</label>
+                        <input type="password"
                                id="password"
-                               placeholder='Contact number'
-                               name='storePhone'
+                               placeholder='Password'
+                               name='password'
                                class="input-field"
                                autocomplete="off" required
                                />
-                        <i class='bx bx-phone' ></i>
+                        <i class="bx bx-lock-alt"></i>
                     </div>
                     
+                    <div class="select-container">
+                        <label for="roleSelector">Role</label>
+                        <select class="select-box" name="role" id="roleSelector">
+                            <option value="Manager">Manager</option>
+                        </select>
+                    </div>
+                    <div class="select-container" id="storeSelector">
+                        <label for="managerStoreId">Store</label>
+
+                        <select class="select-box" name="managerStoreId" id="managerStoreId">
+                            <% if(stores != null) {
+                                for(Store store : stores) { %>
+                                <option value="<%=store.getStore_ID() %>"><%=store.getStore_name() %></option>
+                                <% } } %>
+                        </select>
+                    </div>
                     
+                    <% if(message != null) { %>
+                    <p><%=message%></p>
+                    <% } %>
                     <div class="input-submit">
                         <input name="submit" value="add" hidden>
-                        <button class="submit-btn" id="submit">Add Store</button>
+                        <button class="submit-btn" id="submit">Add Employee</button>
                     </div>
                 </form>
             </div>

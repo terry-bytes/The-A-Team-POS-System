@@ -1,3 +1,5 @@
+<%@page import="ateam.DTO.SalesDTO"%>
+<%@page import="ateam.Models.Sale"%>
 <%@page import="java.lang.String"%>
 <%@page import="java.util.List"%>
 <%@page import="ateam.Models.Product"%>
@@ -15,11 +17,13 @@
     </head>
     <body>
         <% Employee employee = (Employee) request.getSession(false).getAttribute("Employee");
+            List<Employee> employees = (List<Employee>) request.getSession(false).getAttribute("employees");
+            List<SalesDTO> sales = (List<SalesDTO>) request.getSession(false).getAttribute("myStoreSales");
            String message = (String) request.getAttribute("message");
         %>
-        <jsp:include page="navbar.jsp" />
+        <jsp:include page="sidebar.jsp" />
         <div class="container">
-            <div class="store-form">
+            <div class="store-form" style="display: none;">
                 <div class="heading">
                     <h4>Add Store</h4>
                     <% if(message != null){%>
@@ -36,42 +40,17 @@
                                />
 
                     </div>
+                  
                     <div class="input-box">
-                        <input type="text"
-                            placeholder='Address'
-                            name='storeAddress'
-                            class='input-field'
-                            autocomplete="on" required
-                        />
-
-                    </div>
-                    <div class="input-box">
-                        <input type="text"
-                            placeholder='City'
-                            name='storeCity'
-                            class='input-field'
-                            autocomplete="on" required
-                            />
-                         
-                    </div>
-                    <div class="input-box">
-                        <input type="text"
-                            placeholder='province'
-                            name='storeProvince'
-                            class='input-field'
-                            autocomplete="off" required
-                            />
-                         
-                    </div>
-                    <div class="input-box">
-                        <input type="text"
-                               placeholder='Zipcode'
-                               name='storeZipcode'
+                        <input type="email"
+                               placeholder='Branch email address'
+                               name='storeEmailAddress'
                                class='input-field'
                                autocomplete="off" required
                                />
 
                     </div>
+                    
                     <div class="input-box">
                         <input type="text"
                                placeholder='Branch Contact number'
@@ -81,10 +60,41 @@
                                />
 
                     </div>
+                    
                     <div class="input-box">
-                        <input type="email"
-                               placeholder='Branch email address'
-                               name='storeEmailAddress'
+                        <input type="text"
+                            placeholder='Address'
+                            name='storeAddress'
+                            class='input-field'
+                            autocomplete="on" required
+                        />
+
+                    </div>
+                    
+                    <div class="input-box">
+                        <input type="text"
+                            placeholder='City'
+                            name='storeCity'
+                            class='input-field'
+                            autocomplete="on" required
+                            />
+                         
+                    </div>
+                    
+                    <div class="input-box">
+                        <input type="text"
+                            placeholder='province'
+                            name='storeProvince'
+                            class='input-field'
+                            autocomplete="off" required
+                            />
+                         
+                    </div>
+                    
+                    <div class="input-box">
+                        <input type="text"
+                               placeholder='Zipcode'
+                               name='storeZipcode'
                                class='input-field'
                                autocomplete="off" required
                                />
@@ -99,6 +109,36 @@
                     </div>
                 </form>
             </div>
+                
+                <% if (sales != null && !sales.isEmpty()){%>
+                    <table >
+        <tr>
+          <th>Sale Id</th>
+          <th>Teller name</th>
+          <th>Payment Method</th>
+          <th>Sales Date</th>
+          <th>Total Amount</th>
+          <th>Action</th>
+        </tr>
+        <tbody>
+            <% for (SalesDTO sale : sales){%>
+            <tr>
+                <td><%= sale.getSaleId() %></td>
+                <td><%= sale.getTeller() %></td>
+                <td><%= sale.getPaymentMethod() %></td>
+                <td><%= sale.getSalesDate() %></td>
+                <td>R <%= sale.getTotalAmount() %></td>
+                <td>
+                    <form action="AdminServlet" method="post">
+                        <input name="saleId" value="<%= sale.getSaleId()%>" type="hidden">
+                        <button name="admin_switch" value="viewSaleItems" type="submit" >View Items</button>
+                    </form>
+                </td>
+            </tr>
+            <% } %>
+        </tbody>
+        </table><% } %>
+                
         </div>
     </body>
 </html>

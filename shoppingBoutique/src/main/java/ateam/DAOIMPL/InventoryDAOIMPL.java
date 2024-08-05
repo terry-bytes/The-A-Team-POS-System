@@ -311,9 +311,10 @@ public class InventoryDAOIMPL implements InventoryDAO {
                     inventory.setStore_ID(rs.getInt("store_ID"));
                     inventory.setInventory_quantity(rs.getInt("inventory_quantity"));
                     inventory.setReorder_point(rs.getInt("reorder_point"));
-                    reorderList.add(inventory);
+                    inventory.setProductName(rs.getString("product_name")); // Set product name
 
-                    logger.info("Product '" + rs.getString("product_name") + "' needs to be reordered.");
+                    reorderList.add(inventory);
+                    logger.info("Product '" + inventory.getProductName() + "' needs to be reordered.");
                 }
             }
         } catch (SQLException e) {

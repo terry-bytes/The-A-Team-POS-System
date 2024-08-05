@@ -13,11 +13,9 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
+            background-color: #72c2f1;
+            
+           
         }
         .container {
             background-color: white;
