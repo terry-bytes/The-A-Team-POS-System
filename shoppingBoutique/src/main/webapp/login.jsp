@@ -7,6 +7,7 @@
 
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+            @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
         *{
             margin: 0;
             padding: 0;
@@ -31,10 +32,15 @@
             text-align: center;
         }
 
-        .login-wrapper h4, .login-wrapper h3, .login-wrapper p {
+        .login-wrapper h4, .login-wrapper h3 {
             margin: 10px 0;
         }
-
+        
+        .login-wrapper p{
+             font-family: "Pacifico", cursive;
+  font-weight: 400;
+  font-style: normal;
+        }
         .input-field {
             margin: 20px 0;
             position: relative;
@@ -99,7 +105,7 @@
         <% String message = (String) request.getAttribute("message");%>
   
             <div class="login-wrapper">
-                <h4>Carols Boutique</h4>
+                <h2>Carols Boutique</h2>
                 <p>Where Comfort meets style</p>
                 <h3>Login</h3>
 

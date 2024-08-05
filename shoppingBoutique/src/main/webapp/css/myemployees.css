@@ -27,53 +27,39 @@ section{
     margin-left: 300px;
     padding-left: 20px;
 }
-#customers {
-  border-collapse: collapse;
-  width: 100%;
-  border: 1px solid #fff;
-  border-radius: 10px;
+.emp-tb {
+    font-family: sans-serif;
+    width: 100%;
+    background-color: rgb(255, 255, 255);
+    border-collapse: collapse;
+    font-size: 1em;
+    margin: 20px 0;
+    border-radius: 5px 5px 0 0;
+    overflow: hidden;
+}
+.emp-tb thead tr{
+    font-family: sans-serif;
+    background-color: #007bff;
+    color: #fff;
+    text-align: left;
+    padding-top: 12px;
+    padding-bottom: 12px;
 }
 
-/* General table styles */
-#customers {
-  border-collapse: collapse; /* Ensures borders between cells are merged */
-  width: 100%; /* Makes the table take the full width of its container */
+.emp-tb th,
+.emp-tb td{ 
+    padding: 12px 15px;
 }
-
-#customers td, #customers th {
-  border-bottom: 1px solid rgba(254, 254, 254, 0.5); /* Bottom border for cells */
-  padding: 8px; /* Padding inside cells */
-  text-align: left; /* Aligns text to the left inside cells */
+.emp-tb tbody tr{
+    border-bottom: 1px solid #ddd;
 }
-
-/* Zebra striping for table rows */
-#customers tr:nth-child(even) {
-  background: rgba(254, 254, 254, 0.1); /* Lighter background for even rows */
+.emp-tb tbody tr:nth-of-type(even){
+    background-color: #f3f3f3;
 }
-
-#customers tr:nth-child(odd) {
-  background: rgba(254, 254, 254, 0.05); /* Slightly different background for odd rows */
+.emp-tb tbody tr:last-of-type{
+    border-bottom: 2px solid #007bff;
 }
-
-/* Highlight row on hover */
-#customers tr:hover {
-  background: rgba(254, 254, 254, 0.2); /* Light background on hover */
-}
-
-/* Header styling */
-#customers th {
-  padding-top: 12px; /* Extra padding on top */
-  padding-bottom: 12px; /* Extra padding on bottom */
-  text-align: left; /* Aligns text to the left in headers */
-  color: white; /* Text color for headers */
-  background-color: #333; /* Dark background color for headers */
-}
-
-/* Bottom border for the last row */
-#customers tr:last-child td {
-  border-bottom: 2px solid #333; /* Adds a thicker bottom border for the last row */
-}
-#customers .icon{
+.emp-tb .icon{
     min-width: 60px;
     border-radius: 6px;
     height: 100%;
@@ -93,12 +79,45 @@ section{
 .icon-button i {
     font-size: 1.2em;
 }
-#customers tbody tr:hover{
+.emp-tb tbody tr:hover{
     color: #007bff;
-    font-weight: 600;
+    font-weight: 400;
 }
-.header{
-    display: flex;
-    justify-content: space-between;
-    padding-top: 20px;
+.header {
+    background-color: #f8f9fa; /* Light background color */
+    padding: 20px; /* Space inside the header */
+    border-bottom: 1px solid #ddd; /* Bottom border for separation */
+    display: flex; /* Flexbox for alignment */
+    flex-direction: column; /* Stack items vertically */
+    align-items: flex-start; /* Align items to the start */
+    gap: 10px; /* Space between items */
+}
+
+.header h4 {
+    margin: 0; /* Remove default margin */
+    font-size: 1.5em; /* Adjust font size */
+}
+
+.header p {
+    margin: 0; /* Remove default margin */
+    color: #d9534f; /* Color for the message */
+}
+
+.header a {
+    text-decoration: none; /* Remove underline from link */
+    color: #007bff; /* Link color */
+    font-weight: bold; /* Make link text bold */
+    margin-bottom: 10px; /* Space below the link */
+}
+
+.header a:hover {
+    text-decoration: underline; /* Underline link on hover */
+}
+
+.header input#searchInput {
+    padding: 10px; /* Space inside the input */
+    border: 1px solid #ccc; /* Border color */
+    border-radius: 5px; /* Rounded corners */
+    width: 100%; /* Full width of container */
+    max-width: 300px; /* Limit width of input */
 }

@@ -21,12 +21,12 @@
            List<Store> stores = (List<Store>) request.getSession(false).getAttribute("stores");
            Employee emp = (Employee) request.getAttribute("employee");
            String message = (String) request.getSession(false).getAttribute("message");
-            if (manager != null && manager.getRole() == Role.Manager){%>
+            if (manager != null && manager.getRole() != Role.Manager){%>
             <div class="manager-container">
             <div >
                 <jsp:include page="sidebar.jsp"/>
             </div>
-            <div class="main">
+            <div class="left-main">
                 <div class="login-box">
                     <div class="login-header">
                         <h3>Update <%= emp.getFirstName() %>'s details</h3>

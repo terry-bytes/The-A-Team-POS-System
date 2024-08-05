@@ -21,12 +21,10 @@
             String storeName;
         %>
         <% if(employee != null && employee.getRole() != Role.Teller) { %>
-        <jsp:include page="sidebar.jsp"></jsp:include>
+        
         <div class="manager-container">
-        <div>
-            
-        </div>
-        <div class="main">
+            <jsp:include page="sidebar.jsp"></jsp:include>
+        <div class="left-main">
             <div class="login-box">
                 <div class="login-header">
                     <h3>Add Employee</h3>
@@ -80,13 +78,11 @@
                                />
                         <i class="bx bx-lock-alt"></i>
                     </div>
+                    
                     <div class="select-container">
                         <label for="roleSelector">Role</label>
                         <select class="select-box" name="role" id="roleSelector">
-                            <% if(roles != null) {
-                                for(Role role : roles) { %>
-                                <option value="<%=role.name()%>"><%=role.name()%></option>
-                                <% } } %>
+                            <option value="Teller">Teller</option>
                         </select>
                     </div>
                     <div class="select-container" id="storeSelector" style="display: none;">

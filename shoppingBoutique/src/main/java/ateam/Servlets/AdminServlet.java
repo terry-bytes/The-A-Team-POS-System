@@ -93,7 +93,7 @@ public class AdminServlet extends HttpServlet {
                 handleViewEmployees(request, response);
                 break;
                 
-            case "Add Manager":
+            case "AddManager":
                 handleAddManager(request, response);
                 break;
              
@@ -139,7 +139,10 @@ public class AdminServlet extends HttpServlet {
     }
     
     private void handleAddManager(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.getRequestDispatcher("addEmployee.jsp").forward(request, response);
+        List<Store> stores = storeService.getAllStores();
+        
+        request.getSession(false).setAttribute("stores", stores);
+        request.getRequestDispatcher("managerAddEmployee.jsp").forward(request, response);
     }
     
     private void handleViewReports(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -147,6 +150,6 @@ public class AdminServlet extends HttpServlet {
     }
     
     private void handleAddStore(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.getRequestDispatcher("storeDashboard.jsp").forward(request, response);
+        request.getRequestDispatcher("myStore.jsp").forward(request, response);
     }
 }

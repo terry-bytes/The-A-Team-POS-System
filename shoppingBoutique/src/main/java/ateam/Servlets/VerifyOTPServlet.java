@@ -6,6 +6,7 @@ import ateam.DAOIMPL.EmployeeDAOIMPL;
 import ateam.DAOIMPL.StoreDAOIMPL;
 import ateam.Models.Email;
 import ateam.Models.Employee;
+import ateam.Models.Role;
 import ateam.Models.Store;
 import ateam.Service.EmailService;
 import ateam.Service.EmployeeService;
@@ -84,7 +85,11 @@ public class VerifyOTPServlet extends HttpServlet {
                 request.setAttribute("addEmployeeMessage", "Employee added successfully");
             }
             if(manager != null){
-                request.getRequestDispatcher("addEmployee.jsp").forward(request, response);
+                if(manager.getRole() == Role.Manager){
+                    request.getRequestDispatcher("addEmployee.jsp").forward(request, response);
+                }else {
+                    request.getRequestDispatcher("managerAddEmployee.jsp").forward(request, response);
+                }
             }else{
                 request.getRequestDispatcher("login.jsp").forward(request, response);
             }

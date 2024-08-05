@@ -15,6 +15,13 @@ and open the template in the editor.
     box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
 }
+body{
+    height: 100%;
+    width: 100%;
+    background-image: linear-gradient(to right, #277af6, #0098f7, #48b2ef, #85c7e5, #bfd9e0);
+    background-position: center;
+    background-size: cover;
+}
 
 .container{
     display: flex;
@@ -29,9 +36,10 @@ and open the template in the editor.
     justify-content: center;
     flex-direction: column;
     width: 440px;
-    height: 780px;
-    padding: 30px;
-    background-color: #edf2f2;
+    height: 480px;
+    padding: 30px;;
+
+    background-color: #fff;
 
 }
 
