@@ -14,11 +14,45 @@
         <!-- Include jQuery library -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+
         <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/teller.css">
+        <style>
+            /* Popup Form Styles */
+            .popup {
+                display: none; /* Hidden by default */
+                position: fixed;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                overflow: auto;
+                background-color: rgba(0,0,0,0.4); /* Black with opacity */
+            }
 
-        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/teller.css"> 
-        
+            .popup-content {
+                background-color: #fefefe;
+                margin: 15% auto;
+                padding: 20px;
+                border: 1px solid #888;
+                width: 80%;
+                max-width: 500px;
+            }
 
+            .close {
+                color: #aaa;
+                float: right;
+                font-size: 28px;
+                font-weight: bold;
+            }
+
+            .close:hover,
+            .close:focus {
+                color: black;
+                text-decoration: none;
+                cursor: pointer;
+            }
+        </style>
     </head>
 
     <body>
@@ -244,73 +278,44 @@
 
                 </div>
 
+
+
+
+
             </div>
         </div>
 
-                        
-    <!-- The Popup Form -->
-    <div id="popupForm" class="popup">
-        <div class="popup-content">
-            <span class="close" id="closePopup">&times;</span>
-            <h2>Enter IBT ID Number</h2>
-            <form id="ibtForm" action="IBTServlet" method="post">
-                <label for="ibtNumber">IBT ID:</label>
-                <input type="text" id="ibtNumber" name="ibtNumber" >
-                <label>Store ID of Sent IBT: </label><label id="storeID"><%= request.getAttribute("retrievedStoreID")%></label>
-                <label></label><label></label>
-                <label></label><label></label>
-                <input type="submit" value="Validate Store" name="IBT_switch"> 
-            </form>
-                <input type="submit" value="Process Payment to store: <%= request.getAttribute("retrievedStoreID")%>">
+        <!-- The Popup Form -->
+        <div id="popupForm" class="popup">
+            <div class="popup-content">
+                <span class="close" id="closePopup">&times;</span>
+                <h2>Enter IBT ID Number</h2>
+                <form id="ibtForm">
+                    <label for="ibtNumber">IBT ID:</label>
+                    <input type="text" id="ibtNumber" name="ibtNumber" required>
+                    <label>Store ID: </label><label></label>
+                    <label></label><label></label>
+                    <label></label><label></label>
+                    <input type="submit" value="Submit">
+                </form>
+            </div>
+        </div>
 
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                // Get the popup and button elements
+                var popup = document.getElementById("popupForm");
+                var btn = document.getElementById("openPopupButton");
+                var close = document.getElementById("closePopup");
 
-    </div>
-    </div>  
-                
-                <!-- Success Popup -->
-    <div id="successPopup" class="popup">
-    <div class="popup-content">
-        <span class="close" id="closeSuccessPopup">&times;</span>
-        <h2>Payment Successful</h2>
-        <p>Your payment has been processed successfully to store: <%= request.getAttribute("retrievedStoreID")%></p>
-    </div>
-    </div>
-         
-         <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Get the popup and button elements
-            var popup = document.getElementById("popupForm");
-           
-            var btn = document.getElementById("openPopupButton");
-            var close = document.getElementById("closePopup");
-            
-            
+                // When the user clicks the button, open the popup
+                btn.onclick = function () {
+                    popup.style.display = "block";
+                };
 
-
-            // When the user clicks the button, open the popup
-            btn.onclick = function() {
-                popup.style.display = "block";
-            };
-
-            // When the user clicks on <span> (x), close the popup
-            close.onclick = function() {
-                popup.style.display = "none";
-            };
-            
-            // When the user clicks anywhere outside of the popup, close it
-            window.onclick = function(event) {
-                if (event.target === popup) {
+                // When the user clicks on <span> (x), close the popup
+                close.onclick = function () {
                     popup.style.display = "none";
-
-                }
-            };
-         
-    });
-    </script>
-    
-    
-    <script>
-
                 };
 
                 // When the user clicks anywhere outside of the popup, close it
@@ -327,7 +332,6 @@
 
         <script>
            
-
             function selectPaymentMethod(method) {
                 document.getElementById("payment-method").value = method;
 
@@ -340,6 +344,7 @@
                     document.getElementById("card-details").style.display = "block";
                 } else if (method === 'cardAndcash') {
                     document.getElementById("cash-card-amount").style.display = "block";
+                    document.getElementById('card-details').style.display = 'block';
                 } else if (method === 'cash') {
                     document.getElementById("cash-amount").style.display = "block";
                 }
@@ -376,7 +381,7 @@
                         alert("Please enter a valid card amount.");
                         return false;
                     }
-                     if (!cashAmount2 || isNaN(cashAmount2) || parseFloat(cashAmount2) <= 0) {
+                    if (!cashAmount2 || isNaN(cashAmount2) || parseFloat(cashAmount2) <= 0) {
                         alert("Please enter a valid cash amount.");
                         return false;
                     }
@@ -550,8 +555,8 @@
             });
 
         </script>
-    
-    <script>
+
+        <script>
             function openPopup() {
                 document.getElementById('layawayPopup').style.display = 'block';
                 event.preventDefault(); // Prevent form submission
@@ -602,61 +607,6 @@
                 });
             }
         </script>
-        
-        
-         <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Get the popup elements
-        var popup = document.getElementById("popupForm");
-        var successPopup = document.getElementById("successPopup");
-        var btn = document.querySelector('input[value^="Process Payment"]'); // Selects the "Process Payment" button
-        var closePopup = document.getElementById("closePopup");
-        var closeSuccessPopup = document.getElementById("closeSuccessPopup");
-
-        // Function to open the success popup
-        function showSuccessPopup() {
-            successPopup.style.display = "block";
-        }
-
-        // When the user clicks the "Process Payment" button, show the success popup
-        btn.onclick = function(event) {
-            event.preventDefault(); // Prevent form submission for demonstration purposes
-            showSuccessPopup();
-        };
-
-        // When the user clicks on <span> (x) in success popup, close the success popup
-        closeSuccessPopup.onclick = function() {
-            successPopup.style.display = "none";
-        };
-
-        // When the user clicks on <span> (x) in the main popup, close the main popup
-        closePopup.onclick = function() {
-            popup.style.display = "none";
-        };
-
-        // When the user clicks anywhere outside of the success popup, close it
-        window.onclick = function(event) {
-            if (event.target === successPopup) {
-                successPopup.style.display = "none";
-            }
-        };
-
-        // When the user clicks anywhere outside of the main popup, close it
-        window.onclick = function(event) {
-            if (event.target === popup) {
-                popup.style.display = "none";
-            }
-        };
-    });
-</script>
-
-
-        <video id="barcode-scanner" autoplay></video>
-        <audio id="beep-sound" src="beep.mp3" preload="auto"></audio>
-
-  
-          
-
 
         <div class="popup-overlay" id="layawayPopup">
             <div class="popup-content">
