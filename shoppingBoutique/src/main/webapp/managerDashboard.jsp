@@ -37,7 +37,7 @@
         </script>
     </head>
     <body>
-        <jsp:include page="sidebar.jsp"/>
+        
         <%
 
             Employee employee = (Employee) request.getSession(false).getAttribute("Employee");
@@ -86,7 +86,11 @@
                         data.setLength(data.length() - 1);
                     }
         %>
-
+        <% if (employee.getRole() == Role.Admin){%>
+        <jsp:include page="managerSidebar.jsp" />
+        <%} else {%>
+        <jsp:include page="sidebar.jsp" />
+        <%}%>
         <div class="manager-container">
 
 

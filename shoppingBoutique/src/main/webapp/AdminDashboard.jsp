@@ -26,6 +26,14 @@
             width: 100%;
             height: 100vh;
         }
+        section{
+            display: flex;
+        }
+        .left-main{
+            margin-left: 300px;
+            padding-left: 20px;
+            margin-right: 300px;
+        }
             h1 {
                 color: #333;
             }
@@ -137,32 +145,40 @@
             color: #007bff;
             font-weight: 400;
         }
+        .myEmployees{
+            margin-top: 30px;
+        }
+        .myEmployees h4{
+            color: #fff;
+            font-weight: 600;
+        }
+        .header { 
+    padding: 20px; /* Space inside the header */
+    border-bottom: 1px solid #ddd; /* Bottom border for separation */
+    display: flex; /* Use flexbox for horizontal alignment */
+    align-items: center; /* Center items vertically */
+    justify-content: space-between; /* Distribute space between items */
+}
          </style>
     </head>
     <body>
+        <section>
         <%  List<Employee> employeeList = (List<Employee>) request.getAttribute("employeeList"); 
             List<Store> storeList = (List<Store>) request.getAttribute("storeList");
 
             
         
             %>
-        
-        
-        <h1>Please choose an option</h1>
-   
-        <form action="AdminServlet" method="POST">
-        <label>View all employees</label>
-        <button class="btn-submit" name="admin_switch" value="View">View</button>
-        <label>Add Managers</label>
-        <button class="btn-submit" name="admin_switch" value="Add Manager">Add</button>
-        
-        <label>View Reports</label>
-        <button class="btn-submit" name="admin_switch" value="View Report">View</button>
-        
-        <label>Add a Store</label>
-        
-        </form>
-
+            <jsp:include page="managerSidebar.jsp"/>
+            <div class="left-main">
+       
+                <div class="myEmployees">
+                    <div class="header">
+                        <h4>Carol's boutique employees</h4>
+                        <form action="AdminServlet" method="POST">
+                            <button name="admin_switch" value="AddManager">Add Employee</button>
+                        </form>
+                    </div>
         <!-- Display all layaways in a table -->
         <div class="table-wrapper">
             
@@ -201,7 +217,7 @@
             <td><%= employee.getRole() %></td>
             <td><%= employee.getEmail() %></td>
             <td>
-                 <form action="EmployeeServlet" method="post" style="display:inline;">
+                 <form action="EmployeeServlet" method="get" style="display:inline;">
                             <input type="hidden" name="employeeId" value="<%= employee.getEmployee_ID() %>">
                             <button type="submit" name="submit" value="edit" class="icon-button">
                                 <i class='bx bx-edit icon'></i>
@@ -229,10 +245,16 @@
                             <% } %>
                         </div>
            <%}%>
-            
+        </div>
             <div class="stores">
                 <% if (storeList != null && !storeList.isEmpty()){
         %>
+        <div class="header">
+                        <h4>Carol's boutique Store</h4>
+                        <form action="AdminServlet" method="POST">
+                            <button name="admin_switch" value="Add Store">Add Store</button>
+                        </form>
+                    </div>
         <table class="emp-tb">
         <thead>
                 <tr>
@@ -270,5 +292,7 @@
                 <%}%>
             </div>
         </div> 
+            </div>
+        </section>
     </body>
 </html>

@@ -28,18 +28,28 @@ body{
 }
 
 
-
+.left-main{
+    margin-left: 300px;
+    padding-left: 20px;
+     display: flex; /* Use flexbox for centering */
+    justify-content: center; /* Center items horizontally */
+    align-items: center; /* Center items vertically if needed */
+    height: 100vh; 
+}
 .main {
     padding: 20px;
+    display: flex;
+
 }
 
 .login-box {
-    background: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 1);
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     max-width: 500px;
     margin: auto;
+    
 }
 
 .login-header {
@@ -73,7 +83,7 @@ body{
     border: 1px solid #3498db;
     border-radius: 5px;
     box-sizing: border-box;
-    background: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 1);
 }
 
 .input-box i {
@@ -88,8 +98,8 @@ body{
     position: absolute;
     top: -10px;
     left: 10px;
-    background: rgba(255, 255, 255, 0.8);
-    padding: 0 5px;
+    background: rgba(255, 255, 255, 1);
+    padding: 0 1px;
     font-size: 0.9em;
     color: #555;
 }

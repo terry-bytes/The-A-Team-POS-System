@@ -10,6 +10,7 @@ import ateam.DAOIMPL.StoreDAOIMPL;
 import ateam.DTO.SalesDTO;
 import ateam.Exception.DuplicateStoreException;
 import ateam.Models.Employee;
+import ateam.Models.Role;
 import ateam.Models.Store;
 import ateam.Service.SaleService2;
 import ateam.Service.StoreService;
@@ -102,6 +103,7 @@ public class StoreServlet extends HttpServlet {
     
     private void handleAddStore(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException{
         Store store = new Store();
+        Employee manager = (Employee) request.getSession(false).getAttribute("Employee");
         store.setStore_name(request.getParameter("storeName"));
         store.setStore_address(request.getParameter("storeAddress"));
         store.setStore_city(request.getParameter("storeCity"));
@@ -126,7 +128,7 @@ public class StoreServlet extends HttpServlet {
             request.setAttribute("message", ex.getMessage());
         }
         
-        request.getRequestDispatcher("storeDashboard.jsp").forward(request, response);
+        request.getRequestDispatcher("myStore.jsp").forward(request, response);
     }
     
     private void handleViewAllStores(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
