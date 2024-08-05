@@ -14,10 +14,8 @@
         body {
             font-family: Arial, sans-serif;
             background-color: #72c2f1;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
+            
+           
         }
         .container {
             background-color: white;

@@ -65,7 +65,6 @@ public class ProductServlet extends HttpServlet {
 
     private InventoryDAO inventoryDAO = new InventoryDAOIMPL();
 
-
     private static final double VAT_RATE = 0.15;
 
     @Override
@@ -201,11 +200,18 @@ public class ProductServlet extends HttpServlet {
                     BigDecimal cashPaid = BigDecimal.ZERO;
                     BigDecimal cardPaid = BigDecimal.ZERO;
 
-                   try {
+                    try {
+                        // Check if there are scanned items
+                        if (scannedItems == null || scannedItems.isEmpty()) {
+                            request.setAttribute("errorMessage", "No items have been scanned for the sale.");
+                            break;
+                        }
+
                         String paymentMethod = request.getParameter("payment_method");
 
+                        // Handle cash payment
                         if ("cash".equals(paymentMethod)) {
-                            cashPaidStr = request.getParameter("cash_amount");
+                             cashPaidStr = request.getParameter("cash_amount");
                             if (cashPaidStr != null && !cashPaidStr.trim().isEmpty()) {
                                 cashPaidStr = cashPaidStr.trim().replace(",", "");
                                 cashPaid = new BigDecimal(cashPaidStr);
@@ -219,16 +225,15 @@ public class ProductServlet extends HttpServlet {
                                 break;
                             }
 
+                            // Handle card payment
                         } else if ("card".equals(paymentMethod)) {
                             cardPaid = totalAmountWithoutVAT; // Assuming the full amount is paid by card
 
-                        }
-                            
-                        else if ("cardAndcash".equals(paymentMethod)) {
+                            // Handle card and cash payment
+                        } else if ("cardAndcash".equals(paymentMethod)) {
                             String cashPaidStr2 = request.getParameter("cash_amount2");
                             String cardPaidStr2 = request.getParameter("card_amount2");
-                            System.out.println(cardPaidStr2);
-                            System.out.println(cashPaidStr);
+
                             if (cashPaidStr2 != null && !cashPaidStr2.trim().isEmpty()) {
                                 cashPaidStr2 = cashPaidStr2.trim().replace(",", "");
                                 cashPaid = new BigDecimal(cashPaidStr2);
@@ -252,9 +257,9 @@ public class ProductServlet extends HttpServlet {
                             }
 
                             change = totalPaid.subtract(totalAmountWithoutVAT);
-                        }
-                        
-                        else if ("voucher".equals(paymentMethod)) {
+
+                            // Handle voucher payment
+                        } else if ("voucher".equals(paymentMethod)) {
                             String voucherCode = request.getParameter("voucher_code");
                             request.getSession(false).setAttribute("voucherCode", voucherCode);
                             voucherAmount = saleService.validateVoucher(voucherCode);
@@ -262,33 +267,29 @@ public class ProductServlet extends HttpServlet {
                                 request.setAttribute("errorMessage", "Invalid or expired voucher code.");
                                 break;
                             }
-                            
+
                             BigDecimal remainingAmount = totalAmountWithoutVAT.subtract(voucherAmount);
                             if (remainingAmount.compareTo(BigDecimal.ZERO) < 0) {
                                 change = voucherAmount.subtract(totalAmountWithoutVAT);
                                 voucherAmount = totalAmountWithoutVAT;
-                               
+
                             } else {
                                 totalAmountWithoutVAT = remainingAmount;
-                            
-                         }
-                          
-                             
+                            }
                         }
 
-                        
+                        // Save sale details
                         newSale.setSales_date(new Timestamp(System.currentTimeMillis()));
                         newSale.setTotal_amount(totalAmountWithoutVAT);
                         newSale.setPayment_method(paymentMethod);
-                        
-                        if(newSale.getPayment_method().equals("voucher")){
-                          
+
+                        if (newSale.getPayment_method().equals("voucher")) {
                             // Mark the voucher as used
-                            String voucher = (String)request.getSession(false).getAttribute("voucherCode");
+                            String voucher = (String) request.getSession(false).getAttribute("voucherCode");
                             saleService.markVoucherAsUsed(voucher);
-                            
                         }
 
+                        // Check if employee is logged in
                         if (loggedInUser != null) {
                             newSale.setEmployee_ID(loggedInUser.getEmployee_ID());
                             newSale.setStore_ID(loggedInUser.getStore_ID());
@@ -296,8 +297,10 @@ public class ProductServlet extends HttpServlet {
                             request.setAttribute("errorMessage", "Employee not logged in.");
                             break;
                         }
+
                         int newSalesID = saleDAO.saveSale(newSale);
                         if (newSalesID != -1) {
+                            // Save sales items
                             for (Product item : scannedItems) {
                                 SalesItem salesItem = new SalesItem();
                                 salesItem.setSales_ID(newSalesID);
@@ -308,20 +311,21 @@ public class ProductServlet extends HttpServlet {
                                 salesItemDAO.saveSalesItem(salesItem);
                             }
 
+                            // Process inventory and notifications
                             inventoryService.processSale(newSalesID);
                             List<Inventory> reorderList = inventoryDAO.checkAndSendReorderNotification(loggedInUser.getStore_ID());
 
+                            // Send receipt via email and SMS
                             String salespersonName = loggedInUser.getFirstName() + " " + loggedInUser.getLastName();
                             String saleTime = newSale.getSales_date().toString();
                             String customerEmail = request.getParameter("customer_email");
-                             request.setAttribute("saleID", newSalesID);
+                            request.setAttribute("saleID", newSalesID);
 
-                           emailService.sendSaleReceipt(customerEmail, salespersonName, saleTime, scannedItems, totalAmountWithoutVAT, vatAmount, change, newSale.getPayment_method(), cashPaid, cardPaid, newSalesID);
+                            emailService.sendSaleReceipt(customerEmail, salespersonName, saleTime, scannedItems, totalAmountWithoutVAT, vatAmount, change, newSale.getPayment_method(), cashPaid, cardPaid, newSalesID);
                             SmsSender.sendSms("+27631821265", "Thank you for SHOPPING with us! 😊 Please check your email (" + customerEmail + ") for your RECEIPT.");
 
-
+                            // Clear scanned items and set attributes for receipt
                             scannedItems.clear();
-
                             request.setAttribute("totalAmount", totalAmountWithoutVAT);
                             request.setAttribute("vatAmount", vatAmount);
                             request.setAttribute("change", change);
@@ -368,8 +372,7 @@ public class ProductServlet extends HttpServlet {
             request.setAttribute("errorMessage", "An unexpected error occurred.");
             request.getRequestDispatcher("tellerDashboard.jsp").forward(request, response);
         }
-        
-        
+
     }
 
     private boolean verifyManagerPassword(int storeID, String password) {
