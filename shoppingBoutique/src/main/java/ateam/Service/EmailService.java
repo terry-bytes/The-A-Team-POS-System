@@ -24,5 +24,5 @@ public interface EmailService {
 
     void VoucherEmail(String to, BigDecimal change, String voucher);
 
-    void sendSaleReceipt(String toEmail, String salespersonName, String saleTime, List<Product> items, BigDecimal totalAmountWithVAT, BigDecimal vatAmount, BigDecimal change, String paymentMethod, BigDecimal cashPaid, BigDecimal cardPaid);
+    void sendSaleReceipt (String toEmail, String salespersonName, String saleTime, List<Product> items, BigDecimal totalAmountWithVAT, BigDecimal vatAmount, BigDecimal change, String paymentMethod, BigDecimal cashPaid, BigDecimal cardPaid, int saleID);
 }
