@@ -20,9 +20,11 @@ import ateam.Service.EmailService;
 
 import ateam.Service.ProductService;
 import ateam.Service.ReturnService;
+import ateam.Service.SaleService2;
 import ateam.ServiceImpl.EmailServiceImpl;
 import ateam.ServiceImpl.ProductServiceImpl;
 import ateam.ServiceImpl.ReturnServiceImpl;
+import ateam.ServiceImpl.SaleServiceImpl;
 import ateam.Services.impl.InventoryServiceImpl;
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -55,6 +57,7 @@ public class ProductServlet extends HttpServlet {
     private EmailService emailService = new EmailServiceImpl();
     private Connect dbConnect = new Connect();
     private InventoryService inventoryService = new InventoryServiceImpl();
+    private SaleService2 saleService = new SaleServiceImpl();
 
     private static final double VAT_RATE = 0.15;
 
@@ -62,6 +65,7 @@ public class ProductServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        BigDecimal voucherAmount = BigDecimal.ZERO;
         HttpSession session = request.getSession();
         Employee loggedInUser = (Employee) session.getAttribute("Employee");
         List<Product> scannedItems = (List<Product>) session.getAttribute("scannedItems");
@@ -77,6 +81,7 @@ public class ProductServlet extends HttpServlet {
         String sku2 = request.getParameter("sku");
         String managerPassword = request.getParameter("manager_password");
         String cashPaidStr = request.getParameter("cash_amount");
+        Sale newSale = new Sale();
 
         try {
             switch (submit) {
@@ -189,7 +194,7 @@ public class ProductServlet extends HttpServlet {
                     BigDecimal cashPaid = BigDecimal.ZERO;
                     BigDecimal cardPaid = BigDecimal.ZERO;
 
-                    try {
+                   try {
                         String paymentMethod = request.getParameter("payment_method");
 
                         if ("cash".equals(paymentMethod)) {
@@ -210,7 +215,9 @@ public class ProductServlet extends HttpServlet {
                         } else if ("card".equals(paymentMethod)) {
                             cardPaid = totalAmountWithoutVAT; // Assuming the full amount is paid by card
 
-                        } else if ("cardAndcash".equals(paymentMethod)) {
+                        }
+                            
+                        else if ("cardAndcash".equals(paymentMethod)) {
                             String cashPaidStr2 = request.getParameter("cash_amount2");
                             String cardPaidStr2 = request.getParameter("card_amount2");
                             System.out.println(cardPaidStr2);
@@ -239,11 +246,41 @@ public class ProductServlet extends HttpServlet {
 
                             change = totalPaid.subtract(totalAmountWithoutVAT);
                         }
+                        
+                        else if ("voucher".equals(paymentMethod)) {
+                            String voucherCode = request.getParameter("voucher_code");
+                            request.getSession(false).setAttribute("voucherCode", voucherCode);
+                            voucherAmount = saleService.validateVoucher(voucherCode);
+                            if (voucherAmount.compareTo(BigDecimal.ZERO) <= 0) {
+                                request.setAttribute("errorMessage", "Invalid or expired voucher code.");
+                                break;
+                            }
+                            
+                            BigDecimal remainingAmount = totalAmountWithoutVAT.subtract(voucherAmount);
+                            if (remainingAmount.compareTo(BigDecimal.ZERO) < 0) {
+                                change = voucherAmount.subtract(totalAmountWithoutVAT);
+                                voucherAmount = totalAmountWithoutVAT;
+                               
+                            } else {
+                                totalAmountWithoutVAT = remainingAmount;
+                            
+                         }
+                          
+                             
+                        }
 
-                        Sale newSale = new Sale();
+                        
                         newSale.setSales_date(new Timestamp(System.currentTimeMillis()));
                         newSale.setTotal_amount(totalAmountWithoutVAT);
                         newSale.setPayment_method(paymentMethod);
+                        
+                        if(newSale.getPayment_method().equals("voucher")){
+                          
+                            // Mark the voucher as used
+                            String voucher = (String)request.getSession(false).getAttribute("voucherCode");
+                            saleService.markVoucherAsUsed(voucher);
+                            
+                        }
 
                         if (loggedInUser != null) {
                             newSale.setEmployee_ID(loggedInUser.getEmployee_ID());
@@ -252,7 +289,6 @@ public class ProductServlet extends HttpServlet {
                             request.setAttribute("errorMessage", "Employee not logged in.");
                             break;
                         }
-
                         int newSalesID = saleDAO.saveSale(newSale);
                         if (newSalesID != -1) {
                             for (Product item : scannedItems) {
@@ -274,7 +310,7 @@ public class ProductServlet extends HttpServlet {
 
                             emailService.sendSaleReceipt(customerEmail, salespersonName, saleTime, scannedItems, totalAmountWithoutVAT, vatAmount, change, newSale.getPayment_method(), cashPaid, cardPaid);
 
-                            SmsSender.sendSms("add number", "Thank you for SHOPPING with us! 😊 Please check your email (" + customerEmail + ") for your RECEIPT.");
+                           // SmsSender.sendSms("add number", "Thank you for SHOPPING with us! 😊 Please check your email (" + customerEmail + ") for your RECEIPT.");
 
                             scannedItems.clear();
 
@@ -324,6 +360,8 @@ public class ProductServlet extends HttpServlet {
             request.setAttribute("errorMessage", "An unexpected error occurred.");
             request.getRequestDispatcher("tellerDashboard.jsp").forward(request, response);
         }
+        
+        
     }
 
     private boolean verifyManagerPassword(int storeID, String password) {

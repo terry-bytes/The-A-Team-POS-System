@@ -13,7 +13,7 @@
         font-family: Arial, sans-serif;
         margin: 0;
         padding: 0;
-        background-color: #bfd9e0;
+        background-color: #72c2f1;
     }
 
     .container {

@@ -12,6 +12,7 @@ import ateam.Models.Role;
 import ateam.Models.Sale;
 import ateam.Models.Store;
 import ateam.Service.SaleService2;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -140,6 +141,18 @@ public class SaleServiceImpl implements SaleService2{
     public List<Sale> getLeastPerformingStore(LocalDate endDate) {
         return saleDao.getLeastPerformingStores(endDate);
     }
+
+    @Override
+    public void markVoucherAsUsed(String voucherCode) {
+      saleDao.markVoucherAsUsed( voucherCode);   
+    }
+
+    @Override
+    public BigDecimal validateVoucher(String voucherCode) {
+        
+     return saleDao.validateVoucher(voucherCode);
+    }
+    
     
     
 }
