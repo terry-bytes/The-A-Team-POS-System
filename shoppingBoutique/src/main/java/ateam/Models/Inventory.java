@@ -18,5 +18,6 @@ public class Inventory {
     private int reorder_point;
     private Timestamp last_updated;
     private int updated_by_employee_ID;
+    private String productName;
     
 }
