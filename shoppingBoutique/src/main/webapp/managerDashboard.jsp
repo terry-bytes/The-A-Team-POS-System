@@ -353,7 +353,13 @@
                     <div class="two">
                         <h4>Sales Rate</h4>
 
-
+                        <h4>Check another stores</h4>
+                            <select id='hourlyRateStoreId'>
+                                <option  disabled selected>Select Product</option>
+                                <% for (Store store : stores) {%>
+                                <option value="<%= store.getStore_ID()%>"><%= store.getStore_name() %></option>
+                                <% } %>
+                            </select>
                         <div class="input-submit">
                             <input name="submit" value="download" hidden>
                             <button class="submit-btn" id="submit">Download</button>
@@ -362,9 +368,11 @@
                     <div class="graphBox">
                         <div class="box">
                             <canvas id="salesRateBar"></canvas>
+                            <div id="noDataBar" class="no-data-message">No data available</div>
                         </div>
                         <div class="box">
                             <canvas id="salesRatePie"></canvas>
+                            <div id="noDataPie" class="no-data-message">No data available</div>
                         </div>
                     </div>
                 </div>
@@ -393,6 +401,8 @@
         let leastPieChart = null;
         let topEmpBarChart = null;
         let topEmpPieChart = null;
+        let saleAnalyticBarChart = null;
+        let saleAnalyticPieChart = null;
 
         // Colors
         const barBgColor = 'rgba(54, 162, 235, 0.2)';
@@ -476,6 +486,50 @@
             const productId = this.value;
             getTopProductSeller(productId);
         });
+
+        document.getElementById("hourlyRateStoreId").addEventListener('change', function(){
+            const storeId = this.value;
+            getSaleAnalytics(storeId);
+        });
+        
+        function getSaleAnalytics(storeId){
+            fetch('SalesDemo', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({storeId: storeId, submit: 'salesAnalytics'})
+            })
+                    .then(response => response.json())
+                    .then(data => {
+                        const salesAnalyticsLabel = data.labels;
+                        const salesAnalyticsData = data.data;
+                        
+                        if(saleAnalyticPieChart){
+                            saleAnalyticBarChart.destroy();
+                            saleAnalyticPieChart.destroy();
+                        }
+                        
+                        
+                        if (salesAnalyticsData.length > 0) {
+                            
+                            document.getElementById('salesRateBar').style.display = 'block';
+                            document.getElementById('noDataBar').style.display = 'none';
+                            saleAnalyticBarChart = updateBarChart(salesRateBarCtx, salesAnalyticsLabel, salesAnalyticsData, 'Hourly Sales for Last 30 days', barBgColor, barBorderColor);
+
+                            document.getElementById('salesRatePie').style.display = 'block';
+                            document.getElementById('noDataPie').style.display = 'none';
+                            saleAnalyticPieChart = updatePieChart(salesRatePieCtx, salesAnalyticsLabel, salesAnalyticsData, pieBgColor);
+                        } else {
+                            document.getElementById('salesRateBar').style.display = 'none';
+                            document.getElementById('noDataBar').style.display = 'block';
+
+                            document.getElementById('salesRatePie').style.display = 'none';
+                            document.getElementById('noDataPie').style.display = 'block';
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+        }
 
         function getTopProductSeller(productId) {
             fetch('SalesDemo', {

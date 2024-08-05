@@ -56,6 +56,9 @@ public class AdminServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
+        List<Employee> employeeList = employeeService.getAllEmployees();
+        request.setAttribute("employeeList", employeeList);
+        request.getRequestDispatcher("AdminDashboard.jsp").forward(request, response);
     }
 
     /**
@@ -110,7 +113,7 @@ public class AdminServlet extends HttpServlet {
     }
     
     private void handleViewReports(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.getRequestDispatcher("managerDashboard.jsp").forward(request, response);
+        response.sendRedirect("SalesDemo");
     }
     
     private void handleAddStore(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

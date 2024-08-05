@@ -12,6 +12,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Admin Dashboard</title>
+        <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
          <style>
             *{
             margin: 0;
@@ -20,8 +21,7 @@
             box-sizing: border-box;
         }
         body{
-            background: #aecdf0;
-            display: flex;
+            background-image: linear-gradient(to right, #277af6, #0098f7, #48b2ef, #85c7e5, #bfd9e0);
             width: 100%;
             height: 100vh;
         }
@@ -35,7 +35,7 @@
                 font-weight: bold;
                 margin-right: 10px;
             }
-            button {
+            .btn-submit {
                 background-color: #3498db; 
                 border: none; 
                 color: white; 
@@ -49,30 +49,10 @@
                 border-radius: 5px; /* Rounded corners */
                 transition: background-color 0.3s;
             }
-            button:hover {
+            .btn-submit:hover {
                 background-color: #2980b9;
             }
-            table {
-                width: 100%;
-                border-collapse: collapse;
-                margin-bottom: 20px;
-                background-color: #fff;
-            }
-            th, td {
-                padding: 10px;
-                text-align: left;
-                border-bottom: 1px solid #ddd;
-            }
-            th {
-                background-color: #f2f2f2;
-                color: #333;
-            }
-            tr:nth-child(even) {
-                background-color: #f9f9f9;
-            }
-            tr:hover {
-                background-color: #f1f1f1;
-            }
+            
             
             .pagination {
     display: flex;
@@ -98,13 +78,71 @@
 .pagination a:hover:not(.active) {
     background-color: #ddd;
 }
-        </style>
+
+
+        .emp-tb {
+            font-family: sans-serif;
+            width: 100%;
+            background-color: rgb(255, 255, 255);
+            border-collapse: collapse;
+            font-size: 1em;
+            margin: 20px 0;
+            border-radius: 5px 5px 0 0;
+            overflow: hidden;
+        }
+        .emp-tb thead tr{
+            font-family: sans-serif;
+            background-color: #007bff;
+            color: #fff;
+            text-align: left;
+            padding-top: 12px;
+            padding-bottom: 12px;
+        }
+        
+        .emp-tb th,
+        .emp-tb td{ 
+            padding: 12px 15px;
+        }
+        .emp-tb tbody tr{
+            border-bottom: 1px solid #ddd;
+        }
+        .emp-tb tbody tr:nth-of-type(even){
+            background-color: #f3f3f3;
+        }
+        .emp-tb tbody tr:last-of-type{
+            border-bottom: 2px solid #007bff;
+        }
+        .emp-tb .icon{
+            min-width: 60px;
+            border-radius: 6px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #5ba4e7;
+            transition: 0.3s ease;
+        }
+        .icon-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .icon-button i {
+            font-size: 1.2em;
+        }
+        .emp-tb tbody tr:hover{
+            color: #007bff;
+            font-weight: 600;
+        }
+         </style>
     </head>
     <body>
         <%  List<Employee> employeeList = (List<Employee>) request.getAttribute("employeeList"); 
         
 
-            int pageSize = 20;
+            int pageSize = 15;
             int currentPage = request.getParameter("page") != null ? Integer.parseInt(request.getParameter("page")) : 1;
             int totalRows = employeeList.size();
             int totalPages = (int) Math.ceil((double) totalRows / pageSize);
@@ -118,9 +156,20 @@
         <h1>Please choose an option</h1>
         <form action="AdminServlet" method="post">
         <label>View all employees</label>
-        <button name="admin_switch" value="View">View</button>
+        <button class="btn-submit" name="admin_switch" value="View">View</button>
+        <label>Add Managers</label>
+        <button class="btn-submit" name="admin_switch" value="Add Manager">Add</button>
+        
+        <label>View Reports</label>
+        <button class="btn-submit" name="admin_switch" value="View Report">View</button>
+        
+        <label>Add a Store</label>
+        <button class="btn-submit" name="admin_switch" value="Add Store">Add</button>
+                </form>
+
         <!-- Display all layaways in a table -->
-        <table border="1">
+        <div class="table-wrapper">
+            <table class="emp-tb">
             <thead>
                 <tr>
                     <th>Employee Id</th>
@@ -133,34 +182,43 @@
                 </tr>
             </thead>
             <tbody>
-                <% 
-                
-                if (employeeList != null && !employeeList.isEmpty()) {
-                    for (Employee employees : employeeList) {
-                %>
-                <tr>
-                    
-                    <td><%= employees.getEmployees_id() %></td>
-                    <td><%= employees.getFirstName() %></td>
-                    <td><%= employees.getLastName() %></td>
-                    <td><%= employees.getStore_ID() %></td>
-                    <td><%= employees.getRole() %></td>
-                    <td><%= employees.getEmail() %></td>
-                    <td>
-                        <a href="EmployeeServlet?submit=edit">Update</a>
-                        <a href="#">Delete</a>
-                    </td>
-                </tr>
-                <% 
-                    }
-                } else {
-                %>
-                <tr>
-                    <td colspan="8">No Employees found.</td>
-                </tr>
-                <% 
-                }
-                %>
+               <%
+        if (employeeList != null && !employeeList.isEmpty()) {
+            for (int i = start; i < end; i++) {
+                Employee employee = employeeList.get(i);
+        %>
+        <tr>
+            <td><%= employee.getEmployees_id() %></td>
+            <td><%= employee.getFirstName() %></td>
+            <td><%= employee.getLastName() %></td>
+            <td><%= employee.getStore_ID() %></td>
+            <td><%= employee.getRole() %></td>
+            <td><%= employee.getEmail() %></td>
+            <td>
+                 <form action="EmployeeServlet" method="post" style="display:inline;">
+                            <input type="hidden" name="employeeId" value="<%= employee.getEmployees_id() %>">
+                            <button type="submit" name="submit" value="edit" class="icon-button">
+                                <i class='bx bx-edit icon'></i>
+                            </button>
+                        </form>
+                        <form action="DeleteEmployeeServlet" method="post" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this employee?');">
+                            <input type="hidden" name="employeeId" value="<%= employee.getEmployees_id() %>">
+                            <button type="submit" name="submit" value="delete" class="icon-button">
+                                <i class='bx bx-trash icon'></i>
+                            </button>
+                        </form>
+            </td>
+        </tr>
+        <%
+            }
+        } else {
+        %>
+        <tr>
+            <td colspan="8">No Employees found.</td>
+        </tr>
+        <%
+        }
+        %>
             </tbody>
         </table>
             <div class="pagination">
@@ -174,16 +232,6 @@
                             <a href="?page=<%= currentPage + 1%>">Next</a>
                             <% } %>
                         </div>
-        
-        <label>Add Managers</label>
-        <button name="admin_switch" value="Add Manager">Add</button>
-        
-        <label>View Reports</label>
-        <button name="admin_switch" value="View Report">View</button>
-        
-        <label>Add a Store</label>
-        <button name="admin_switch" value="Add Store">Add</button>
-        
-        </form>
+        </div> 
     </body>
 </html>
