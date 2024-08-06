@@ -1,4 +1,7 @@
  
+<%@page import="ateam.Models.Role"%>
+<%@page import="ateam.Models.Employee"%>
+<%@page import="ateam.Models.Store"%>
 <%@page import="ateam.Models.InventorySummary"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
@@ -115,29 +118,75 @@
             display: block;
             
         }
+        .select-container {
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.select-container label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.select-box {
+    width: 200px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
     </style>
     
+    
+</head>
+<body>
+    <% List<Store> stores = (List<Store>) request.getSession(false).getAttribute("stores");
+        Employee employee = (Employee) request.getSession(false).getAttribute("Employee");
+    %>
+    
+    <% if (employee != null && employee.getRole() == Role.Teller){%>
     <div id="mySidenav" class="sidebar">
     <a href="replenishStock.jsp" >
         <img src="Icons/back.png" alt="Icon 1"> Back
     </a><br><br>
     </div>
-</head>
-<body>
+    <% }%>
+    
     <h1>Store Inventory Summary</h1>
 
     <!-- Filter Form -->
     <div class="filter-form">
         <form action="storeInventorySummary" method="get">
-            <label for="color">Filter By Color:</label>
-            <input type="text" id="color" name="color" size="5">
+            <div class="select-container">
+                <label for="color">Filter By Color:</label>
+                <select class="select-box" name="color">
+                    <option value="" disabled selected>Select</option>
+                    <option value="Red">Red</option>
+                    <option value="Black">Black</option>
+                    <option value="White">White</option>
+                    <option value="Purple">Purple</option>
+                    <option value="Green">Green</option>
+                    <option value="Yellow">Yellow</option>
+                    <option value="Blue">Blue</option>
+                </select>
+            
+            </div>
             
             <label for="size">Filter By Size:</label>
             <input type="text" id="size" name="size"maxlength="2" size="2">
-            
-            <label for="store">Filter By Store ID:</label>
-            <input type="text" id="store" name="store" size="3">
-            
+
+             <div class="select-container" id="storeSelector" >
+                        <label for="store">Filter By Store </label>
+
+                        <select class="select-box" name="store" id="managerStoreId">
+                            <option value="" disabled selected>Select</option>
+                            <% if(stores != null) {
+                                for(Store store : stores) { %>
+                                <option value="<%=store.getStore_ID() %>"><%=store.getStore_name() %></option>
+                                <% } } %>
+                        </select>
+                    </div>
             <label for="sku">Filter By Product SKU:</label>
             <input type="text" id="sku" name="sku">
             

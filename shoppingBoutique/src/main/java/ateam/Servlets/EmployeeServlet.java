@@ -152,8 +152,8 @@ public class EmployeeServlet extends HttpServlet {
     private void showDeleteConfirm(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int employeeId = Integer.parseInt(request.getParameter("employeeId"));
         Employee employee = employeeService.getEmployeeById(employeeId);
-        request.setAttribute("employee", employee);
-        request.getRequestDispatcher("/deleteEmployee.jsp").forward(request, response);
+        request.setAttribute("employeeList", employee);
+        request.getRequestDispatcher("MyEmployees.jsp").forward(request, response);
     }
 
     private void addEmployee(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -247,15 +247,22 @@ public class EmployeeServlet extends HttpServlet {
     private void deleteEmployee(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int employeeId = Integer.parseInt(request.getParameter("employeeId"));
         boolean success = employeeService.deleteEmployee(employeeId);
-        
+        Employee manager = (Employee) request.getSession(false).getAttribute("Employee");
         
         if(success){
             request.setAttribute("message", "Employee deleted Successsfully");
         }else{
             request.setAttribute("message", "Failed to delete employee");
         }
+        request.setAttribute("employeeList", employeeService.getAllEmployees());
+        if(manager != null){
+            if(manager.getRole() == Role.Admin){
+                request.getRequestDispatcher("AdminDashboard.jsp").forward(request, response);
+            }else {
+                request.getRequestDispatcher("MyEmployees.jsp").forward(request, response);
+            }
+        }
         
-        request.getRequestDispatcher("MyEmployees.jsp").forward(request, response);
     }
 
     private void handleLogin(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -360,7 +367,7 @@ public class EmployeeServlet extends HttpServlet {
         Employee manager = (Employee) request.getSession(false).getAttribute("Employee");
         List<Employee> myEmployees = employeeService.managersEmployee(manager.getStore_ID());
         
-        request.getSession(false).setAttribute("MyEmployees", myEmployees);
+        request.setAttribute("employeeList", myEmployees);
         request.getRequestDispatcher("MyEmployees.jsp").forward(request, response);
     }
 }

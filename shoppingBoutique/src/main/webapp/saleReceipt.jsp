@@ -98,6 +98,10 @@
                         <td>${cardPaid}</td>
                     </tr>
                     <tr>
+                        <td colspan="3" class="change">Voucher Paid (R)</td>
+                        <td>${voucherAmount}</td>
+                    </tr>
+                    <tr>
                         <td colspan="3" class="change">Change (R)</td>
                         <td>${change}</td>
                     </tr>

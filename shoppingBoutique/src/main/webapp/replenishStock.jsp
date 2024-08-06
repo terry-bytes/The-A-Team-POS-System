@@ -219,7 +219,7 @@
     <a href="InventoryServlet?submit=viewAll" >
         <img src="Icons/viewList.png" alt="Icon 2"> View Inventory
     </a><br><br>
-    <a href="Search.jsp" >
+    <a href="InventoryServlet?submit=search" >
        
         <img src="Icons/searcher.png" alt="Icon 3"> Search in Stores
     </a><br><br>

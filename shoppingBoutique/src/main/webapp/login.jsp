@@ -42,7 +42,7 @@
   font-style: normal;
         }
         .input-field {
-            margin: 20px 0;
+            margin: 30px 0;
             position: relative;
         }
 
@@ -66,6 +66,7 @@
             background-color: white;
             padding: 0 5px;
             font-size: 12px;
+            font-weight: 600;
         }
 
         .input-submit {

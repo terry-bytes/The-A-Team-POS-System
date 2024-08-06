@@ -258,6 +258,7 @@ public class ProductServlet extends HttpServlet {
                                return;
                            }
 
+                           
                          BigDecimal  remainingAmount = totalAmountWithoutVAT.subtract(voucherAmount);
 
                            if (remainingAmount.compareTo(BigDecimal.ZERO) > 0) {
@@ -269,7 +270,8 @@ public class ProductServlet extends HttpServlet {
                                return;
                            } else {
                                // Voucher covers the entire amount
-                               totalAmountWithoutVAT = BigDecimal.ZERO;
+                               voucherAmount = totalAmountWithoutVAT; 
+                               BigDecimal  totalPaid = voucherAmount;
                            }
 
                            // Mark the voucher as used
@@ -389,7 +391,7 @@ public class ProductServlet extends HttpServlet {
                             String saleTime = newSale.getSales_date().toString();
                             String customerEmail = request.getParameter("customer_email");
 
-                            scannedItems.clear();
+                            
                             String message=null;
                             try{
                                 emailService.sendSaleReceipt(customerEmail, salespersonName, saleTime, scannedItems, totalAmountWithoutVAT, vatAmount, change, newSale.getPayment_method(), cashPaid, cardPaid,newSalesID);
@@ -397,7 +399,7 @@ public class ProductServlet extends HttpServlet {
                                message = "Failed to send email, "+e.getMessage();
                             }
                            // SmsSender.sendSms("add number", "Thank you for SHOPPING with us! 😊 Please check your email (" + customerEmail + ") for your RECEIPT.");
-
+                           scannedItems.clear();
                             
 
                             request.setAttribute("totalAmount", totalAmountWithoutVAT);
