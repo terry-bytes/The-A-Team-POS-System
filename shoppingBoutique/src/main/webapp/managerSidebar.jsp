@@ -38,8 +38,8 @@
                 </header>
                 
                 <li class="nav-link">
-                    <a href="SalesDemo?submit=getReports">
-                        <i class='bx bx-home-alt-2 icon' ></i>
+                    <a href="AdminServlet">
+                        <i class='bx bx-home-alt icon' ></i>
                         <span class="text nav-text">Home</span>
                     </a>
                 </li>
