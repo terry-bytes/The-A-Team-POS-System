@@ -15,7 +15,7 @@
     <body>
         <%  
             Role[] roles = Role.values();
-            String message = (String) request.getAttribute("addEmployeeMessage");
+            String message = (String) request.getAttribute("message");
             Employee employee = (Employee) request.getSession(false).getAttribute("Employee");
             List<Store> stores = (List<Store>) request.getSession(false).getAttribute("stores");
             String storeName;
@@ -28,8 +28,9 @@
             <div class="login-box">
                 <div class="login-header">
                     <h3>Add Store</h3>
+                <% if(message != null){%><p><%=message%></p><%}%>
                 </div>
-                <form action="EmployeeServlet" method="post">
+                <form action="StoreServlet" method="post">
                     <div class="input-box">
                             <label for="firstName">Store Name</label>
                             <input type="text"
@@ -47,6 +48,17 @@
                                    id="firstName"
                                    placeholder='Store Address'
                                    name='storeAddress'
+                                   class='input-field'
+                                   autocomplete="off" required
+                                   />
+                             <i class='bx bx-location-plus'></i>
+                        </div>
+                    <div class="input-box">
+                            <label for="firstName">Store City</label>
+                            <input type="text"
+                                   id="firstName"
+                                   placeholder='Store Address'
+                                   name='storeCity'
                                    class='input-field'
                                    autocomplete="off" required
                                    />
@@ -103,7 +115,7 @@
                     
                     
                     <div class="input-submit">
-                        <input name="submit" value="add" hidden>
+                        <input name="submit" value="Submit_Store" hidden>
                         <button class="submit-btn" id="submit">Add Store</button>
                     </div>
                 </form>

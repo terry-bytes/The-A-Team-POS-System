@@ -35,14 +35,12 @@
         justify-content: center;
         min-height: 100vh;
         padding: 20px;
-        background-color: #f4f4f4;
+        background-color: #72c2f1;
     }
 
     .content {
         background-color: #fff;
         padding: 20px;
-         align-items: center;
-        justify-content: center;
         border-radius: 8px;
         box-shadow: 0 0 10px rgba(0,0,0,0.1);
         max-width: 800px;

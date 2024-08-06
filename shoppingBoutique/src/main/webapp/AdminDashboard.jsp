@@ -249,6 +249,7 @@
         </tr>
             <%}%>
             </table>
+            <form action="AdminServlet" method="get">
             <div class="pagination">
                             <% if (currentPage > 1) {%>
                             <a href="?page=<%= currentPage - 1%>">Previous</a>
@@ -260,6 +261,7 @@
                             <a href="?page=<%= currentPage + 1%>">Next</a>
                             <% } %>
                         </div>
+            </form>
            <%}%>
         </div>
             <div class="stores">

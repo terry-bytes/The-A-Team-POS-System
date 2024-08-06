@@ -3,10 +3,13 @@ package ateam.Servlets;
 import ateam.Models.Employee;
 import ateam.Models.Inventory;
 import ateam.Models.Product;
+import ateam.Models.Store;
 import ateam.Service.InventoryService;
 import ateam.Service.ProductService;
+import ateam.Service.StoreService;
 import ateam.ServiceImpl.ProductServiceImpl;
 import ateam.ServiceImpl.InventoryServiceImpl;
+import ateam.ServiceImpl.StoreServiceImpl;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -27,6 +30,7 @@ public class InventoryServlet extends HttpServlet {
 
     private final ProductService productService = new ProductServiceImpl();
     private final InventoryService inventoryService = new InventoryServiceImpl();
+    private final StoreService storeService = new StoreServiceImpl();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -117,6 +121,11 @@ public class InventoryServlet extends HttpServlet {
         }
         break;
         
+                case "search":
+                    List<Store> stores = storeService.getAllStores();
+                    request.getSession(false).setAttribute("stores", stores);
+                    request.getRequestDispatcher("Search.jsp").forward(request, response);
+                    break;
         }
         
     

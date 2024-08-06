@@ -51,6 +51,12 @@
                     </a>
                 </li>
                 
+                <li class="nav-link">
+                    <a href="InventoryServlet?submit=search">
+                        <i class='bx bx-box icon'></i>
+                        <span class="text nav-text">Products</span>
+                    </a>
+                </li>
                 
                 <li "class="nav-link">
                      <a href="IBTMainDashboard.jsp">

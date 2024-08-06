@@ -1,16 +1,13 @@
 package ateam.Servlets;
 
 import ateam.BDconnection.Connect;
-import ateam.DAO.InventoryDAO;
 import ateam.DAO.ProductDAO;
 import ateam.DAO.SaleDAO;
 import ateam.DAO.SalesItemDAO;
-import ateam.DAOIMPL.InventoryDAOIMPL;
 import ateam.DAOIMPL.ProductDAOIMPL;
 import ateam.DAOIMPL.SaleDAOIMPL;
 import ateam.DAOIMPL.SalesItemDAOIMPL;
 import ateam.Models.Employee;
-import ateam.Models.Inventory;
 import ateam.Models.Layaway;
 import ateam.Models.Product;
 import ateam.Models.Sale;
@@ -25,10 +22,10 @@ import ateam.Service.ProductService;
 import ateam.Service.ReturnService;
 import ateam.Service.SaleService2;
 import ateam.ServiceImpl.EmailServiceImpl;
+import ateam.ServiceImpl.InventoryServiceImpl;
 import ateam.ServiceImpl.ProductServiceImpl;
 import ateam.ServiceImpl.ReturnServiceImpl;
 import ateam.ServiceImpl.SaleServiceImpl;
-import ateam.ServiceImpl.InventoryServiceImpl;
 import org.mindrot.jbcrypt.BCrypt;
 
 import javax.servlet.ServletException;
@@ -60,10 +57,7 @@ public class ProductServlet extends HttpServlet {
     private EmailService emailService = new EmailServiceImpl();
     private Connect dbConnect = new Connect();
     private InventoryService inventoryService = new InventoryServiceImpl();
-
     private SaleService2 saleService = new SaleServiceImpl();
-
-    private InventoryDAO inventoryDAO = new InventoryDAOIMPL();
 
     private static final double VAT_RATE = 0.15;
 
@@ -200,18 +194,11 @@ public class ProductServlet extends HttpServlet {
                     BigDecimal cashPaid = BigDecimal.ZERO;
                     BigDecimal cardPaid = BigDecimal.ZERO;
 
-                    try {
-                        // Check if there are scanned items
-                        if (scannedItems == null || scannedItems.isEmpty()) {
-                            request.setAttribute("errorMessage", "No items have been scanned for the sale.");
-                            break;
-                        }
-
+                   try {
                         String paymentMethod = request.getParameter("payment_method");
 
-                        // Handle cash payment
                         if ("cash".equals(paymentMethod)) {
-                             cashPaidStr = request.getParameter("cash_amount");
+                            cashPaidStr = request.getParameter("cash_amount");
                             if (cashPaidStr != null && !cashPaidStr.trim().isEmpty()) {
                                 cashPaidStr = cashPaidStr.trim().replace(",", "");
                                 cashPaid = new BigDecimal(cashPaidStr);
@@ -225,15 +212,16 @@ public class ProductServlet extends HttpServlet {
                                 break;
                             }
 
-                            // Handle card payment
                         } else if ("card".equals(paymentMethod)) {
                             cardPaid = totalAmountWithoutVAT; // Assuming the full amount is paid by card
 
-                            // Handle card and cash payment
-                        } else if ("cardAndcash".equals(paymentMethod)) {
+                        }
+                            
+                        else if ("cardAndcash".equals(paymentMethod)) {
                             String cashPaidStr2 = request.getParameter("cash_amount2");
                             String cardPaidStr2 = request.getParameter("card_amount2");
-
+                            System.out.println(cardPaidStr2);
+                            System.out.println(cashPaidStr);
                             if (cashPaidStr2 != null && !cashPaidStr2.trim().isEmpty()) {
                                 cashPaidStr2 = cashPaidStr2.trim().replace(",", "");
                                 cashPaid = new BigDecimal(cashPaidStr2);
@@ -257,39 +245,124 @@ public class ProductServlet extends HttpServlet {
                             }
 
                             change = totalPaid.subtract(totalAmountWithoutVAT);
+                        }
+                        
+                        else if ("voucher".equals(paymentMethod)) {
+                            
+                           String voucherCode = request.getParameter("voucher_code");
+                           request.getSession(false).setAttribute("voucherCode", voucherCode);
+                           voucherAmount = saleService.validateVoucher(voucherCode);
+                           if (voucherAmount.compareTo(BigDecimal.ZERO) <= 0) {
+                               request.setAttribute("errorMessage", "Invalid or expired voucher code.");
+                               request.getRequestDispatcher("tellerDashboard.jsp").forward(request, response);
+                               return;
+                           }
 
-                            // Handle voucher payment
-                        } else if ("voucher".equals(paymentMethod)) {
-                            String voucherCode = request.getParameter("voucher_code");
-                            request.getSession(false).setAttribute("voucherCode", voucherCode);
-                            voucherAmount = saleService.validateVoucher(voucherCode);
-                            if (voucherAmount.compareTo(BigDecimal.ZERO) <= 0) {
-                                request.setAttribute("errorMessage", "Invalid or expired voucher code.");
+                         BigDecimal  remainingAmount = totalAmountWithoutVAT.subtract(voucherAmount);
+
+                           if (remainingAmount.compareTo(BigDecimal.ZERO) > 0) {
+                               // Store remaining amount in session and redirect to additional payment
+                               request.getSession(false).setAttribute("remainingAmount", remainingAmount);
+                               request.getSession(false).setAttribute("voucherAmount", voucherAmount);
+                               request.setAttribute("voucherCode", voucherCode);
+                               request.getRequestDispatcher("/additionalPayments.jsp").forward(request, response);
+                               return;
+                           } else {
+                               // Voucher covers the entire amount
+                               totalAmountWithoutVAT = BigDecimal.ZERO;
+                           }
+
+                           // Mark the voucher as used
+                           saleService.markVoucherAsUsed(voucherCode);
+                       }
+                             
+                        else if ("additionalPayment".equals(paymentMethod)) {
+                           BigDecimal remainingAmount = new BigDecimal(request.getParameter("remaining_amount"));
+                           voucherAmount = new BigDecimal(request.getParameter("voucher_amount"));
+                           String additionalPaymentMethod = request.getParameter("additional_payment_method");
+                           String voucherCode = request.getParameter("voucher_code");
+                           
+                           BigDecimal amount =  BigDecimal.ZERO;
+                           
+                           if ("cash".equals(additionalPaymentMethod)) {
+                            cashPaidStr = request.getParameter("additional_cash_amount");
+                            if (cashPaidStr != null && !cashPaidStr.trim().isEmpty()) {
+                                cashPaidStr = cashPaidStr.trim().replace(",", "");
+                                amount = new BigDecimal(cashPaidStr);
+                               
+                            } else {
+                                request.setAttribute("errorMessage", "Cash amount is required.");
                                 break;
                             }
 
-                            BigDecimal remainingAmount = totalAmountWithoutVAT.subtract(voucherAmount);
-                            if (remainingAmount.compareTo(BigDecimal.ZERO) < 0) {
-                                change = voucherAmount.subtract(totalAmountWithoutVAT);
-                                voucherAmount = totalAmountWithoutVAT;
-
-                            } else {
-                                totalAmountWithoutVAT = remainingAmount;
-                            }
+                        } else if ("card".equals(additionalPaymentMethod)) {
+                            amount = remainingAmount; // Assuming the full amount is paid by card
+                            
                         }
+                            
+                        else if ("cardAndcash".equals(additionalPaymentMethod)) {
+                            String cashPaidStr2 = request.getParameter("cash_amount2");
+                            String cardPaidStr2 = request.getParameter("card_amount2");
+                            System.out.println(cardPaidStr2);
+                            System.out.println(cashPaidStr);
+                            if (cashPaidStr2 != null && !cashPaidStr2.trim().isEmpty()) {
+                                cashPaidStr2 = cashPaidStr2.trim().replace(",", "");
+                                cashPaid = new BigDecimal(cashPaidStr2);
+                            } else {
+                                request.setAttribute("errorMessage", "Cash amount is required.");
+                                break;
+                            }
 
-                        // Save sale details
+                            if (cardPaidStr2 != null && !cardPaidStr2.trim().isEmpty()) {
+                                cardPaidStr2 = cardPaidStr2.trim().replace(",", "");
+                                cardPaid = new BigDecimal(cardPaidStr2);
+                            } else {
+                                request.setAttribute("errorMessage", "Card amount is required.");
+                                break;
+                            }
+
+                           amount = cashPaid.add(cardPaid);
+                            
+                        }
+                        //==================================================
+                           
+                           BigDecimal  totalPaid = voucherAmount.add(amount);
+                         change = totalPaid.subtract(totalAmountWithoutVAT);
+                         //totalPaid =totalAmountWithoutVAT;
+
+                            System.out.println("R AMOUNT: "+ remainingAmount);
+                            System.out.println("ad amount: "+ voucherAmount);
+                            System.out.println("payment method: "+ additionalPaymentMethod);
+                            System.out.println("coucher "+ voucherCode);
+                            
+                           if (totalPaid.compareTo(totalAmountWithoutVAT) < 0) {
+                               request.setAttribute("errorMessage", "Insufficient additional payment amount.");
+                               request.getRequestDispatcher("tellerDasboard.jsp").forward(request, response);
+                               return;
+                           }
+
+                         
+                           newSale.setPayment_method(additionalPaymentMethod);
+
+                           // Mark the voucher as used
+                           saleService.markVoucherAsUsed(voucherCode);
+                       }
+
+
+                        
                         newSale.setSales_date(new Timestamp(System.currentTimeMillis()));
                         newSale.setTotal_amount(totalAmountWithoutVAT);
                         newSale.setPayment_method(paymentMethod);
-
-                        if (newSale.getPayment_method().equals("voucher")) {
+                        
+                        if(newSale.getPayment_method().equals("voucher")){
+                            
+                            newSale.setTotal_amount(totalAmountWithoutVAT);
                             // Mark the voucher as used
-                            String voucher = (String) request.getSession(false).getAttribute("voucherCode");
+                            String voucher = (String)request.getSession(false).getAttribute("voucherCode");
                             saleService.markVoucherAsUsed(voucher);
+                            
                         }
 
-                        // Check if employee is logged in
                         if (loggedInUser != null) {
                             newSale.setEmployee_ID(loggedInUser.getEmployee_ID());
                             newSale.setStore_ID(loggedInUser.getStore_ID());
@@ -297,10 +370,8 @@ public class ProductServlet extends HttpServlet {
                             request.setAttribute("errorMessage", "Employee not logged in.");
                             break;
                         }
-
                         int newSalesID = saleDAO.saveSale(newSale);
                         if (newSalesID != -1) {
-                            // Save sales items
                             for (Product item : scannedItems) {
                                 SalesItem salesItem = new SalesItem();
                                 salesItem.setSales_ID(newSalesID);
@@ -311,27 +382,31 @@ public class ProductServlet extends HttpServlet {
                                 salesItemDAO.saveSalesItem(salesItem);
                             }
 
-                            // Process inventory and notifications
                             inventoryService.processSale(newSalesID);
-                            List<Inventory> reorderList = inventoryDAO.checkAndSendReorderNotification(loggedInUser.getStore_ID());
+                            
 
-                            // Send receipt via email and SMS
                             String salespersonName = loggedInUser.getFirstName() + " " + loggedInUser.getLastName();
                             String saleTime = newSale.getSales_date().toString();
                             String customerEmail = request.getParameter("customer_email");
-                            request.setAttribute("saleID", newSalesID);
 
-                            emailService.sendSaleReceipt(customerEmail, salespersonName, saleTime, scannedItems, totalAmountWithoutVAT, vatAmount, change, newSale.getPayment_method(), cashPaid, cardPaid, newSalesID);
-                            SmsSender.sendSms("+27631821265", "Thank you for SHOPPING with us! 😊 Please check your email (" + customerEmail + ") for your RECEIPT.");
-
-                            // Clear scanned items and set attributes for receipt
                             scannedItems.clear();
+                            String message=null;
+                            try{
+                                emailService.sendSaleReceipt(customerEmail, salespersonName, saleTime, scannedItems, totalAmountWithoutVAT, vatAmount, change, newSale.getPayment_method(), cashPaid, cardPaid,newSalesID);
+                            }catch(Exception e){
+                               message = "Failed to send email, "+e.getMessage();
+                            }
+                           // SmsSender.sendSms("add number", "Thank you for SHOPPING with us! 😊 Please check your email (" + customerEmail + ") for your RECEIPT.");
+
+                            
+
                             request.setAttribute("totalAmount", totalAmountWithoutVAT);
                             request.setAttribute("vatAmount", vatAmount);
                             request.setAttribute("change", change);
                             request.setAttribute("cashPaid", cashPaid);
                             request.setAttribute("cardPaid", cardPaid);
                             request.setAttribute("scannedItems", scannedItems);
+                            request.setAttribute("voucherAmount",voucherAmount);
                             request.getRequestDispatcher("saleReceipt.jsp").forward(request, response);
                             return;
                         } else {
@@ -372,7 +447,8 @@ public class ProductServlet extends HttpServlet {
             request.setAttribute("errorMessage", "An unexpected error occurred.");
             request.getRequestDispatcher("tellerDashboard.jsp").forward(request, response);
         }
-
+        
+        
     }
 
     private boolean verifyManagerPassword(int storeID, String password) {
