@@ -24,10 +24,8 @@ import ateam.Service.SaleService2;
 import ateam.ServiceImpl.EmailServiceImpl;
 import ateam.ServiceImpl.InventoryServiceImpl;
 import ateam.ServiceImpl.ProductServiceImpl;
+import ateam.ServiceImpl.ReturnServiceImpl;
 import ateam.ServiceImpl.SaleServiceImpl;
-
-
-
 import org.mindrot.jbcrypt.BCrypt;
 
 import javax.servlet.ServletException;
@@ -249,7 +247,7 @@ public class ProductServlet extends HttpServlet {
                             change = totalPaid.subtract(totalAmountWithoutVAT);
                         }
                         
-                       else if ("voucher".equals(paymentMethod)) {
+                        else if ("voucher".equals(paymentMethod)) {
                             
                            String voucherCode = request.getParameter("voucher_code");
                            request.getSession(false).setAttribute("voucherCode", voucherCode);
@@ -259,12 +257,12 @@ public class ProductServlet extends HttpServlet {
                                request.getRequestDispatcher("tellerDashboard.jsp").forward(request, response);
                                return;
                            }
-                           cashPaid = voucherAmount;
-                           change = totalAmountWithoutVAT.subtract(voucherAmount);
 
-                           if (change.compareTo(BigDecimal.ZERO) > 0) {
+                         BigDecimal  remainingAmount = totalAmountWithoutVAT.subtract(voucherAmount);
+
+                           if (remainingAmount.compareTo(BigDecimal.ZERO) > 0) {
                                // Store remaining amount in session and redirect to additional payment
-                               request.getSession(false).setAttribute("remainingAmount", change);
+                               request.getSession(false).setAttribute("remainingAmount", remainingAmount);
                                request.getSession(false).setAttribute("voucherAmount", voucherAmount);
                                request.setAttribute("voucherCode", voucherCode);
                                request.getRequestDispatcher("/additionalPayments.jsp").forward(request, response);
@@ -277,37 +275,87 @@ public class ProductServlet extends HttpServlet {
                            // Mark the voucher as used
                            saleService.markVoucherAsUsed(voucherCode);
                        }
-                           
+                             
                         else if ("additionalPayment".equals(paymentMethod)) {
                            BigDecimal remainingAmount = new BigDecimal(request.getParameter("remaining_amount"));
-                           BigDecimal additionalAmount = new BigDecimal(request.getParameter("voucher_amount"));
+                           voucherAmount = new BigDecimal(request.getParameter("voucher_amount"));
                            String additionalPaymentMethod = request.getParameter("additional_payment_method");
                            String voucherCode = request.getParameter("voucher_code");
-
                            
-                            System.out.println("zeeeeee");
-                           if (additionalAmount.compareTo(remainingAmount) < 0) {
+                           BigDecimal amount =  BigDecimal.ZERO;
+                           
+                           if ("cash".equals(additionalPaymentMethod)) {
+                            cashPaidStr = request.getParameter("additional_cash_amount");
+                            if (cashPaidStr != null && !cashPaidStr.trim().isEmpty()) {
+                                cashPaidStr = cashPaidStr.trim().replace(",", "");
+                                amount = new BigDecimal(cashPaidStr);
+                               
+                            } else {
+                                request.setAttribute("errorMessage", "Cash amount is required.");
+                                break;
+                            }
+
+                        } else if ("card".equals(additionalPaymentMethod)) {
+                            amount = remainingAmount; // Assuming the full amount is paid by card
+                            
+                        }
+                            
+                        else if ("cardAndcash".equals(additionalPaymentMethod)) {
+                            String cashPaidStr2 = request.getParameter("cash_amount2");
+                            String cardPaidStr2 = request.getParameter("card_amount2");
+                            System.out.println(cardPaidStr2);
+                            System.out.println(cashPaidStr);
+                            if (cashPaidStr2 != null && !cashPaidStr2.trim().isEmpty()) {
+                                cashPaidStr2 = cashPaidStr2.trim().replace(",", "");
+                                cashPaid = new BigDecimal(cashPaidStr2);
+                            } else {
+                                request.setAttribute("errorMessage", "Cash amount is required.");
+                                break;
+                            }
+
+                            if (cardPaidStr2 != null && !cardPaidStr2.trim().isEmpty()) {
+                                cardPaidStr2 = cardPaidStr2.trim().replace(",", "");
+                                cardPaid = new BigDecimal(cardPaidStr2);
+                            } else {
+                                request.setAttribute("errorMessage", "Card amount is required.");
+                                break;
+                            }
+
+                           amount = cashPaid.add(cardPaid);
+                            
+                        }
+                        //==================================================
+                           
+                           BigDecimal  totalPaid = voucherAmount.add(amount);
+                         change = totalPaid.subtract(totalAmountWithoutVAT);
+                         //totalPaid =totalAmountWithoutVAT;
+
+                            System.out.println("R AMOUNT: "+ remainingAmount);
+                            System.out.println("ad amount: "+ voucherAmount);
+                            System.out.println("payment method: "+ additionalPaymentMethod);
+                            System.out.println("coucher "+ voucherCode);
+                            
+                           if (totalPaid.compareTo(totalAmountWithoutVAT) < 0) {
                                request.setAttribute("errorMessage", "Insufficient additional payment amount.");
                                request.getRequestDispatcher("tellerDasboard.jsp").forward(request, response);
                                return;
                            }
 
-                           newSale.setTotal_amount(remainingAmount.add(additionalAmount));
+                         
                            newSale.setPayment_method(additionalPaymentMethod);
-                           cashPaid =newSale.getTotal_amount();
-                           change = remainingAmount.subtract(cashPaid);
+
                            // Mark the voucher as used
                            saleService.markVoucherAsUsed(voucherCode);
                        }
 
 
-
+                        
                         newSale.setSales_date(new Timestamp(System.currentTimeMillis()));
                         newSale.setTotal_amount(totalAmountWithoutVAT);
                         newSale.setPayment_method(paymentMethod);
                         
                         if(newSale.getPayment_method().equals("voucher")){
-                          
+                            
                             newSale.setTotal_amount(totalAmountWithoutVAT);
                             // Mark the voucher as used
                             String voucher = (String)request.getSession(false).getAttribute("voucherCode");
@@ -341,11 +389,16 @@ public class ProductServlet extends HttpServlet {
                             String saleTime = newSale.getSales_date().toString();
                             String customerEmail = request.getParameter("customer_email");
 
-                          emailService.sendSaleReceipt(customerEmail, salespersonName, saleTime, scannedItems, totalAmountWithoutVAT, vatAmount, change, newSale.getPayment_method(), cashPaid, cardPaid,newSalesID);
-
+                            scannedItems.clear();
+                            String message=null;
+                            try{
+                                emailService.sendSaleReceipt(customerEmail, salespersonName, saleTime, scannedItems, totalAmountWithoutVAT, vatAmount, change, newSale.getPayment_method(), cashPaid, cardPaid,newSalesID);
+                            }catch(Exception e){
+                               message = "Failed to send email, "+e.getMessage();
+                            }
                            // SmsSender.sendSms("add number", "Thank you for SHOPPING with us! 😊 Please check your email (" + customerEmail + ") for your RECEIPT.");
 
-                            scannedItems.clear();
+                            
 
                             request.setAttribute("totalAmount", totalAmountWithoutVAT);
                             request.setAttribute("vatAmount", vatAmount);
@@ -353,6 +406,7 @@ public class ProductServlet extends HttpServlet {
                             request.setAttribute("cashPaid", cashPaid);
                             request.setAttribute("cardPaid", cardPaid);
                             request.setAttribute("scannedItems", scannedItems);
+                            request.setAttribute("voucherAmount",voucherAmount);
                             request.getRequestDispatcher("saleReceipt.jsp").forward(request, response);
                             return;
                         } else {
