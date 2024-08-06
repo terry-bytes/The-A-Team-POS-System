@@ -12,8 +12,10 @@ import ateam.Exception.DuplicateStoreException;
 import ateam.Models.Employee;
 import ateam.Models.Role;
 import ateam.Models.Store;
+import ateam.Service.EmployeeService;
 import ateam.Service.SaleService2;
 import ateam.Service.StoreService;
+import ateam.ServiceImpl.EmployeeServiceImpl;
 import ateam.ServiceImpl.SaleServiceImpl;
 import ateam.ServiceImpl.StoreServiceImpl;
 import java.io.IOException;
@@ -33,8 +35,9 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet(name = "StoreServlet", urlPatterns = {"/StoreServlet"})
 public class StoreServlet extends HttpServlet {
-    private StoreService storeService =  new StoreServiceImpl(new StoreDAOIMPL(new Connect().connectToDB()));;
-    private SaleService2 saleService = new SaleServiceImpl();
+    private final StoreService storeService =  new StoreServiceImpl(new StoreDAOIMPL(new Connect().connectToDB()));;
+    private final SaleService2 saleService = new SaleServiceImpl();
+    private final EmployeeService employeeService = new EmployeeServiceImpl();
     
     
     /**

@@ -286,7 +286,7 @@
                         </div>
                     </div>
                     <div class="table1">
-                        <table>
+                        <table class="emp-tb">
                             <thead>
                                 <tr>
                                     <th>Product Name</th>
