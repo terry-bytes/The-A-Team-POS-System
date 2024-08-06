@@ -8,7 +8,7 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #e0f7fa;
+            background-color: #0098f7;
         }
 
         .container {
@@ -32,7 +32,7 @@
 
         h2 {
             margin-top: 0;
-            color: #00796b;
+            color: #000;
         }
 
         p {
@@ -82,7 +82,7 @@
             padding: 10px 15px;
             border: none;
             border-radius: 4px;
-            background-color: #00796b;
+            background-color: #007bff;
             color: white;
             font-size: 16px;
             cursor: pointer;
@@ -125,9 +125,13 @@
             <p>The voucher amount is less than the total amount. Please choose an additional payment method to complete the sale.</p>
             <form action="ProductServlet" method="post">
                 <input type="hidden" name="payment_method" value="additionalPayment">
-                <input type="hidden" name="remaining_amount" value="${remainingAmount}">
-                <input type="hidden" name="voucher_amount" value="${voucherAmount}">
-                <input type="hidden" name="voucher_code" value="${voucherCode}">
+                <label>Remaining Amount :</label>
+                <input type="text" name="remaining_amount" value="${sessionScope.remainingAmount}">
+                <label>Voucher Amount Paid</label>
+                <input type="text" name="voucher_amount" value="${sessionScope.voucherAmount}">
+                <label>Voucher code : </label>
+                <input type="text" name="voucher_code" value="${sessionScope.voucherCode}">
+                <br><br>
                 <div>
                     <label for="additional_payment_method">Select Payment Method:</label>
                     <select name="additional_payment_method" required>
@@ -176,7 +180,8 @@
                     </div>
                 </div>
 
-                <button type="submit">Complete Payment</button>
+                <button class="styled-button" id="complete" type="submit" name="submit" value="Complete-Sale">Complete Sale</button>
+
             </form>
         </div>
     </div>

@@ -22,10 +22,12 @@ import ateam.Service.ProductService;
 import ateam.Service.ReturnService;
 import ateam.Service.SaleService2;
 import ateam.ServiceImpl.EmailServiceImpl;
+import ateam.ServiceImpl.InventoryServiceImpl;
 import ateam.ServiceImpl.ProductServiceImpl;
-import ateam.ServiceImpl.ReturnServiceImpl;
 import ateam.ServiceImpl.SaleServiceImpl;
-import ateam.Services.impl.InventoryServiceImpl;
+
+
+
 import org.mindrot.jbcrypt.BCrypt;
 
 import javax.servlet.ServletException;
@@ -257,12 +259,12 @@ public class ProductServlet extends HttpServlet {
                                request.getRequestDispatcher("tellerDashboard.jsp").forward(request, response);
                                return;
                            }
+                           cashPaid = voucherAmount;
+                           change = totalAmountWithoutVAT.subtract(voucherAmount);
 
-                         BigDecimal  remainingAmount = totalAmountWithoutVAT.subtract(voucherAmount);
-
-                           if (remainingAmount.compareTo(BigDecimal.ZERO) > 0) {
+                           if (change.compareTo(BigDecimal.ZERO) > 0) {
                                // Store remaining amount in session and redirect to additional payment
-                               request.getSession(false).setAttribute("remainingAmount", remainingAmount);
+                               request.getSession(false).setAttribute("remainingAmount", change);
                                request.getSession(false).setAttribute("voucherAmount", voucherAmount);
                                request.setAttribute("voucherCode", voucherCode);
                                request.getRequestDispatcher("/additionalPayments.jsp").forward(request, response);
@@ -278,10 +280,12 @@ public class ProductServlet extends HttpServlet {
                            
                         else if ("additionalPayment".equals(paymentMethod)) {
                            BigDecimal remainingAmount = new BigDecimal(request.getParameter("remaining_amount"));
-                           BigDecimal additionalAmount = new BigDecimal(request.getParameter("additional_amount"));
+                           BigDecimal additionalAmount = new BigDecimal(request.getParameter("voucher_amount"));
                            String additionalPaymentMethod = request.getParameter("additional_payment_method");
                            String voucherCode = request.getParameter("voucher_code");
 
+                           
+                            System.out.println("zeeeeee");
                            if (additionalAmount.compareTo(remainingAmount) < 0) {
                                request.setAttribute("errorMessage", "Insufficient additional payment amount.");
                                request.getRequestDispatcher("tellerDasboard.jsp").forward(request, response);
@@ -290,7 +294,8 @@ public class ProductServlet extends HttpServlet {
 
                            newSale.setTotal_amount(remainingAmount.add(additionalAmount));
                            newSale.setPayment_method(additionalPaymentMethod);
-
+                           cashPaid =newSale.getTotal_amount();
+                           change = remainingAmount.subtract(cashPaid);
                            // Mark the voucher as used
                            saleService.markVoucherAsUsed(voucherCode);
                        }
@@ -336,7 +341,7 @@ public class ProductServlet extends HttpServlet {
                             String saleTime = newSale.getSales_date().toString();
                             String customerEmail = request.getParameter("customer_email");
 
-                            emailService.sendSaleReceipt(customerEmail, salespersonName, saleTime, scannedItems, totalAmountWithoutVAT, vatAmount, change, newSale.getPayment_method(), cashPaid, cardPaid);
+                          emailService.sendSaleReceipt(customerEmail, salespersonName, saleTime, scannedItems, totalAmountWithoutVAT, vatAmount, change, newSale.getPayment_method(), cashPaid, cardPaid,newSalesID);
 
                            // SmsSender.sendSms("add number", "Thank you for SHOPPING with us! 😊 Please check your email (" + customerEmail + ") for your RECEIPT.");
 

@@ -41,7 +41,7 @@
     .content {
         background-color: #fff;
         padding: 20px;
-         align-items: center;
+         
         justify-content: center;
         border-radius: 8px;
         box-shadow: 0 0 10px rgba(0,0,0,0.1);

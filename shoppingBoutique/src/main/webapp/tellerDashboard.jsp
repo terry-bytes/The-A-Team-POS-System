@@ -20,6 +20,43 @@
         <link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/teller.css">
         <style>
+            .header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px 20px;
+                background-color: #f1f1f1;
+                border-bottom: 1px solid #ddd;
+            }
+
+            .header .user-info {
+                display: flex;
+                align-items: center;
+            }
+
+            .header .user-info img {
+                border-radius: 50%;
+                width: 50px;
+                height: 50px;
+                margin-right: 10px;
+            }
+
+            .header .user-info .user {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .header .logout a {
+                text-decoration: none;
+                color: #333;
+                display: flex;
+                align-items: center;
+            }
+
+            .header .logout i {
+                font-size: 24px;
+                margin-right: 8px;
+            }
             .payment-icons {
                 display: flex;
                 gap: 10px; /* Adjust the spacing between options */
@@ -343,27 +380,23 @@
 
         <div class="container">
             <div class="left-section">
-                <div class="user-info ">
-                    <div class="user-details">
+                <header class="header">
+                    <div class="user-info">
                         <img src="images.jpeg" alt="User Avatar">
                         <div class="user">
                             <%
-
-                                Employee loggedInUser = (Employee) session.getAttribute("Employee");%>
-                            <h3><%=loggedInUser.getFirstName()%> <%=loggedInUser.getLastName()%></h3>
-                        </div> 
-
-
-                        <div class="logout">
-
-                            <a href="EmployeeServlet?submit=logout">
-                                <i class='bx bx-log-out icon' ></i>
-                                <span class="text nav-text">Logout</span>
-                            </a>
-
+                                Employee loggedInUser = (Employee) session.getAttribute("Employee");
+                            %>
+                            <h3><%= loggedInUser.getFirstName()%> <%= loggedInUser.getLastName()%></h3>
                         </div>
                     </div>
-                </div>
+                    <div class="logout">
+                        <a href="EmployeeServlet?submit=logout">
+                            <i class='bx bx-log-out icon'></i>
+                            <span class="text nav-text">Logout</span>
+                        </a>
+                    </div>
+                </header>
 
                 <div class="scanned-items">
                     <h2>Scanned Items</h2>

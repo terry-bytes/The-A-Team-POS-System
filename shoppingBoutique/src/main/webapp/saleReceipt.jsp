@@ -23,7 +23,7 @@
             }
             h1 {
                 text-align: center;
-                color: #333;
+                color:  #f9f9f9;
             }
             table {
                 width: 100%;
@@ -62,14 +62,6 @@
         <div class="container">
             <h1>Sale Successful</h1>
             <table>
-                <thead>
-                    <tr>
-                        <th>Item</th>
-                        <th>Quantity</th>
-                        <th>Unit Price (R)</th>
-                        <th>Total Price (R)</th>
-                    </tr>
-                </thead>
                 <tbody>
                     <%-- Assuming `scannedItems` is available in request scope and iterates over items --%>
                     <%
