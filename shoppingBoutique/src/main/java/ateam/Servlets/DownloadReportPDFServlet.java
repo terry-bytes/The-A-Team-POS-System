@@ -14,6 +14,7 @@ import org.jfree.chart.ChartUtils;
 import org.jfree.chart.plot.PiePlot3D;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
+import org.jfree.chart.util.Rotation;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -25,7 +26,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
-import org.jfree.chart.util.Rotation;
 
 @WebServlet("/DownloadReportPDF")
 public class DownloadReportPDFServlet extends HttpServlet {
@@ -78,8 +78,9 @@ public class DownloadReportPDFServlet extends HttpServlet {
                 );
 
                 ByteArrayOutputStream barChartOutputStream = new ByteArrayOutputStream();
-                ChartUtils.writeChartAsPNG(barChartOutputStream, barChart, 600, 400);
+                ChartUtils.writeChartAsPNG(barChartOutputStream, barChart, 500, 300);
                 Image barChartImage = Image.getInstance(barChartOutputStream.toByteArray());
+                barChartImage.scaleToFit(500, 300); // Adjust the size to fit the layout
                 document.add(barChartImage);
             }
 
@@ -106,6 +107,7 @@ public class DownloadReportPDFServlet extends HttpServlet {
                 ByteArrayOutputStream pieChartOutputStream = new ByteArrayOutputStream();
                 ChartUtils.writeChartAsPNG(pieChartOutputStream, pieChart, 600, 400);
                 Image pieChartImage = Image.getInstance(pieChartOutputStream.toByteArray());
+                pieChartImage.scaleToFit(500, 300); // Adjust the size to fit the layout
                 document.add(pieChartImage);
             }
 
@@ -116,10 +118,10 @@ public class DownloadReportPDFServlet extends HttpServlet {
                 productTable.addCell("Product");
                 productTable.addCell("Quantity Sold");
 
-                for (TopProductDTO product : topProducts) {
-                    productTable.addCell(product.getProductName());
+//                for (TopProductDTO product : topProducts) {
+//                    productTable.addCell(product.getProductName());
 //                    productTable.addCell(String.valueOf(product.getQuantitySold()));
-                }
+//                }
                 document.add(productTable);
             }
 
