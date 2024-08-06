@@ -124,7 +124,7 @@ public class ReturnedServlet extends HttpServlet {
             session.setAttribute("salesItems", salesItems);
             session.setAttribute("message", "Sale has been successfully retrieved");
         } else {
-            session.setAttribute("message", "Sale not found for ID: " + salesId);
+            session.setAttribute("errorMessage", "Sale not found for ID: " + salesId);
         }
         response.sendRedirect("returnSale.jsp");
     }
@@ -158,7 +158,7 @@ public class ReturnedServlet extends HttpServlet {
 
         if (quantity>sales.getQuantity() || sales.getQuantity() == 0) {
             
-            request.setAttribute("message", "Error, Item already returned");
+            request.setAttribute("errorMessage", "Error, Item already returned");
             request.getRequestDispatcher("returnSale.jsp").forward(request, response);
             
             

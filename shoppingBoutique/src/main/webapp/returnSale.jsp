@@ -165,6 +165,13 @@
                 <button type="submit">Retrieve Sale</button>
             </form>
             
+            <div>
+                <c:if test="${not empty errorMessage}">
+                    <div class="error-message" style="color: red; font-weight: bold;">
+                        ${errorMessage}
+                    </div>
+                </c:if>
+            </div>
 
             <!-- Display Sale and Sales Items if available -->
             <c:if test="${not empty sale}">
