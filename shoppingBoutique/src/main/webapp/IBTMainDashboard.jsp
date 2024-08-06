@@ -96,6 +96,36 @@
             }
 });
     </script>
+    
+    <script>
+        $(document).ready(function() {
+    // Initially hide the popup form
+    $("#popup-form").hide();
+
+    // Function to handle clicking on "Delivered IBT" button
+    $("input[value='Delivered IBT']").click(function(e) {
+        e.preventDefault(); // Prevent the default form submission
+        $("#popup-form").show(); // Show the popup form
+    });
+
+    // Function to handle clicking on the close button
+    $("#close-btn").click(function() {
+        $("#popup-form").hide(); // Hide the popup form
+    });
+
+    // Additional functionality (notifications etc.) remains unchanged
+
+    // Function to handle clicking on "IBT Requests" button
+    $("input[value='IBT Requests']").click(function(e) {
+        e.preventDefault(); // Prevent the default form submission
+        fetchIBTNotifications();
+        setInterval(fetchIBTNotifications, 5000); // Fetch notifications every 5 seconds
+    });
+
+    
+});
+
+        </script>
 
    <style>
         /* General Styles */
@@ -217,6 +247,41 @@
             cursor: pointer;
             font-size: 20px; /* Size for the close button */
         }
+        
+        
+        /*---------------------------------------------*/
+        
+        
+        /* CSS for popup form */
+#popup-form {
+    display: none; /* Hidden by default */
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    z-index: 1000;
+    display: flex; /* Use flexbox to center content */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+}
+
+#popup-form .form-content {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    width: 300px;
+    position: relative;
+}
+
+#popup-form .form-content #close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    font-size: 20px; /* Size for the close button */
+}
     </style>
     
     </head>

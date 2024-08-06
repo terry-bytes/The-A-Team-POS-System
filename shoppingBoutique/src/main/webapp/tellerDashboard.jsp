@@ -17,28 +17,111 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
 
-       
+        <style>
+/* General Popup Styles */
+.popup {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5); /* Black with opacity */
+}
+
+/* Popup Content */
+.popup-content {
+    background-color: #ffffff;
+    margin: 10% auto; /* Center the popup */
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 500px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center content horizontally */
+}
+
+/* Close Button */
+.close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: #888;
+    font-size: 1.5em;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+}
+
+/* Heading */
+.popup-content h2 {
+    margin-top: 0;
+    color: #333;
+    font-size: 1.6em;
+}
+
+/* Form Elements */
+.popup-content label {
+    display: block;
+    margin-bottom: 8px;
+    color: #555;
+    font-weight: bold;
+}
+
+.popup-content input[type="text"] {
+    width: calc(100% - 20px); /* Ensure full width minus padding */
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1em;
+    box-sizing: border-box; /* Ensure padding doesn't affect width */
+}
+
+/* Button Container */
+.button-container {
+    display: flex;
+    justify-content: center; /* Center buttons horizontally */
+    width: 100%; /* Ensure full width of the parent container */
+    gap: 10px; /* Add space between buttons */
+}
+
+/* Button Styles */
+.popup-content input[type="submit"] {
+    background-color: #3498db; /* Blue background */
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.popup-content input[type="submit"]:hover {
+    background-color: #2980b9; /* Darker blue */
+}
+
+        </style>
         
         
         <style>
-            /*
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
-*/
-/* 
-    Created on : 31 Jul 2024, 15:08:03
-    Author     : T440
-*/
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-*{
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
-}
-
-
+            
 .payment-section {
     flex: 1;
 }
@@ -120,7 +203,9 @@ body {
 #lay{
     background-color: #6bf406;}
 
-
+#openPopupButton{
+    background-color: red;
+}
 .styled-input {
     width: 100%; 
     padding: 12px 20px; 
@@ -1545,23 +1630,24 @@ th {
             </div>
         </div>
 
-
-        <!-- The Popup Form -->
-        <div id="popupForm" class="popup">
-            <div class="popup-content">
-                <span class="close" id="closePopup">&times;</span>
-                <h2>Enter IBT ID Number</h2>
-                <form id="ibtForm" action="IBTServlet" method="post">
-                    <label for="ibtNumber">IBT ID:</label>
-                    <input type="text" id="ibtNumber" name="ibtNumber" >
-                    <label>Store ID of Sent IBT: </label><label id="storeID"><%= request.getAttribute("retrievedStoreID")%></label>
-                    <label></label><label></label>
-                    <label></label><label></label>
-                    <input type="submit" value="Validate Store" name="IBT_switch"> 
-                </form>
+<!-- The Popup Form -->
+<div id="popupForm" class="popup">
+    <div class="popup-content">
+        <span class="close" id="closePopup">&times;</span>
+        <h2>Enter IBT ID Number</h2>
+        <form id="ibtForm" action="IBTServlet" method="post">
+            <label for="ibtNumber">IBT ID:</label>
+            <input type="text" id="ibtNumber" name="ibtNumber">
+            <label>Store ID of Sent IBT: </label><label id="storeID"><%= request.getAttribute("retrievedStoreID")%></label>
+            <label></label><label></label>
+            <label></label><label></label>
+            <div class="button-container">
+                <input type="submit" value="Validate Store" name="IBT_switch">
                 <input type="submit" value="Process Payment to store: <%= request.getAttribute("retrievedStoreID")%>">
             </div>
-        </div>
+        </form>
+    </div>
+</div>
 
         <!-- Success Popup -->
         <div id="successPopup" class="popup">
@@ -1571,6 +1657,6 @@ th {
                 <p>Your payment has been processed successfully to store: <%= request.getAttribute("retrievedStoreID")%></p>
             </div>
         </div>
-
+          
     </body>
 </html>
