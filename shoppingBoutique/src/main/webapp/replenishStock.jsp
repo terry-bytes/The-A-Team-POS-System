@@ -11,6 +11,8 @@
     <title>Add Stock</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -255,6 +257,11 @@
     </div>
 </div>
 
+ <video id="barcode-scanner" style="display: none;"></video>
+ <audio id="beep-sound" src="beep.mp3" preload="auto"></audio>
+
+
+
 <script>
     var modal = document.getElementById("myModal");
     var span = document.getElementsByClassName("close")[0];
@@ -286,6 +293,49 @@ function openNav() {
     // Initial call to display the current time immediately
     updateTime();
 </script>
+ <script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+      Quagga.init({
+        inputStream: {
+          name: "Live",
+          type: "LiveStream",
+          target: document.querySelector('#barcode-scanner'), // Or '#yourElement' (optional)
+        },
+        decoder: {
+          readers: ["code_128_reader", "ean_reader", "ean_8_reader"] // Add other barcode types if needed
+        }
+      }, function (err) {
+        if (err) {
+          console.log(err);
+          return;
+        }
+        console.log("Initialization finished. Ready to start");
+        Quagga.start();
+      });
+
+      Quagga.onDetected(function (data) {
+        let barcode = data.codeResult.code;
+        console.log("Barcode detected and processed : [" + barcode + "]", data);
+         document.getElementById('beep-sound').play();
+                    
+
+        // Simulate keyboard input
+        simulateKeyboardInput(barcode);
+      });
+    });
+
+    function simulateKeyboardInput(barcode) {
+      let inputField = document.querySelector('#barcode'); // Your input field where the barcode should be entered
+      inputField.value = barcode;
+
+      // If you need to trigger events as if it was typed
+      let event = new Event('input', {
+        bubbles: true,
+        cancelable: true,
+      });
+      inputField.dispatchEvent(event);
+    }
+  </script>
 
 </body>
 </html>
